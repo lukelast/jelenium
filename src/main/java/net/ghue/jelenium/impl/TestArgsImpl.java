@@ -3,7 +3,6 @@ package net.ghue.jelenium.impl;
 import java.util.Map;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-
 import net.ghue.jelenium.api.HttpUrl;
 import net.ghue.jelenium.api.TestArgs;
 
@@ -18,6 +17,13 @@ final class TestArgsImpl implements TestArgs {
 
    private final HttpUrl url;
 
+   /**
+    * <p>
+    * Constructor for TestArgsImpl.
+    * </p>
+    *
+    * @param args a {@link java.util.Map} object.
+    */
    public TestArgsImpl( Map<String, String> args ) {
       this.args = ImmutableMap.copyOf( args );
       if ( Strings.isNullOrEmpty( args.get( KEY_URL ) ) ) {

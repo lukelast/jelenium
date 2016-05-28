@@ -5,8 +5,23 @@ import java.util.Map;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import net.ghue.jelenium.api.SeleniumTest;
 
+/**
+ * <p>
+ * TestRunnerImpl class.
+ * </p>
+ *
+ * @author Luke Last
+ */
 public final class TestRunnerImpl {
 
+   /**
+    * <p>
+    * run.
+    * </p>
+    *
+    * @param parsedArgs a {@link java.util.Map} object.
+    * @throws java.lang.Exception if any.
+    */
    public void run( Map<String, String> parsedArgs ) throws Exception {
 
       final TestArgsImpl testArgs = new TestArgsImpl( parsedArgs );

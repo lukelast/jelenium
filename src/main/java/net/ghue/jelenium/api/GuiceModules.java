@@ -7,8 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This is required by Java. For actual use just use multiple {@link GuiceModule} annotations.
- * 
+ * This is required by Java. For actual use just use multiple
+ * {@link net.ghue.jelenium.api.GuiceModule} annotations.
+ *
  * @author Luke Last
  */
 @Retention( RetentionPolicy.RUNTIME )

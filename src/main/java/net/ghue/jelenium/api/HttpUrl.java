@@ -35,60 +35,29 @@ import okio.Buffer;
  * A uniform resource locator (URL) with a scheme of either {@code http} or {@code https}. Use this
  * class to compose and decompose Internet addresses. For example, this code will compose and print
  * a URL for Google search:
- * 
- * <pre>
- * 
- * {
- *    &#64;code
  *
- *    HttpUrl url = new HttpUrl.Builder().scheme( "https" )
- *                                       .host( "www.google.com" )
- *                                       .addPathSegment( "search" )
- *                                       .addQueryParameter( "q", "polar bears" )
- *                                       .build();
- *    System.out.println( url );
- * }
+ * <pre>
+ *
+ * HttpUrl url = new HttpUrl.Builder().scheme( "https" )
+ *                                    .host( "www.google.com" )
+ *                                    .addPathSegment( "search" )
+ *                                    .addQueryParameter( "q", "polar bears" )
+ *                                    .build();
+ * System.out.println( url );
  * </pre>
  *
  * which prints:
- * 
- * <pre>
- *    {@code
  *
+ * <pre>
  *     https://www.google.com/search?q=polar%20bears
- * }
- * </pre>
- *
- * As another example, this code prints the human-readable query parameters of a Twitter search:
- * 
- * <pre>
- * 
- * {
- *    &#64;code
- *
- *    HttpUrl url = HttpUrl.parse( "https://twitter.com/search?q=cute%20%23puppies&f=images" );
- *    for ( int i = 0, size = url.querySize(); i < size; i++ ) {
- *       System.out.println( url.queryParameterName( i ) + ": " + url.queryParameterValue( i ) );
- *    }
- * }
- * </pre>
- *
- * which prints:
- * 
- * <pre>
- *    {@code
- *
- *   q: cute #puppies
- *   f: images
- * }
  * </pre>
  *
  * In addition to composing URLs from their component parts and decomposing URLs into their
  * component parts, this class implements relative URL resolution: what address you'd reach by
  * clicking a relative link on a specified page. For example:
- * 
+ *
  * <pre>
- * 
+ *
  * {
  *    &#64;code
  *
@@ -99,7 +68,7 @@ import okio.Buffer;
  * </pre>
  *
  * which prints:
- * 
+ *
  * <pre>
  *    {@code
  *
@@ -153,9 +122,9 @@ import okio.Buffer;
  * component must escape all of its {@code ?} characters, otherwise it could be interpreted as the
  * start of the URL's query. But within the query and fragment components, the {@code ?} character
  * doesn't delimit anything and doesn't need to be escaped.
- * 
+ *
  * <pre>
- * 
+ *
  * {
  *    &#64;code
  *
@@ -171,7 +140,7 @@ import okio.Buffer;
  * </pre>
  *
  * This prints:
- * 
+ *
  * <pre>
  *    {@code
  *
@@ -195,22 +164,22 @@ import okio.Buffer;
  * <p>
  * <a href="http://ietf.org/rfc/rfc3492.txt">Punycode</a> converts a Unicode string to an ASCII
  * string to make international domain names work everywhere. For example, "σ" encodes as "xn--4xa".
- * The encoded string is not human readable, but can be used with classes like {@link InetAddress}
- * to establish connections.
+ * The encoded string is not human readable, but can be used with classes like
+ * {@link java.net.InetAddress} to establish connections.
  * <h3>Why another URL model?</h3> Java includes both {@link URL java.net.URL} and {@link URI
  * java.net.URI}. We offer a new URL model to address problems that the others don't.
  * <h4>Different URLs should be different</h4> Although they have different content,
- * {@code java.net.URL} considers the following two URLs equal, and the {@link Object#equals
- * equals()} method between them returns true:
+ * {@code java.net.URL} considers the following two URLs equal, and the
+ * {@link java.lang.Object#equals equals()} method between them returns true:
  * <ul>
  * <li>http://square.github.io/
  * <li>http://google.github.io/
  * </ul>
  * This is because those two hosts share the same IP address. This is an old, bad design decision
  * that makes {@code java.net.URL} unusable for many things. It shouldn't be used as a
- * {@link java.util.Map Map} key or in a {@link Set}. Doing so is both inefficient because equality
- * may require a DNS lookup, and incorrect because unequal URLs may be equal because of how they are
- * hosted.
+ * {@link java.util.Map Map} key or in a {@link java.util.Set}. Doing so is both inefficient because
+ * equality may require a DNS lookup, and incorrect because unequal URLs may be equal because of how
+ * they are hosted.
  * <h4>Equal URLs should be equal</h4> These two URLs are semantically identical, but
  * {@code java.net.URI} disagrees:
  * <ul>
@@ -225,9 +194,9 @@ import okio.Buffer;
  * Because they don't attempt canonical form, these classes are surprisingly difficult to use
  * securely. Suppose you're building a webservice that checks that incoming paths are prefixed
  * "/static/images/" before serving the corresponding assets from the filesystem.
- * 
+ *
  * <pre>
- * 
+ *
  * {
  *    &#64;code
  *
@@ -240,7 +209,7 @@ import okio.Buffer;
  *
  * By canonicalizing the input paths, they are complicit in directory traversal attacks. Code that
  * checks only the path prefix may suffer!
- * 
+ *
  * <pre>
  *    {@code
  *
@@ -266,9 +235,10 @@ import okio.Buffer;
  * instead use telescoping constructors. For example, there's no API to compose a URI with a custom
  * port without also providing a query and fragment.
  * <p>
- * Instances of {@link HttpUrl} are well-formed and always have a scheme, host, and path. With
- * {@code java.net.URL} it's possible to create an awkward URL like {@code http:/} with scheme and
- * path but no hostname. Building APIs that consume such malformed values is difficult!
+ * Instances of {@link net.ghue.jelenium.api.HttpUrl} are well-formed and always have a scheme,
+ * host, and path. With {@code java.net.URL} it's possible to create an awkward URL like
+ * {@code http:/} with scheme and path but no hostname. Building APIs that consume such malformed
+ * values is difficult!
  * <p>
  * This class has a modern API. It avoids punitive checked exceptions: {@link #parse parse()}
  * returns null if the input is an invalid URL. You can even be explicit about whether each
@@ -636,7 +606,13 @@ public final class HttpUrl {
          return this;
       }
 
-      /** Adds the pre-encoded query parameter to this URL's query string. */
+      /**
+       * Adds the pre-encoded query parameter to this URL's query string.
+       * 
+       * @param encodedName Encoded Name.
+       * @param encodedValue Encoded Value.
+       * @return Builder.
+       */
       public Builder addEncodedQueryParameter( String encodedName, String encodedValue ) {
          if ( encodedName == null ) {
             throw new IllegalArgumentException( "encodedName == null" );
@@ -661,7 +637,13 @@ public final class HttpUrl {
          return this;
       }
 
-      /** Encodes the query parameter using UTF-8 and adds it to this URL's query string. */
+      /**
+       * Encodes the query parameter using UTF-8 and adds it to this URL's query string.
+       * 
+       * @param name Name.
+       * @param value Value.
+       * @return Builder.
+       */
       public Builder addQueryParameter( String name, String value ) {
          if ( name == null ) {
             throw new IllegalArgumentException( "name == null" );
@@ -720,12 +702,13 @@ public final class HttpUrl {
       }
 
       public Builder encodedQuery( String encodedQuery ) {
-         this.encodedQueryNamesAndValues = encodedQuery != null
-               ? queryStringToNamesAndValues( canonicalize( encodedQuery,
-                                                            QUERY_ENCODE_SET,
-                                                            true,
-                                                            true ) )
-               : null;
+         this.encodedQueryNamesAndValues =
+               encodedQuery != null
+                     ? queryStringToNamesAndValues( canonicalize( encodedQuery,
+                                                                  QUERY_ENCODE_SET,
+                                                                  true,
+                                                                  true ) )
+                     : null;
          return this;
       }
 
@@ -748,6 +731,7 @@ public final class HttpUrl {
       /**
        * @param host either a regular hostname, International Domain Name, IPv4 address, or IPv6
        *           address.
+       * @return Builder.
        */
       public Builder host( String host ) {
          if ( host == null ) {
@@ -820,13 +804,12 @@ public final class HttpUrl {
                   if ( !hasPassword ) {
                      int passwordColonOffset =
                            delimiterOffset( input, pos, componentDelimiterOffset, ":" );
-                     String canonicalUsername =
-                           canonicalize( input,
-                                         pos,
-                                         passwordColonOffset,
-                                         USERNAME_ENCODE_SET,
-                                         true,
-                                         false );
+                     String canonicalUsername = canonicalize( input,
+                                                              pos,
+                                                              passwordColonOffset,
+                                                              USERNAME_ENCODE_SET,
+                                                              true,
+                                                              false );
                      this.encodedUsername = hasUsername
                            ? this.encodedUsername + "%40" + canonicalUsername : canonicalUsername;
                      if ( passwordColonOffset != componentDelimiterOffset ) {
@@ -840,14 +823,12 @@ public final class HttpUrl {
                      }
                      hasUsername = true;
                   } else {
-                     this.encodedPassword = this.encodedPassword +
-                                            "%40" +
-                                            canonicalize( input,
-                                                          pos,
-                                                          componentDelimiterOffset,
-                                                          PASSWORD_ENCODE_SET,
-                                                          true,
-                                                          false );
+                     this.encodedPassword = this.encodedPassword + "%40" + canonicalize( input,
+                                                                                         pos,
+                                                                                         componentDelimiterOffset,
+                                                                                         PASSWORD_ENCODE_SET,
+                                                                                         true,
+                                                                                         false );
                   }
                   pos = componentDelimiterOffset + 1;
                   break;
@@ -899,7 +880,8 @@ public final class HttpUrl {
             int queryDelimiterOffset = delimiterOffset( input, pos, limit, "#" );
             this.encodedQueryNamesAndValues =
                   queryStringToNamesAndValues( canonicalize( input,
-                                                             pos + 1,
+                                                             pos +
+                                                                    1,
                                                              queryDelimiterOffset,
                                                              QUERY_ENCODE_SET,
                                                              true,
@@ -1340,6 +1322,9 @@ public final class HttpUrl {
    /**
     * Returns 80 if {@code scheme.equals("http")}, 443 if {@code scheme.equals("https")} and -1
     * otherwise.
+    *
+    * @param scheme "http" or "https".
+    * @return port number.
     */
    public static int defaultPort( String scheme ) {
       if ( scheme.equals( "http" ) ) {
@@ -1364,13 +1349,24 @@ public final class HttpUrl {
       return limit;
    }
 
+   /**
+    * <p>
+    * get.
+    * </p>
+    *
+    * @param uri a {@link java.net.URI} object.
+    * @return a {@link net.ghue.jelenium.api.HttpUrl} object.
+    */
    public static HttpUrl get( URI uri ) {
       return parse( uri.toString() );
    }
 
    /**
-    * Returns an {@link HttpUrl} for {@code url} if its protocol is {@code http} or {@code https},
-    * or null if it has any other protocol.
+    * Returns an {@link net.ghue.jelenium.api.HttpUrl} for {@code url} if its protocol is
+    * {@code http} or {@code https}, or null if it has any other protocol.
+    *
+    * @param url a {@link java.net.URL} object.
+    * @return Parsed URL.
     */
    public static HttpUrl get( URL url ) {
       return parse( url.toString() );
@@ -1417,6 +1413,9 @@ public final class HttpUrl {
    /**
     * Returns a new {@code HttpUrl} representing {@code url} if it is a well-formed HTTP or HTTPS
     * URL, or null if it isn't.
+    *
+    * @param url a {@link java.lang.String} object.
+    * @return Parsed URL.
     */
    public static HttpUrl parse( String url ) {
       Builder builder = new Builder();
@@ -1544,6 +1543,13 @@ public final class HttpUrl {
       this.url = builder.toString();
    }
 
+   /**
+    * <p>
+    * encodedFragment.
+    * </p>
+    *
+    * @return a {@link java.lang.String} object.
+    */
    public String encodedFragment() {
       if ( fragment == null ) {
          return null;
@@ -1552,7 +1558,11 @@ public final class HttpUrl {
       return url.substring( fragmentStart );
    }
 
-   /** Returns the password, or an empty string if none is set. */
+   /**
+    * Returns the password, or an empty string if none is set.
+    *
+    * @return Password.
+    */
    public String encodedPassword() {
       if ( password.isEmpty() ) {
          return "";
@@ -1565,6 +1575,8 @@ public final class HttpUrl {
    /**
     * Returns the entire path of this URL, encoded for use in HTTP resource resolution. The returned
     * path is always nonempty and is prefixed with {@code /}.
+    *
+    * @return Path.
     */
    public String encodedPath() {
       int pathStart = url.indexOf( '/', scheme.length() + 3 ); // "://".length() == 3.
@@ -1572,6 +1584,13 @@ public final class HttpUrl {
       return url.substring( pathStart, pathEnd );
    }
 
+   /**
+    * <p>
+    * encodedPathSegments.
+    * </p>
+    *
+    * @return a {@link java.util.List} object.
+    */
    public List<String> encodedPathSegments() {
       int pathStart = url.indexOf( '/', scheme.length() + 3 );
       int pathEnd = delimiterOffset( url, pathStart, url.length(), "?#" );
@@ -1589,6 +1608,8 @@ public final class HttpUrl {
     * Returns the query of this URL, encoded for use in HTTP resource resolution. The returned
     * string may be null (for URLs with no query), empty (for URLs with an empty query) or non-empty
     * (all other URLs).
+    *
+    * @return Query.
     */
    public String encodedQuery() {
       if ( queryNamesAndValues == null ) {
@@ -1599,7 +1620,11 @@ public final class HttpUrl {
       return url.substring( queryStart, queryEnd );
    }
 
-   /** Returns the username, or an empty string if none is set. */
+   /**
+    * Returns the username, or an empty string if none is set.
+    *
+    * @return Username.
+    */
    public String encodedUsername() {
       if ( username.isEmpty() ) {
          return "";
@@ -1609,38 +1634,63 @@ public final class HttpUrl {
       return url.substring( usernameStart, usernameEnd );
    }
 
+   /** {@inheritDoc} */
    @Override
    public boolean equals( Object o ) {
       return ( o instanceof HttpUrl ) && ( (HttpUrl) o ).url.equals( url );
    }
 
+   /**
+    * <p>
+    * fragment.
+    * </p>
+    *
+    * @return a {@link java.lang.String} object.
+    */
    public String fragment() {
       return fragment;
    }
 
+   /** {@inheritDoc} */
    @Override
    public int hashCode() {
       return url.hashCode();
    }
 
    /**
-    * Returns the host address suitable for use with {@link InetAddress#getAllByName(String)}. May
-    * be:
+    * Returns the host address suitable for use with
+    * {@link java.net.InetAddress#getAllByName(String)}. May be:
     * <ul>
     * <li>A regular host name, like {@code android.com}.
     * <li>An IPv4 address, like {@code 127.0.0.1}.
     * <li>An IPv6 address, like {@code ::1}. Note that there are no square braces.
     * <li>An encoded IDN, like {@code xn--n3h.net}.
     * </ul>
+    *
+    * @return a {@link java.lang.String} object.
     */
    public String host() {
       return host;
    }
 
+   /**
+    * <p>
+    * isHttps.
+    * </p>
+    *
+    * @return a boolean.
+    */
    public boolean isHttps() {
       return scheme.equals( "https" );
    }
 
+   /**
+    * <p>
+    * newBuilder.
+    * </p>
+    *
+    * @return a {@link net.ghue.jelenium.api.HttpUrl.Builder} object.
+    */
    public Builder newBuilder() {
       Builder result = new Builder();
       result.scheme = scheme;
@@ -1660,15 +1710,33 @@ public final class HttpUrl {
       return result;
    }
 
-   /** Returns the decoded password, or an empty string if none is present. */
+   /**
+    * Returns the decoded password, or an empty string if none is present.
+    *
+    * @return a {@link java.lang.String} object.
+    */
    public String password() {
       return password;
    }
 
+   /**
+    * <p>
+    * pathSegments.
+    * </p>
+    *
+    * @return a {@link java.util.List} object.
+    */
    public List<String> pathSegments() {
       return pathSegments;
    }
 
+   /**
+    * <p>
+    * pathSize.
+    * </p>
+    *
+    * @return a int.
+    */
    public int pathSize() {
       return pathSegments.size();
    }
@@ -1685,11 +1753,20 @@ public final class HttpUrl {
     * Returns the explicitly-specified port if one was provided, or the default port for this URL's
     * scheme. For example, this returns 8443 for {@code https://square.com:8443/} and 443 for {@code
     * https://square.com/}. The result is in {@code [1..65535]}.
+    *
+    * @return a int.
     */
    public int port() {
       return port;
    }
 
+   /**
+    * <p>
+    * query.
+    * </p>
+    *
+    * @return a {@link java.lang.String} object.
+    */
    public String query() {
       if ( queryNamesAndValues == null ) {
          return null; // No query.
@@ -1702,6 +1779,9 @@ public final class HttpUrl {
    /**
     * Returns the first query parameter named {@code name} decoded using UTF-8, or null if there is
     * no such query parameter.
+    *
+    * @param name a {@link java.lang.String} object.
+    * @return a {@link java.lang.String} object.
     */
    public String queryParameter( String name ) {
       if ( queryNamesAndValues == null ) {
@@ -1715,10 +1795,25 @@ public final class HttpUrl {
       return null;
    }
 
+   /**
+    * <p>
+    * queryParameterName.
+    * </p>
+    *
+    * @param index a int.
+    * @return a {@link java.lang.String} object.
+    */
    public String queryParameterName( int index ) {
       return queryNamesAndValues.get( index * 2 );
    }
 
+   /**
+    * <p>
+    * queryParameterNames.
+    * </p>
+    *
+    * @return a {@link java.util.Set} object.
+    */
    public Set<String> queryParameterNames() {
       if ( queryNamesAndValues == null ) {
          return Collections.emptySet();
@@ -1730,10 +1825,26 @@ public final class HttpUrl {
       return Collections.unmodifiableSet( result );
    }
 
+   /**
+    * <p>
+    * queryParameterValue.
+    * </p>
+    *
+    * @param index a int.
+    * @return a {@link java.lang.String} object.
+    */
    public String queryParameterValue( int index ) {
       return queryNamesAndValues.get( ( index * 2 ) + 1 );
    }
 
+   /**
+    * <p>
+    * queryParameterValues.
+    * </p>
+    *
+    * @param name a {@link java.lang.String} object.
+    * @return a {@link java.util.List} object.
+    */
    public List<String> queryParameterValues( String name ) {
       if ( queryNamesAndValues == null ) {
          return Collections.emptyList();
@@ -1747,22 +1858,39 @@ public final class HttpUrl {
       return Collections.unmodifiableList( result );
    }
 
+   /**
+    * <p>
+    * querySize.
+    * </p>
+    *
+    * @return a int.
+    */
    public int querySize() {
       return queryNamesAndValues != null ? queryNamesAndValues.size() / 2 : 0;
    }
 
-   /** Returns the URL that would be retrieved by following {@code link} from this URL. */
+   /**
+    * Returns the URL that would be retrieved by following {@code link} from this URL.
+    *
+    * @param link a {@link java.lang.String} object.
+    * @return a {@link net.ghue.jelenium.api.HttpUrl} object.
+    */
    public HttpUrl resolve( String link ) {
       Builder builder = new Builder();
       Builder.ParseResult result = builder.parse( this, link );
       return result == Builder.ParseResult.SUCCESS ? builder.build() : null;
    }
 
-   /** Returns either "http" or "https". */
+   /**
+    * Returns either "http" or "https".
+    *
+    * @return a {@link java.lang.String} object.
+    */
    public String scheme() {
       return scheme;
    }
 
+   /** {@inheritDoc} */
    @Override
    public String toString() {
       return url;
@@ -1770,9 +1898,11 @@ public final class HttpUrl {
 
    /**
     * Attempt to convert this URL to a {@link URI java.net.URI}. This method throws an unchecked
-    * {@link IllegalStateException} if the URL it holds isn't valid by URI's overly-stringent
-    * standard. For example, URI rejects paths containing the '[' character. Consult that class for
-    * the exact rules of what URLs are permitted.
+    * {@link java.lang.IllegalStateException} if the URL it holds isn't valid by URI's
+    * overly-stringent standard. For example, URI rejects paths containing the '[' character.
+    * Consult that class for the exact rules of what URLs are permitted.
+    *
+    * @return a {@link java.net.URI} object.
     */
    public URI uri() {
       try {
@@ -1783,7 +1913,11 @@ public final class HttpUrl {
       }
    }
 
-   /** Returns this URL as a {@link URL java.net.URL}. */
+   /**
+    * Returns this URL as a {@link URL java.net.URL}.
+    *
+    * @return a {@link java.net.URL} object.
+    */
    public URL url() {
       try {
          return new URL( url );
@@ -1792,6 +1926,13 @@ public final class HttpUrl {
       }
    }
 
+   /**
+    * <p>
+    * username.
+    * </p>
+    *
+    * @return a {@link java.lang.String} object.
+    */
    public String username() {
       return username;
    }

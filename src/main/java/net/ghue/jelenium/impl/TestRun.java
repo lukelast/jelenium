@@ -35,6 +35,15 @@ final class TestRun implements Closeable {
 
    private final WebDriver webDriver;
 
+   /**
+    * <p>
+    * Constructor for TestRun.
+    * </p>
+    *
+    * @param testClass a {@link java.lang.Class} object.
+    * @param webDriver a {@link org.openqa.selenium.WebDriver} object.
+    * @param testArgs a {@link net.ghue.jelenium.api.TestArgs} object.
+    */
    public TestRun( Class<? extends SeleniumTest> testClass, WebDriver webDriver,
                    TestArgs testArgs ) {
       this.testClass = testClass;
@@ -94,11 +103,17 @@ final class TestRun implements Closeable {
       theTest.manage( driver.manage() );
    }
 
+   /**
+    * @return {@code true} if the test passed.
+    */
    boolean passed() {
       return this.testPassed;
    }
 
-   public void run() {
+   /**
+    * Run the test.
+    */
+   void run() {
       try {
          log.info( "Starting Test: %s", testClass.getSimpleName() );
          this.init();

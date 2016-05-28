@@ -2,7 +2,6 @@ package net.ghue.jelenium.impl;
 
 import javax.inject.Inject;
 import org.openqa.selenium.WebDriver;
-
 import net.ghue.jelenium.api.HttpUrl;
 import net.ghue.jelenium.api.TestArgs;
 import net.ghue.jelenium.api.TestContext;
@@ -19,6 +18,16 @@ final class TestContextImpl implements TestContext {
 
    private final WebNavigate webNavigate;
 
+   /**
+    * <p>
+    * Constructor for TestContextImpl.
+    * </p>
+    *
+    * @param webDriver a {@link org.openqa.selenium.WebDriver} object.
+    * @param log a {@link net.ghue.jelenium.api.TestLog} object.
+    * @param testArgs a {@link net.ghue.jelenium.api.TestArgs} object.
+    * @param webNavigate a {@link net.ghue.jelenium.api.WebNavigate} object.
+    */
    @Inject
    public TestContextImpl( WebDriver webDriver, TestLog log, TestArgs testArgs,
                            WebNavigate webNavigate ) {

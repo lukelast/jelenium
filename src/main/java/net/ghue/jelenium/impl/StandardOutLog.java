@@ -1,9 +1,13 @@
 package net.ghue.jelenium.impl;
 
 import java.lang.reflect.InvocationTargetException;
-
 import net.ghue.jelenium.api.TestLog;
 
+/**
+ * Implement {@link TestLog} by printing to standard out and standard error.
+ * 
+ * @author Luke Last
+ */
 final class StandardOutLog implements TestLog {
 
    @Override

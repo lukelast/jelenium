@@ -11,40 +11,39 @@ import net.ghue.jelenium.api.SeleniumTest;
 
 /**
  * Searches the class path for available tests to be run.
- * 
+ *
  * @author Luke Last
  */
 public final class Scanner {
 
-   private static final List<String> CLASSES_TO_IGNORE =
-         ImmutableList.of( "cern.",
-                           "com.gargoylesoftware.htmlunit.",
-                           "com.google.",
-                           "com.steadystate.css.",
-                           "com.sun.",
-                           "com.thoughtworks.selenium.",
-                           "java_cup.",
-                           "javax.",
-                           "junit.",
-                           "net.ghue.jelenium.",
-                           "net.sf.cglib.",
-                           "net.sourceforge.htmlunit.",
-                           "netscape.javascript.",
-                           "okio.",
-                           "org.aopalliance.",
-                           "org.apache.",
-                           "org.assertj.",
-                           "org.codehaus.",
-                           "org.cyberneko.html.",
-                           "org.eclipse.jetty.",
-                           "org.hamcrest.",
-                           "org.hibernate.",
-                           "org.jboss.netty.",
-                           "org.junit.",
-                           "org.openqa.selenium.",
-                           "org.w3c.",
-                           "org.webbitserver.",
-                           "org.xml." );
+   private static final List<String> CLASSES_TO_IGNORE = ImmutableList.of( "cern.",
+                                                                           "com.gargoylesoftware.htmlunit.",
+                                                                           "com.google.",
+                                                                           "com.steadystate.css.",
+                                                                           "com.sun.",
+                                                                           "com.thoughtworks.selenium.",
+                                                                           "java_cup.",
+                                                                           "javax.",
+                                                                           "junit.",
+                                                                           "net.ghue.jelenium.",
+                                                                           "net.sf.cglib.",
+                                                                           "net.sourceforge.htmlunit.",
+                                                                           "netscape.javascript.",
+                                                                           "okio.",
+                                                                           "org.aopalliance.",
+                                                                           "org.apache.",
+                                                                           "org.assertj.",
+                                                                           "org.codehaus.",
+                                                                           "org.cyberneko.html.",
+                                                                           "org.eclipse.jetty.",
+                                                                           "org.hamcrest.",
+                                                                           "org.hibernate.",
+                                                                           "org.jboss.netty.",
+                                                                           "org.junit.",
+                                                                           "org.openqa.selenium.",
+                                                                           "org.w3c.",
+                                                                           "org.webbitserver.",
+                                                                           "org.xml." );
 
    private static Stream<Class<?>> load( ClassInfo ci ) {
       try {
@@ -54,6 +53,14 @@ public final class Scanner {
       }
    }
 
+   /**
+    * <p>
+    * findTests.
+    * </p>
+    *
+    * @return a {@link java.util.List} object.
+    * @throws java.io.IOException if any.
+    */
    public static List<Class<? extends SeleniumTest>> findTests() throws IOException {
       return ClassPath.from( Thread.currentThread().getContextClassLoader() )
                       .getTopLevelClasses()

@@ -26,9 +26,10 @@ import com.google.common.collect.ImmutableSet;
 final class GuavaCollectors {
 
    /**
-    * Collect a stream of elements into an {@link ImmutableList}.
-    * 
+    * Collect a stream of elements into an {@link com.google.common.collect.ImmutableList}.
+    *
     * @return Collector.
+    * @param <T> a T object.
     */
    public static <T> Collector<T, ImmutableList.Builder<T>, ImmutableList<T>> immutableList() {
       return Collector.of( ImmutableList.Builder::new,
@@ -38,9 +39,10 @@ final class GuavaCollectors {
    }
 
    /**
-    * Collect a stream of elements into an {@link ImmutableSet}.
-    * 
+    * Collect a stream of elements into an {@link com.google.common.collect.ImmutableSet}.
+    *
     * @return Collector.
+    * @param <T> a T object.
     */
    public static <T> Collector<T, ImmutableSet.Builder<T>, ImmutableSet<T>> immutableSet() {
       return Collector.of( ImmutableSet.Builder::new,

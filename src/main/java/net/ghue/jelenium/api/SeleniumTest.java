@@ -2,6 +2,13 @@ package net.ghue.jelenium.api;
 
 import org.openqa.selenium.WebDriver.Options;
 
+/**
+ * <p>
+ * Every non-abstract class that implements this interface becomes a test.
+ * </p>
+ *
+ * @author Luke Last
+ */
 public interface SeleniumTest {
 
    default void fail( String reason ) throws Exception {

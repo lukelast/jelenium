@@ -9,9 +9,9 @@ import java.lang.annotation.Target;
 import com.google.inject.Module;
 
 /**
- * Use this to annotate a {@link SeleniumTest} implementation. The test will then use your custom
- * GUICE {@link Module}.
- * 
+ * Use this to annotate a {@link net.ghue.jelenium.api.SeleniumTest} implementation. The test will
+ * then use your custom GUICE {@link com.google.inject.Module}.
+ *
  * @author Luke Last
  */
 @Retention( RetentionPolicy.RUNTIME )
