@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>net.ghue.jelenium</groupId>
+	<artifactId>jelenium-demo</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	
+	<name>Jelenium Demo</name>
+	<description>A collection of examples using Jelenium</description>
+	<url>https://github.com/lukelast/jelenium</url>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>net.ghue.jelenium</groupId>
+			<artifactId>jelenium</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+
+				<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.5.1</version>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+					</configuration>
+				</plugin>
+
+			</plugins>
+		</pluginManagement>
+		
+		<plugins>
+
+			<!-- Use maven exec plugin to start Jelenium Test Runner. -->
+			<!-- "mvn clean compile exec:java" -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.5.0</version>
+				<configuration>
+					<mainClass>net.ghue.jelenium.Runner</mainClass>
+					<arguments>
+						<argument>url=http://www.example.com/</argument>
+						<!-- Use a local browser. -->
+						<argument>browser=firefox</argument>
+						<!-- Use a remote web driver. -->
+						<!--argument>hub=localhost</argument-->
+						<!-- Custom argument. -->
+						<argument>mykey=myvalue</argument>
+					</arguments>
+				</configuration>
+
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<profiles>
+
+
+	</profiles>
+</project>
