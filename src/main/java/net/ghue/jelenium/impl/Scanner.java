@@ -25,7 +25,8 @@ public final class Scanner {
                                                                            "java_cup.",
                                                                            "javax.",
                                                                            "junit.",
-                                                                           "net.ghue.jelenium.",
+                                                                           "net.ghue.jelenium.api.",
+                                                                           "net.ghue.jelenium.impl.",
                                                                            "net.sf.cglib.",
                                                                            "net.sourceforge.htmlunit.",
                                                                            "netscape.javascript.",
@@ -44,14 +45,6 @@ public final class Scanner {
                                                                            "org.w3c.",
                                                                            "org.webbitserver.",
                                                                            "org.xml." );
-
-   private static Stream<Class<?>> load( ClassInfo ci ) {
-      try {
-         return Stream.of( ci.load() );
-      } catch ( Throwable ex ) {
-         return Stream.empty();
-      }
-   }
 
    /**
     * <p>
@@ -74,6 +67,14 @@ public final class Scanner {
                       .map( cl -> cl.<SeleniumTest> asSubclass( SeleniumTest.class ) )
                       .peek( cl -> System.out.println( "Found Test: " + cl.getName() ) )
                       .collect( GuavaCollectors.immutableList() );
+   }
+
+   private static Stream<Class<?>> load( ClassInfo ci ) {
+      try {
+         return Stream.of( ci.load() );
+      } catch ( Throwable ex ) {
+         return Stream.empty();
+      }
    }
 
    /**

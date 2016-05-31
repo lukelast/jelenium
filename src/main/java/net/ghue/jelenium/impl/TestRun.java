@@ -114,10 +114,16 @@ final class TestRun implements Closeable {
     * Run the test.
     */
    void run() {
+      final String testName = testClass.getSimpleName();
       try {
-         log.info( "Starting Test: %s", testClass.getSimpleName() );
+         log.info( "Starting Test: %s", testName );
          this.init();
-         theTest.run( injector.getInstance( TestContext.class ) );
+         final TestContext context = injector.getInstance( TestContext.class );
+         if ( theTest.skipTest() ) {
+            return;
+         }
+         theTest.onBeforeRun( context );
+         theTest.run( context );
 
       } catch ( Throwable ex ) {
          log.error( "", ex );
@@ -128,24 +134,30 @@ final class TestRun implements Closeable {
          throw new IllegalStateException( "Failed to instantiate " + testClass );
       }
 
+      if ( injector == null ) {
+         throw new IllegalStateException( "Failed to create guice injector" );
+      }
+
+      final TestContext context = injector.getInstance( TestContext.class );
+
       if ( this.testPassed ) {
-         log.info( "Passed: %s", theTest.getClass().getSimpleName() );
+         log.info( "Passed: %s", testName );
          try {
-            theTest.onPass( injector.getInstance( TestContext.class ) );
+            theTest.onPass( context );
          } catch ( Throwable ex ) {
             log.error( "", ex );
          }
       } else {
-         log.warn( "Failed: %s", theTest.getClass().getSimpleName() );
+         log.warn( "Failed: %s", testName );
          try {
-            theTest.onFail( injector.getInstance( TestContext.class ) );
+            theTest.onFail( context );
          } catch ( Throwable ex ) {
             log.error( "", ex );
          }
       }
 
       try {
-         theTest.onFinish( injector.getInstance( TestContext.class ) );
+         theTest.onFinish( context );
       } catch ( Throwable ex ) {
          log.error( "", ex );
       }
