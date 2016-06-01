@@ -1,31 +1,34 @@
 package net.ghue.jelenium.impl;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import net.ghue.jelenium.api.HttpUrl;
-import net.ghue.jelenium.api.TestArgs;
+import net.ghue.jelenium.api.JeleniumSettings;
 
 /**
  * This implementation must be immutable because instances are shared between test runs.
  * 
  * @author Luke Last
  */
-final class TestArgsImpl implements TestArgs {
+final class SettingsImpl implements JeleniumSettings {
 
-   private final Map<String, String> args;
+   private final ImmutableMap<String, String> args;
 
    private final HttpUrl url;
 
+   private final Path resultsDir;
+
    /**
-    * <p>
     * Constructor for TestArgsImpl.
-    * </p>
-    *
-    * @param args a {@link java.util.Map} object.
+    * 
+    * @param rawArgs Raw map of all the arguments.
     */
-   public TestArgsImpl( Map<String, String> args ) {
-      this.args = ImmutableMap.copyOf( args );
+   public SettingsImpl( Map<String, String> rawArgs ) {
+      this.args = ImmutableMap.copyOf( rawArgs );
       if ( Strings.isNullOrEmpty( args.get( KEY_URL ) ) ) {
          this.url = defaultUrl();
       } else {
@@ -34,6 +37,13 @@ final class TestArgsImpl implements TestArgs {
             throw new IllegalArgumentException( "BAD URL: " + args.get( KEY_URL ) );
          }
       }
+
+      final String dir = Strings.nullToEmpty( args.get( KEY_RESULTS_DIR ) );
+      if ( dir.isEmpty() ) {
+         this.resultsDir = DEFAULT_RESULTS_DIR;
+      } else {
+         this.resultsDir = Paths.get( dir ).toAbsolutePath().normalize();
+      }
    }
 
    private HttpUrl defaultUrl() {
@@ -41,7 +51,7 @@ final class TestArgsImpl implements TestArgs {
    }
 
    @Override
-   public String getArg( String key ) {
+   public String get( String key ) {
       if ( KEY_URL.equals( key ) ) {
          return this.url.toString();
       }
@@ -49,14 +59,18 @@ final class TestArgsImpl implements TestArgs {
    }
 
    @Override
-   public HttpUrl getSecondaryUrl( int index ) {
-      HttpUrl url = HttpUrl.parse( getArg( KEY_URL + index ) );
-      return ( url != null ) ? url : defaultUrl();
+   public Optional<HttpUrl> getSecondaryUrl( int index ) {
+      return Optional.ofNullable( HttpUrl.parse( get( KEY_URL + index ) ) );
    }
 
    @Override
    public HttpUrl getUrl() {
       return this.url;
+   }
+
+   @Override
+   public Path getResultsDir() {
+      return this.resultsDir;
    }
 
 }

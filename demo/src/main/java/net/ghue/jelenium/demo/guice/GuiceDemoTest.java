@@ -11,7 +11,7 @@ import net.ghue.jelenium.api.TestContext;
  * {@link Module}'s by annotating the class with one or more {@link GuiceModule}'s.
  */
 @GuiceModule( MyGuiceModule.class )
-public final class GuiceExampleTest implements SeleniumTest {
+public final class GuiceDemoTest implements SeleniumTest {
 
    @Inject
    private MyService myService;

@@ -1,5 +1,9 @@
 package net.ghue.jelenium.api;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
+
 /**
  * <p>
  * TestArgs interface.
@@ -7,7 +11,9 @@ package net.ghue.jelenium.api;
  *
  * @author Luke Last
  */
-public interface TestArgs {
+public interface JeleniumSettings {
+
+   Path DEFAULT_RESULTS_DIR = Paths.get( ".", "results" ).toAbsolutePath().normalize();
 
    /**
     * Constant <code>KEY_BROWSER="browser"</code>
@@ -25,24 +31,32 @@ public interface TestArgs {
    String KEY_URL = "url";
 
    /**
-    * <p>
-    * getArg.
-    * </p>
+    * The directory that stores all the test results.
+    */
+   String KEY_RESULTS_DIR = "results";
+
+   /**
+    * @return The root directory for all test results.
+    */
+   Path getResultsDir();
+
+   /**
+    * Get the value of a setting using the key.
     *
     * @param key a {@link java.lang.String} object.
-    * @return a {@link java.lang.String} object.
+    * @return The setting value. If the setting does not exist empty string will be returned.
     */
-   String getArg( String key );
+   String get( String key );
 
    /**
     * <p>
     * getSecondaryUrl.
     * </p>
     *
-    * @param index a int.
+    * @param index If the key is "url2" then the index is 2.
     * @return a {@link net.ghue.jelenium.api.HttpUrl} object.
     */
-   HttpUrl getSecondaryUrl( int index );
+   Optional<HttpUrl> getSecondaryUrl( int index );
 
    /**
     * <p>

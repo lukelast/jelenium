@@ -15,16 +15,14 @@ import net.ghue.jelenium.api.SeleniumTest;
 public final class TestRunnerImpl {
 
    /**
-    * <p>
-    * run.
-    * </p>
+    * Run test suite.
     *
     * @param parsedArgs a {@link java.util.Map} object.
     * @throws java.lang.Exception if any.
     */
    public void run( Map<String, String> parsedArgs ) throws Exception {
 
-      final TestArgsImpl testArgs = new TestArgsImpl( parsedArgs );
+      final SettingsImpl settings = new SettingsImpl( parsedArgs );
 
       final List<Class<? extends SeleniumTest>> testClasses = Scanner.findTests();
 
@@ -32,7 +30,7 @@ public final class TestRunnerImpl {
       int failed = 0;
 
       for ( Class<? extends SeleniumTest> testClass : testClasses ) {
-         try ( TestRun tr = new TestRun( testClass, new FirefoxDriver(), testArgs ) ) {
+         try ( TestRun tr = new TestRun( testClass, new FirefoxDriver(), settings ) ) {
             tr.run();
             if ( tr.passed() ) {
                passed++;

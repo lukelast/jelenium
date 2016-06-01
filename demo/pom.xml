@@ -6,11 +6,11 @@
 	<groupId>net.ghue.jelenium</groupId>
 	<artifactId>jelenium-demo</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	
+
 	<name>Jelenium Demo</name>
 	<description>A collection of examples using Jelenium</description>
 	<url>https://github.com/lukelast/jelenium</url>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -40,7 +40,7 @@
 
 			</plugins>
 		</pluginManagement>
-		
+
 		<plugins>
 
 			<!-- Use maven exec plugin to start Jelenium Test Runner. -->
@@ -52,11 +52,14 @@
 				<configuration>
 					<mainClass>net.ghue.jelenium.Runner</mainClass>
 					<arguments>
+						<!-- Save result files in MAVEN target directory. -->
+						<argument>results=${project.build.directory}/results</argument>
+						<!-- Provide the primary URL under test. -->
 						<argument>url=http://www.example.com/</argument>
 						<!-- Use a local browser. -->
 						<argument>browser=firefox</argument>
 						<!-- Use a remote web driver. -->
-						<!--argument>hub=localhost</argument-->
+						<!--argument>hub=localhost</argument -->
 						<!-- Custom argument. -->
 						<argument>mykey=myvalue</argument>
 					</arguments>

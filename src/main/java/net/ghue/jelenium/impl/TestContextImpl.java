@@ -1,40 +1,49 @@
 package net.ghue.jelenium.impl;
 
+import java.nio.file.Path;
 import javax.inject.Inject;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import net.ghue.jelenium.api.HttpUrl;
-import net.ghue.jelenium.api.TestArgs;
+import net.ghue.jelenium.api.JeleniumSettings;
+import net.ghue.jelenium.api.ScreenshotSaver;
 import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.TestLog;
+import net.ghue.jelenium.api.TestName;
+import net.ghue.jelenium.api.TestResultDir;
 import net.ghue.jelenium.api.WebNavigate;
 
+/**
+ * This class should not contain any state directly in itself.
+ * 
+ * @author Luke Last
+ */
 final class TestContextImpl implements TestContext {
 
    private final TestLog log;
 
-   private final TestArgs testArgs;
+   private final JeleniumSettings settings;
 
-   private final WebDriver webDriver;
+   private final RemoteWebDriver webDriver;
 
    private final WebNavigate webNavigate;
 
-   /**
-    * <p>
-    * Constructor for TestContextImpl.
-    * </p>
-    *
-    * @param webDriver a {@link org.openqa.selenium.WebDriver} object.
-    * @param log a {@link net.ghue.jelenium.api.TestLog} object.
-    * @param testArgs a {@link net.ghue.jelenium.api.TestArgs} object.
-    * @param webNavigate a {@link net.ghue.jelenium.api.WebNavigate} object.
-    */
+   private final String name;
+
+   private final Path testResultsDir;
+
+   private final ScreenshotSaver screenshotSaver;
+
    @Inject
-   public TestContextImpl( WebDriver webDriver, TestLog log, TestArgs testArgs,
-                           WebNavigate webNavigate ) {
+   TestContextImpl( RemoteWebDriver webDriver, TestLog log, JeleniumSettings testArgs,
+                    WebNavigate webNavigate, @TestName String name,
+                    @TestResultDir Path testResultsDir, ScreenshotSaver screenshotSaver ) {
       this.webDriver = webDriver;
       this.log = log;
-      this.testArgs = testArgs;
+      this.settings = testArgs;
       this.webNavigate = webNavigate;
+      this.name = name;
+      this.testResultsDir = testResultsDir;
+      this.screenshotSaver = screenshotSaver;
    }
 
    @Override
@@ -43,22 +52,37 @@ final class TestContextImpl implements TestContext {
    }
 
    @Override
-   public TestArgs getTestArgs() {
-      return this.testArgs;
+   public JeleniumSettings getSettings() {
+      return this.settings;
    }
 
    @Override
    public HttpUrl getUrl() {
-      return this.testArgs.getUrl();
+      return this.settings.getUrl();
    }
 
    @Override
-   public WebDriver getWebDriver() {
+   public RemoteWebDriver getWebDriver() {
       return webDriver;
    }
 
    @Override
    public WebNavigate getWebNavigate() {
       return this.webNavigate;
+   }
+
+   @Override
+   public String getName() {
+      return this.name;
+   }
+
+   @Override
+   public Path getResultDir() {
+      return this.testResultsDir;
+   }
+
+   @Override
+   public ScreenshotSaver getScreenshotSaver() {
+      return this.screenshotSaver;
    }
 }

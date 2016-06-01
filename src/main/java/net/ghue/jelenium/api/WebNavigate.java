@@ -44,9 +44,7 @@ public final class WebNavigate {
    }
 
    /**
-    * <p>
-    * to.
-    * </p>
+    * Navigate to the given URL.
     *
     * @param url a {@link net.ghue.jelenium.api.HttpUrl} object.
     */
@@ -55,9 +53,7 @@ public final class WebNavigate {
    }
 
    /**
-    * <p>
-    * toPrimaryUrl.
-    * </p>
+    * Navigate the {@link WebDriver} to the configured primary URL.
     */
    public void toPrimaryUrl() {
       to( this.url );

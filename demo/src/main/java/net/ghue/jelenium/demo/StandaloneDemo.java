@@ -1,21 +1,30 @@
 package net.ghue.jelenium.demo;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import net.ghue.jelenium.api.SeleniumTest;
 import net.ghue.jelenium.api.TestContext;
 
 /**
- * This example is fully contained in this file. Each file/class that implements
- * {@link SeleniumTest} always contains a single test.
+ * <p>
+ * This example is fully contained in this file. In normal use you shouldn't use {@link WebDriver}
+ * directly in your test.
+ * </p>
+ * <p>
+ * Each file/class that implements {@link SeleniumTest} always contains a single test.
+ * </p>
+ * <p>
+ * The test name is the name of the class.
+ * </p>
  */
-public final class StandaloneExampleTest implements SeleniumTest {
+public final class StandaloneDemo implements SeleniumTest {
 
    /**
     * The test must have a public no-argument constructor. It is suggested you don't define any
     * constructors. Instead use a life-cycle method defined in {@link SeleniumTest}.
     */
-   public StandaloneExampleTest() {}
+   public StandaloneDemo() {}
 
    /**
     * The entry point for test execution.
@@ -26,7 +35,7 @@ public final class StandaloneExampleTest implements SeleniumTest {
       context.getLog().info( "hi" );
 
       // How to fetch an argument passed in via the MAVEN POM.
-      context.getLog().info( "Value of my arg: %s", context.getTestArgs().getArg( "mykey" ) );
+      context.getLog().info( "Value of my arg: %s", context.getSettings().get( "mykey" ) );
 
       context.getWebNavigate().toPrimaryUrl();
 

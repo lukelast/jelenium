@@ -1,56 +1,62 @@
 package net.ghue.jelenium.api;
 
+import java.nio.file.Path;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
- * <p>
- * TestContext interface.
- * </p>
+ * Provides everything that a test needs to interact with the world.
  *
  * @author Luke Last
  */
 public interface TestContext {
 
    /**
-    * <p>
-    * getLog.
-    * </p>
+    * @return A service to save browser screen shots as images.
+    */
+   ScreenshotSaver getScreenshotSaver();
+
+   /**
+    * @return The directory that all results for this test should be saved.
+    */
+   Path getResultDir();
+
+   /**
+    * @return The name of the test.
+    */
+   String getName();
+
+   /**
+    * Used for logging from a test.
     *
     * @return a {@link net.ghue.jelenium.api.TestLog} object.
     */
    TestLog getLog();
 
    /**
-    * <p>
-    * getTestArgs.
-    * </p>
+    * Global settings.
     *
-    * @return a {@link net.ghue.jelenium.api.TestArgs} object.
+    * @return a {@link net.ghue.jelenium.api.JeleniumSettings} object.
     */
-   TestArgs getTestArgs();
+   JeleniumSettings getSettings();
 
    /**
-    * <p>
-    * getUrl.
-    * </p>
+    * The primary URL as configured.
     *
     * @return a {@link net.ghue.jelenium.api.HttpUrl} object.
+    * @see JeleniumSettings#getUrl()
     */
    HttpUrl getUrl();
 
    /**
-    * <p>
-    * getWebDriver.
-    * </p>
+    * The {@link WebDriver} instance to be used for the test.
     *
     * @return a {@link org.openqa.selenium.WebDriver} object.
     */
-   WebDriver getWebDriver();
+   RemoteWebDriver getWebDriver();
 
    /**
-    * <p>
-    * getWebNavigate.
-    * </p>
+    * Used to navigate the {@link WebDriver} to different URL's.
     *
     * @return a {@link net.ghue.jelenium.api.WebNavigate} object.
     */

@@ -14,7 +14,7 @@ import net.ghue.jelenium.api.SeleniumTest;
  *
  * @author Luke Last
  */
-public final class Scanner {
+final class Scanner {
 
    private static final List<String> CLASSES_TO_IGNORE = ImmutableList.of( "cern.",
                                                                            "com.gargoylesoftware.htmlunit.",
@@ -47,14 +47,13 @@ public final class Scanner {
                                                                            "org.xml." );
 
    /**
-    * <p>
-    * findTests.
-    * </p>
+    * Scan all available classes on the class-path looking for any that implement
+    * {@link SeleniumTest}.
     *
-    * @return a {@link java.util.List} object.
+    * @return List of classes.
     * @throws java.io.IOException if any.
     */
-   public static List<Class<? extends SeleniumTest>> findTests() throws IOException {
+   static List<Class<? extends SeleniumTest>> findTests() throws IOException {
       return ClassPath.from( Thread.currentThread().getContextClassLoader() )
                       .getTopLevelClasses()
                       .stream()
@@ -65,7 +64,7 @@ public final class Scanner {
                       .filter( cl -> !Modifier.isAbstract( cl.getModifiers() ) )
                       .filter( cl -> !cl.isInterface() )
                       .map( cl -> cl.<SeleniumTest> asSubclass( SeleniumTest.class ) )
-                      .peek( cl -> System.out.println( "Found Test: " + cl.getName() ) )
+                      //.peek( cl -> System.out.println( "Found Test: " + cl.getName() ) )
                       .collect( GuavaCollectors.immutableList() );
    }
 
