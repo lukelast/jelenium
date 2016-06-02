@@ -26,19 +26,14 @@ public interface JeleniumSettings {
    String KEY_HUB = "hub";
 
    /**
-    * Constant <code>KEY_URL="url"</code>
-    */
-   String KEY_URL = "url";
-
-   /**
     * The directory that stores all the test results.
     */
    String KEY_RESULTS_DIR = "results";
 
    /**
-    * @return The root directory for all test results.
+    * Constant <code>KEY_URL="url"</code>
     */
-   Path getResultsDir();
+   String KEY_URL = "url";
 
    /**
     * Get the value of a setting using the key.
@@ -47,6 +42,11 @@ public interface JeleniumSettings {
     * @return The setting value. If the setting does not exist empty string will be returned.
     */
    String get( String key );
+
+   /**
+    * @return The root directory for all test results.
+    */
+   Path getResultsDir();
 
    /**
     * <p>

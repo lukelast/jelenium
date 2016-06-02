@@ -1,9 +1,9 @@
 package net.ghue.jelenium.demo;
 
-import net.ghue.jelenium.api.SeleniumTest;
+import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.TestContext;
 
-public final class ScreenshotDemo implements SeleniumTest {
+public final class ScreenshotDemo implements JeleniumTest {
 
    @Override
    public void run( TestContext context ) throws Exception {

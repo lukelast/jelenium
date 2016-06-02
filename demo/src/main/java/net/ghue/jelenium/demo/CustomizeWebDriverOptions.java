@@ -3,10 +3,10 @@ package net.ghue.jelenium.demo;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.Options;
-import net.ghue.jelenium.api.SeleniumTest;
+import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.TestContext;
 
-public final class CustomizeWebDriverOptions implements SeleniumTest {
+public final class CustomizeWebDriverOptions implements JeleniumTest {
 
    /**
     * Override this method to change {@link WebDriver} options before the test is run.

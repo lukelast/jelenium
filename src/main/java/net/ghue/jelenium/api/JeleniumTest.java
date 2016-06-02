@@ -10,7 +10,7 @@ import org.openqa.selenium.WebDriver.Options;
  *
  * @author Luke Last
  */
-public interface SeleniumTest {
+public interface JeleniumTest {
 
    default void fail( String reason ) throws Exception {
       throw new Exception( reason );
@@ -28,15 +28,15 @@ public interface SeleniumTest {
     * This life-cycle event is executed before the main test {@link #run(TestContext)}.
     * 
     * @param context The context of the test being executed.
-    * @throws Exception
+    * @throws Exception If error occurs.
     */
    default void onBeforeRun( TestContext context ) throws Exception {}
 
    /**
     * Life-cycle event run after test execution if the test failed.
     * 
-    * @param context
-    * @throws Exception
+    * @param context The context of the test being executed.
+    * @throws Exception If error occurs.
     */
    default void onFail( TestContext context ) throws Exception {}
 
@@ -44,16 +44,16 @@ public interface SeleniumTest {
     * Called after the test finishes no matter if it passed or failed. It will not be called if the
     * test was skipped.
     * 
-    * @param context
-    * @throws Exception
+    * @param context The context of the test being executed.
+    * @throws Exception If error occurs.
     */
    default void onFinish( TestContext context ) throws Exception {}
 
    /**
     * Life-cycle event run after test execution if the test passed.
     * 
-    * @param context
-    * @throws Exception
+    * @param context The context of the test being executed.
+    * @throws Exception If error occurs.
     */
    default void onPass( TestContext context ) throws Exception {}
 

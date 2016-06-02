@@ -3,12 +3,10 @@ package net.ghue.jelenium.impl;
 import java.util.List;
 import java.util.Map;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import net.ghue.jelenium.api.SeleniumTest;
+import net.ghue.jelenium.api.JeleniumTest;
 
 /**
- * <p>
- * TestRunnerImpl class.
- * </p>
+ * Takes the raw input arguments and runs all the tests.
  *
  * @author Luke Last
  */
@@ -24,12 +22,12 @@ public final class TestRunnerImpl {
 
       final SettingsImpl settings = new SettingsImpl( parsedArgs );
 
-      final List<Class<? extends SeleniumTest>> testClasses = Scanner.findTests();
+      final List<Class<? extends JeleniumTest>> testClasses = Scanner.findTests();
 
       int passed = 0;
       int failed = 0;
 
-      for ( Class<? extends SeleniumTest> testClass : testClasses ) {
+      for ( Class<? extends JeleniumTest> testClass : testClasses ) {
          try ( TestRun tr = new TestRun( testClass, new FirefoxDriver(), settings ) ) {
             tr.run();
             if ( tr.passed() ) {

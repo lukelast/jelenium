@@ -10,13 +10,13 @@ enum TestResult {
     */
    FAILED,
    /**
-    * Everything is good.
-    */
-   PASSED,
-   /**
     * The test has not run yet.
     */
    NOT_RUN,
+   /**
+    * Everything is good.
+    */
+   PASSED,
    /**
     * The test was skipped.
     */

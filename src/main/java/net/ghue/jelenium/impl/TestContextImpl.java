@@ -8,9 +8,9 @@ import net.ghue.jelenium.api.JeleniumSettings;
 import net.ghue.jelenium.api.ScreenshotSaver;
 import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.TestLog;
-import net.ghue.jelenium.api.TestName;
-import net.ghue.jelenium.api.TestResultDir;
 import net.ghue.jelenium.api.WebNavigate;
+import net.ghue.jelenium.api.annotation.TestName;
+import net.ghue.jelenium.api.annotation.TestResultDir;
 
 /**
  * This class should not contain any state directly in itself.
@@ -21,17 +21,17 @@ final class TestContextImpl implements TestContext {
 
    private final TestLog log;
 
+   private final String name;
+
+   private final ScreenshotSaver screenshotSaver;
+
    private final JeleniumSettings settings;
+
+   private final Path testResultsDir;
 
    private final RemoteWebDriver webDriver;
 
    private final WebNavigate webNavigate;
-
-   private final String name;
-
-   private final Path testResultsDir;
-
-   private final ScreenshotSaver screenshotSaver;
 
    @Inject
    TestContextImpl( RemoteWebDriver webDriver, TestLog log, JeleniumSettings testArgs,
@@ -52,6 +52,21 @@ final class TestContextImpl implements TestContext {
    }
 
    @Override
+   public String getName() {
+      return this.name;
+   }
+
+   @Override
+   public Path getResultDir() {
+      return this.testResultsDir;
+   }
+
+   @Override
+   public ScreenshotSaver getScreenshotSaver() {
+      return this.screenshotSaver;
+   }
+
+   @Override
    public JeleniumSettings getSettings() {
       return this.settings;
    }
@@ -69,20 +84,5 @@ final class TestContextImpl implements TestContext {
    @Override
    public WebNavigate getWebNavigate() {
       return this.webNavigate;
-   }
-
-   @Override
-   public String getName() {
-      return this.name;
-   }
-
-   @Override
-   public Path getResultDir() {
-      return this.testResultsDir;
-   }
-
-   @Override
-   public ScreenshotSaver getScreenshotSaver() {
-      return this.screenshotSaver;
    }
 }

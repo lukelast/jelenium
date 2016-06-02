@@ -1,28 +1,22 @@
 package net.ghue.jelenium.api;
 
 /**
- * <p>
- * TestLog interface.
- * </p>
+ * Each test will have it's own {@link TestLog}.
  *
  * @author Luke Last
  */
 public interface TestLog {
 
    /**
-    * <p>
-    * debug.
-    * </p>
+    * Debug is the most verbose level.
     *
     * @param message a {@link java.lang.String} object.
-    * @param args a {@link java.lang.Object} object.
+    * @param args {@link String#format(String, Object...)} arguments.
     */
    void debug( String message, Object... args );
 
    /**
-    * <p>
-    * error.
-    * </p>
+    * An error means the test has failed.
     *
     * @param message a {@link java.lang.String} object.
     * @param ex a {@link java.lang.Throwable} object.
@@ -30,9 +24,7 @@ public interface TestLog {
    void error( String message, Throwable ex );
 
    /**
-    * <p>
-    * info.
-    * </p>
+    * Major information events.
     *
     * @param message a {@link java.lang.String} object.
     * @param args a {@link java.lang.Object} object.
@@ -40,9 +32,7 @@ public interface TestLog {
    void info( String message, Object... args );
 
    /**
-    * <p>
-    * warn.
-    * </p>
+    * A warning is bad but the test can keep going.
     *
     * @param message a {@link java.lang.String} object.
     * @param args a {@link java.lang.Object} object.

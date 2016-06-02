@@ -14,14 +14,14 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import net.ghue.jelenium.api.GuiceModule;
 import net.ghue.jelenium.api.HttpUrl;
 import net.ghue.jelenium.api.JeleniumSettings;
-import net.ghue.jelenium.api.SeleniumTest;
+import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.TestLog;
-import net.ghue.jelenium.api.TestName;
-import net.ghue.jelenium.api.TestResultDir;
+import net.ghue.jelenium.api.annotation.GuiceModule;
+import net.ghue.jelenium.api.annotation.TestName;
+import net.ghue.jelenium.api.annotation.TestResultDir;
 
 final class TestRun implements Closeable {
 
@@ -29,17 +29,17 @@ final class TestRun implements Closeable {
 
    private final TestLog log = new StandardOutLog();
 
-   private final JeleniumSettings settings;
-
-   private final Class<? extends SeleniumTest> testClass;
+   private final String name;
 
    private TestResult result = TestResult.NOT_RUN;
 
-   private SeleniumTest theTest;
+   private final JeleniumSettings settings;
+
+   private final Class<? extends JeleniumTest> testClass;
+
+   private JeleniumTest theTest;
 
    private final RemoteWebDriver webDriver;
-
-   private final String name;
 
    /**
     * <p>
@@ -50,8 +50,8 @@ final class TestRun implements Closeable {
     * @param webDriver a {@link org.openqa.selenium.WebDriver} object.
     * @param settings a {@link net.ghue.jelenium.api.JeleniumSettings} object.
     */
-   public TestRun( Class<? extends SeleniumTest> testClass, RemoteWebDriver webDriver,
-                   JeleniumSettings settings ) {
+   TestRun( Class<? extends JeleniumTest> testClass, RemoteWebDriver webDriver,
+            JeleniumSettings settings ) {
       this.testClass = testClass;
       this.webDriver = webDriver;
       this.settings = settings;

@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import com.google.common.collect.ImmutableList;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
-import net.ghue.jelenium.api.SeleniumTest;
+import net.ghue.jelenium.api.JeleniumTest;
 
 /**
  * Searches the class path for available tests to be run.
@@ -48,22 +48,22 @@ final class Scanner {
 
    /**
     * Scan all available classes on the class-path looking for any that implement
-    * {@link SeleniumTest}.
+    * {@link JeleniumTest}.
     *
     * @return List of classes.
     * @throws java.io.IOException if any.
     */
-   static List<Class<? extends SeleniumTest>> findTests() throws IOException {
+   static List<Class<? extends JeleniumTest>> findTests() throws IOException {
       return ClassPath.from( Thread.currentThread().getContextClassLoader() )
                       .getTopLevelClasses()
                       .stream()
                       .filter( Scanner::shouldCheck )
                       //.peek( System.out::println )
                       .flatMap( Scanner::load )
-                      .filter( SeleniumTest.class::isAssignableFrom )
+                      .filter( JeleniumTest.class::isAssignableFrom )
                       .filter( cl -> !Modifier.isAbstract( cl.getModifiers() ) )
                       .filter( cl -> !cl.isInterface() )
-                      .map( cl -> cl.<SeleniumTest> asSubclass( SeleniumTest.class ) )
+                      .map( cl -> cl.<JeleniumTest> asSubclass( JeleniumTest.class ) )
                       //.peek( cl -> System.out.println( "Found Test: " + cl.getName() ) )
                       .collect( GuavaCollectors.immutableList() );
    }

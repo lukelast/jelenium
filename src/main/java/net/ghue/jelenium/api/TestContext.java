@@ -12,14 +12,11 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 public interface TestContext {
 
    /**
-    * @return A service to save browser screen shots as images.
+    * Used for logging from a test.
+    *
+    * @return a {@link net.ghue.jelenium.api.TestLog} object.
     */
-   ScreenshotSaver getScreenshotSaver();
-
-   /**
-    * @return The directory that all results for this test should be saved.
-    */
-   Path getResultDir();
+   TestLog getLog();
 
    /**
     * @return The name of the test.
@@ -27,11 +24,14 @@ public interface TestContext {
    String getName();
 
    /**
-    * Used for logging from a test.
-    *
-    * @return a {@link net.ghue.jelenium.api.TestLog} object.
+    * @return The directory that all results for this test should be saved.
     */
-   TestLog getLog();
+   Path getResultDir();
+
+   /**
+    * @return A service to save browser screen shots as images.
+    */
+   ScreenshotSaver getScreenshotSaver();
 
    /**
     * Global settings.

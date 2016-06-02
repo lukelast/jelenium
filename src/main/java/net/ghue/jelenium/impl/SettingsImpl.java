@@ -18,9 +18,9 @@ final class SettingsImpl implements JeleniumSettings {
 
    private final ImmutableMap<String, String> args;
 
-   private final HttpUrl url;
-
    private final Path resultsDir;
+
+   private final HttpUrl url;
 
    /**
     * Constructor for TestArgsImpl.
@@ -59,6 +59,11 @@ final class SettingsImpl implements JeleniumSettings {
    }
 
    @Override
+   public Path getResultsDir() {
+      return this.resultsDir;
+   }
+
+   @Override
    public Optional<HttpUrl> getSecondaryUrl( int index ) {
       return Optional.ofNullable( HttpUrl.parse( get( KEY_URL + index ) ) );
    }
@@ -66,11 +71,6 @@ final class SettingsImpl implements JeleniumSettings {
    @Override
    public HttpUrl getUrl() {
       return this.url;
-   }
-
-   @Override
-   public Path getResultsDir() {
-      return this.resultsDir;
    }
 
 }

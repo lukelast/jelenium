@@ -9,6 +9,8 @@ import javax.inject.Inject;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import com.google.common.base.Ascii;
+import net.ghue.jelenium.api.annotation.TestName;
+import net.ghue.jelenium.api.annotation.TestResultDir;
 
 /**
  * TODO This should be an interface and IMPL but initially writing as one to save time.
@@ -21,15 +23,15 @@ public final class ScreenshotSaver {
    private RemoteWebDriver driver;
 
    @Inject
-   @TestName
-   private String testName;
+   private TestLog log;
 
    @Inject
    @TestResultDir
    private Path resultsDir;
 
    @Inject
-   private TestLog log;
+   @TestName
+   private String testName;
 
    /**
     * Save a browser screenshot as PNG to the test results directory.

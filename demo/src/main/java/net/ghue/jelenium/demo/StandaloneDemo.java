@@ -3,7 +3,7 @@ package net.ghue.jelenium.demo;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import net.ghue.jelenium.api.SeleniumTest;
+import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.TestContext;
 
 /**
@@ -12,17 +12,17 @@ import net.ghue.jelenium.api.TestContext;
  * directly in your test.
  * </p>
  * <p>
- * Each file/class that implements {@link SeleniumTest} always contains a single test.
+ * Each file/class that implements {@link JeleniumTest} always contains a single test.
  * </p>
  * <p>
  * The test name is the name of the class.
  * </p>
  */
-public final class StandaloneDemo implements SeleniumTest {
+public final class StandaloneDemo implements JeleniumTest {
 
    /**
     * The test must have a public no-argument constructor. It is suggested you don't define any
-    * constructors. Instead use a life-cycle method defined in {@link SeleniumTest}.
+    * constructors. Instead use a life-cycle method defined in {@link JeleniumTest}.
     */
    public StandaloneDemo() {}
 
