@@ -21,6 +21,11 @@ public interface JeleniumSettings {
    String KEY_BROWSER = "browser";
 
    /**
+    * Only tests that match this filter will be executed.
+    */
+   String KEY_FILTER = "filter";
+
+   /**
     * Constant <code>KEY_HUB="hub"</code>
     */
    String KEY_HUB = "hub";
@@ -42,6 +47,14 @@ public interface JeleniumSettings {
     * @return The setting value. If the setting does not exist empty string will be returned.
     */
    String get( String key );
+
+   /**
+    * Empty string means no filter so run all tests.
+    * 
+    * @return Never {@code null}.
+    * @see #KEY_FILTER
+    */
+   String getFilter();
 
    /**
     * @return The root directory for all test results.

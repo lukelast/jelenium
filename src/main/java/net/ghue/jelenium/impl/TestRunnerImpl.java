@@ -2,7 +2,10 @@ package net.ghue.jelenium.impl;
 
 import java.util.List;
 import java.util.Map;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import com.google.common.collect.ConcurrentHashMultiset;
+import com.google.common.collect.Multiset;
 import net.ghue.jelenium.api.JeleniumTest;
 
 /**
@@ -24,30 +27,48 @@ public final class TestRunnerImpl {
 
       final List<Class<? extends JeleniumTest>> testClasses = Scanner.findTests();
 
-      int passed = 0;
-      int failed = 0;
+      final Multiset<TestResult> results = ConcurrentHashMultiset.create();
+
+      final RemoteWebDriver driver = new ChromeDriver();
+
+      final WebDriverManager wdc = new WebDriverManager() {
+
+         @Override
+         public void giveBack( RemoteWebDriver driver ) {
+            driver.manage().deleteAllCookies();
+            driver.navigate().refresh();
+         }
+
+         @Override
+         public RemoteWebDriver take() {
+            return driver;
+         }
+      };
 
       for ( Class<? extends JeleniumTest> testClass : testClasses ) {
-         try ( TestRun tr = new TestRun( testClass, new FirefoxDriver(), settings ) ) {
+
+         try ( TestRun tr = new TestRun( testClass, wdc, settings ) ) {
             tr.run();
-            if ( tr.passed() ) {
-               passed++;
-            } else {
-               failed++;
-            }
+            results.add( tr.getResult() );
          }
       }
 
+      driver.quit();
+
       System.out.println( "\n========== PASSED " +
-                          passed +
+                          results.count( TestResult.PASSED ) +
                           " FAILED " +
-                          failed +
+                          results.count( TestResult.FAILED ) +
                           " TOTAL " +
-                          ( passed + failed ) +
+                          results.size() +
                           " ==========\n" );
 
-      if ( 0 < failed ) {
-         throw new Exception( failed + " tests failed" );
+      if ( 0 < results.count( TestResult.ERROR ) ) {
+         throw new Exception( results.count( TestResult.ERROR ) + " tests had an ERROR" );
+      }
+
+      if ( 0 < results.count( TestResult.FAILED ) ) {
+         throw new Exception( results.count( TestResult.FAILED ) + " tests failed" );
       }
    }
 

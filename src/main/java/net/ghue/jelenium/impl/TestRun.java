@@ -1,11 +1,13 @@
 package net.ghue.jelenium.impl;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.*;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Singleton;
 import org.openqa.selenium.WebDriver;
@@ -25,7 +27,7 @@ import net.ghue.jelenium.api.annotation.TestResultDir;
 
 final class TestRun implements Closeable {
 
-   private Injector injector;
+   private Optional<Injector> injector = empty();
 
    private final TestLog log = new StandardOutLog();
 
@@ -37,9 +39,11 @@ final class TestRun implements Closeable {
 
    private final Class<? extends JeleniumTest> testClass;
 
-   private JeleniumTest theTest;
+   private Optional<JeleniumTest> theTest = empty();
 
-   private final RemoteWebDriver webDriver;
+   private Optional<RemoteWebDriver> webDriver = empty();
+
+   private final WebDriverManager webDriverManager;
 
    /**
     * <p>
@@ -50,26 +54,37 @@ final class TestRun implements Closeable {
     * @param webDriver a {@link org.openqa.selenium.WebDriver} object.
     * @param settings a {@link net.ghue.jelenium.api.JeleniumSettings} object.
     */
-   TestRun( Class<? extends JeleniumTest> testClass, RemoteWebDriver webDriver,
+   TestRun( Class<? extends JeleniumTest> testClass, WebDriverManager webDriverProvider,
             JeleniumSettings settings ) {
-      this.testClass = testClass;
-      this.webDriver = webDriver;
-      this.settings = settings;
-      this.name = testClass.getSimpleName();
+      this.testClass = requireNonNull( testClass );
+      this.webDriverManager = requireNonNull( webDriverProvider );
+      this.settings = requireNonNull( settings );
+      this.name = testClass.getName();
    }
 
    @Override
    public void close() throws IOException {
       try {
-         webDriver.quit();
+         if ( webDriver.isPresent() ) {
+            webDriverManager.giveBack( webDriver.get() );
+         }
       } catch ( Throwable ex ) {
          log.error( "", ex );
       }
    }
 
+   private TestContext getContext() {
+      return injector.orElseThrow( () -> new IllegalStateException( "GUICE injector not created yet" ) )
+                     .getInstance( TestContext.class );
+   }
+
+   public TestResult getResult() {
+      return requireNonNull( this.result );
+   }
+
    private void init() {
 
-      List<Module> modules = new ArrayList<>();
+      final List<Module> modules = new ArrayList<>();
 
       for ( GuiceModule guiceModAnnotation : testClass.getDeclaredAnnotationsByType( GuiceModule.class ) ) {
          try {
@@ -79,13 +94,15 @@ final class TestRun implements Closeable {
          }
       }
 
+      this.webDriver = of( this.webDriverManager.take() );
+
       modules.add( new AbstractModule() {
 
          @Override
          protected void configure() {
             bind( testClass ).in( Singleton.class );
-            bind( WebDriver.class ).toInstance( webDriver );
-            bind( RemoteWebDriver.class ).toInstance( webDriver );
+            bind( WebDriver.class ).toInstance( webDriver.get() );
+            bind( RemoteWebDriver.class ).toInstance( webDriver.get() );
             bind( TestLog.class ).toInstance( log );
             bind( JeleniumSettings.class ).toInstance( settings );
             bind( TestContext.class ).to( TestContextImpl.class );
@@ -98,22 +115,22 @@ final class TestRun implements Closeable {
          }
       } );
 
-      this.injector = Guice.createInjector( modules );
+      this.injector = of( Guice.createInjector( modules ) );
 
-      this.theTest = Objects.requireNonNull( injector.getInstance( testClass ),
-                                             testClass.getName() + " could not be instantiated." );
+      this.theTest = of( requireNonNull( injector.get().getInstance( testClass ),
+                                         testClass.getName() + " could not be instantiated." ) );
 
-      this.initWebDriver();
+      this.initWebDriver( injector.get(), theTest.get() );
    }
 
-   private void initWebDriver() {
+   private void initWebDriver( Injector injector, JeleniumTest test ) {
       WebDriver driver = injector.getInstance( WebDriver.class );
 
       driver.manage().timeouts().implicitlyWait( 10, TimeUnit.SECONDS );
       driver.manage().timeouts().pageLoadTimeout( 20, TimeUnit.SECONDS );
       driver.manage().timeouts().setScriptTimeout( 20, TimeUnit.SECONDS );
 
-      theTest.manage( driver.manage() );
+      test.manage( driver.manage() );
    }
 
    /**
@@ -128,14 +145,21 @@ final class TestRun implements Closeable {
     */
    void run() {
       try {
-         log.info( "Starting Test: %s", name );
-         this.init();
-         final TestContext context = injector.getInstance( TestContext.class );
-         if ( theTest.skipTest() ) {
+
+         if ( !settings.getFilter().isEmpty() &&
+              !name.toLowerCase().contains( settings.getFilter() ) ) {
+            log.info( "Skipping test: %s", name );
+            this.result = TestResult.SKIPPED;
             return;
          }
-         theTest.onBeforeRun( context );
-         theTest.run( context );
+
+         log.info( "Starting Test: %s", name );
+         this.init();
+         if ( theTest.get().skipTest() ) {
+            return;
+         }
+         theTest.get().onBeforeRun( getContext() );
+         theTest.get().run( getContext() );
          this.result = TestResult.PASSED;
 
       } catch ( Throwable ex ) {
@@ -143,34 +167,32 @@ final class TestRun implements Closeable {
          this.result = TestResult.FAILED;
       }
 
-      if ( theTest == null ) {
+      if ( !theTest.isPresent() ) {
          throw new IllegalStateException( "Failed to instantiate " + testClass );
       }
 
-      if ( injector == null ) {
+      if ( !injector.isPresent() ) {
          throw new IllegalStateException( "Failed to create guice injector" );
       }
-
-      final TestContext context = injector.getInstance( TestContext.class );
 
       if ( this.result == TestResult.PASSED ) {
          log.info( "Passed: %s", name );
          try {
-            theTest.onPass( context );
+            theTest.get().onPass( getContext() );
          } catch ( Throwable ex ) {
             log.error( "", ex );
          }
       } else {
          log.warn( "Failed: %s", name );
          try {
-            theTest.onFail( context );
+            theTest.get().onFail( getContext() );
          } catch ( Throwable ex ) {
             log.error( "", ex );
          }
       }
 
       try {
-         theTest.onFinish( context );
+         theTest.get().onFinish( getContext() );
       } catch ( Throwable ex ) {
          log.error( "", ex );
       }

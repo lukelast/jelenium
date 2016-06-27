@@ -2,6 +2,7 @@ package net.ghue.jelenium.impl;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import com.google.common.base.Strings;
@@ -17,6 +18,8 @@ import net.ghue.jelenium.api.JeleniumSettings;
 final class SettingsImpl implements JeleniumSettings {
 
    private final ImmutableMap<String, String> args;
+
+   private final String filter;
 
    private final Path resultsDir;
 
@@ -44,6 +47,7 @@ final class SettingsImpl implements JeleniumSettings {
       } else {
          this.resultsDir = Paths.get( dir ).toAbsolutePath().normalize();
       }
+      this.filter = Strings.nullToEmpty( args.get( KEY_FILTER ) ).toLowerCase( Locale.US );
    }
 
    private HttpUrl defaultUrl() {
@@ -56,6 +60,11 @@ final class SettingsImpl implements JeleniumSettings {
          return this.url.toString();
       }
       return Strings.nullToEmpty( this.args.get( key ) );
+   }
+
+   @Override
+   public String getFilter() {
+      return this.filter;
    }
 
    @Override
