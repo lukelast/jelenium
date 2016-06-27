@@ -43,14 +43,17 @@
 
 		<plugins>
 
-			<!-- Use maven exec plugin to start Jelenium Test Runner. -->
+			<!-- Use MAVEN EXEC plug-in to start JELENIUM test runner. -->
 			<!-- "mvn clean compile exec:java" -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.5.0</version>
 				<configuration>
+					<!-- The JELENIUM test runner. -->
 					<mainClass>net.ghue.jelenium.Runner</mainClass>
+					<!-- SELENIUM keeps daemon threads alive in thread pools. -->
+					<cleanupDaemonThreads>false</cleanupDaemonThreads>
 					<arguments>
 						<!-- Save result files in MAVEN target directory. -->
 						<argument>results=${project.build.directory}/results</argument>
