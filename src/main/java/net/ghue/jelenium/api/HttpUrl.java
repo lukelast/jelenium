@@ -28,7 +28,9 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
+import javax.annotation.Nullable;
 import okio.Buffer;
 
 /**
@@ -252,6 +254,7 @@ public final class HttpUrl {
          INVALID_HOST, INVALID_PORT, MISSING_SCHEME, SUCCESS, UNSUPPORTED_SCHEME,
       }
 
+      @Nullable
       private static String canonicalizeHost( String input, int pos, int limit ) {
          // Start by percent decoding the host. The WHATWG spec suggests doing this only after we've
          // checked for IPv6 square braces. But Chrome does it first, and that's more lenient.
@@ -345,6 +348,7 @@ public final class HttpUrl {
       }
 
       /** Decodes an IPv6 address like 1111:2222:3333:4444:5555:6666:7777:8888 or ::1. */
+      @Nullable
       private static InetAddress decodeIpv6( String input, int pos, int limit ) {
          byte[] address = new byte[16];
          int b = 0;
@@ -439,6 +443,7 @@ public final class HttpUrl {
        * {@code null} will be returned if the input cannot be ToASCII encoded or if the result
        * contains unsupported ASCII characters.
        */
+      @Nullable
       private static String domainToAscii( String input ) {
          try {
             String result = IDN.toASCII( input ).toLowerCase( Locale.US );
@@ -578,27 +583,41 @@ public final class HttpUrl {
          return slashCount;
       }
 
+      @Nullable
       String encodedFragment;
 
       String encodedPassword = "";
 
       final List<String> encodedPathSegments = new ArrayList<>();
 
+      @Nullable
       List<String> encodedQueryNamesAndValues;
+
+      private List<String> getEncodedQueryNamesAndValues() {
+         if ( this.encodedQueryNamesAndValues != null ) {
+            return this.encodedQueryNamesAndValues;
+         } else {
+            final List<String> newArray = new ArrayList<>();
+            this.encodedQueryNamesAndValues = newArray;
+            return newArray;
+         }
+      }
 
       String encodedUsername = "";
 
+      @Nullable
       String host;
 
       int port = -1;
 
+      @Nullable
       String scheme;
 
       public Builder() {
          encodedPathSegments.add( "" ); // The default path is '/' which needs a trailing space.
       }
 
-      public Builder addEncodedPathSegment( String encodedPathSegment ) {
+      public Builder addEncodedPathSegment( @Nullable String encodedPathSegment ) {
          if ( encodedPathSegment == null ) {
             throw new IllegalArgumentException( "encodedPathSegment == null" );
          }
@@ -613,23 +632,22 @@ public final class HttpUrl {
        * @param encodedValue Encoded Value.
        * @return Builder.
        */
-      public Builder addEncodedQueryParameter( String encodedName, String encodedValue ) {
+      public Builder addEncodedQueryParameter( @Nullable String encodedName,
+                                               @Nullable String encodedValue ) {
          if ( encodedName == null ) {
             throw new IllegalArgumentException( "encodedName == null" );
          }
-         if ( encodedQueryNamesAndValues == null ) {
-            encodedQueryNamesAndValues = new ArrayList<>();
-         }
-         encodedQueryNamesAndValues.add( canonicalize( encodedName,
-                                                       QUERY_COMPONENT_ENCODE_SET,
-                                                       true,
-                                                       true ) );
-         encodedQueryNamesAndValues.add( encodedValue != null
+
+         getEncodedQueryNamesAndValues().add( canonicalize( encodedName,
+                                                            QUERY_COMPONENT_ENCODE_SET,
+                                                            true,
+                                                            true ) );
+         getEncodedQueryNamesAndValues().add( encodedValue != null
                ? canonicalize( encodedValue, QUERY_COMPONENT_ENCODE_SET, true, true ) : null );
          return this;
       }
 
-      public Builder addPathSegment( String pathSegment ) {
+      public Builder addPathSegment( @Nullable String pathSegment ) {
          if ( pathSegment == null ) {
             throw new IllegalArgumentException( "pathSegment == null" );
          }
@@ -644,18 +662,16 @@ public final class HttpUrl {
        * @param value Value.
        * @return Builder.
        */
-      public Builder addQueryParameter( String name, String value ) {
+      public Builder addQueryParameter( @Nullable String name, @Nullable String value ) {
          if ( name == null ) {
             throw new IllegalArgumentException( "name == null" );
          }
-         if ( encodedQueryNamesAndValues == null ) {
-            encodedQueryNamesAndValues = new ArrayList<>();
-         }
-         encodedQueryNamesAndValues.add( canonicalize( name,
-                                                       QUERY_COMPONENT_ENCODE_SET,
-                                                       false,
-                                                       true ) );
-         encodedQueryNamesAndValues.add( value != null
+
+         getEncodedQueryNamesAndValues().add( canonicalize( name,
+                                                            QUERY_COMPONENT_ENCODE_SET,
+                                                            false,
+                                                            true ) );
+         getEncodedQueryNamesAndValues().add( value != null
                ? canonicalize( value, QUERY_COMPONENT_ENCODE_SET, false, true ) : null );
          return this;
       }
@@ -674,7 +690,7 @@ public final class HttpUrl {
          return port != -1 ? port : defaultPort( scheme );
       }
 
-      public Builder encodedFragment( String encodedFragment ) {
+      public Builder encodedFragment( @Nullable String encodedFragment ) {
          if ( encodedFragment == null ) {
             throw new IllegalArgumentException( "encodedFragment == null" );
          }
@@ -682,7 +698,7 @@ public final class HttpUrl {
          return this;
       }
 
-      public Builder encodedPassword( String encodedPassword ) {
+      public Builder encodedPassword( @Nullable String encodedPassword ) {
          if ( encodedPassword == null ) {
             throw new IllegalArgumentException( "encodedPassword == null" );
          }
@@ -690,7 +706,7 @@ public final class HttpUrl {
          return this;
       }
 
-      public Builder encodedPath( String encodedPath ) {
+      public Builder encodedPath( @Nullable String encodedPath ) {
          if ( encodedPath == null ) {
             throw new IllegalArgumentException( "encodedPath == null" );
          }
@@ -701,7 +717,7 @@ public final class HttpUrl {
          return this;
       }
 
-      public Builder encodedQuery( String encodedQuery ) {
+      public Builder encodedQuery( @Nullable String encodedQuery ) {
          this.encodedQueryNamesAndValues =
                encodedQuery != null
                      ? queryStringToNamesAndValues( canonicalize( encodedQuery,
@@ -712,7 +728,7 @@ public final class HttpUrl {
          return this;
       }
 
-      public Builder encodedUsername( String encodedUsername ) {
+      public Builder encodedUsername( @Nullable String encodedUsername ) {
          if ( encodedUsername == null ) {
             throw new IllegalArgumentException( "encodedUsername == null" );
          }
@@ -720,7 +736,7 @@ public final class HttpUrl {
          return this;
       }
 
-      public Builder fragment( String fragment ) {
+      public Builder fragment( @Nullable String fragment ) {
          if ( fragment == null ) {
             throw new IllegalArgumentException( "fragment == null" );
          }
@@ -733,7 +749,7 @@ public final class HttpUrl {
        *           address.
        * @return Builder.
        */
-      public Builder host( String host ) {
+      public Builder host( @Nullable String host ) {
          if ( host == null ) {
             throw new IllegalArgumentException( "host == null" );
          }
@@ -756,7 +772,7 @@ public final class HttpUrl {
                 input.equalsIgnoreCase( "%2e%2e" );
       }
 
-      ParseResult parse( HttpUrl base, String input ) {
+      ParseResult parse( @Nullable HttpUrl base, String input ) {
          int pos = skipLeadingAsciiWhitespace( input, 0, input.length() );
          int limit = skipTrailingAsciiWhitespace( input, pos, input.length() );
 
@@ -898,7 +914,7 @@ public final class HttpUrl {
          return ParseResult.SUCCESS;
       }
 
-      public Builder password( String password ) {
+      public Builder password( @Nullable String password ) {
          if ( password == null ) {
             throw new IllegalArgumentException( "password == null" );
          }
@@ -960,7 +976,7 @@ public final class HttpUrl {
          }
       }
 
-      public Builder query( String query ) {
+      public Builder query( @Nullable String query ) {
          this.encodedQueryNamesAndValues = query != null
                ? queryStringToNamesAndValues( canonicalize( query, QUERY_ENCODE_SET, false, true ) )
                : null;
@@ -968,19 +984,22 @@ public final class HttpUrl {
       }
 
       private void removeAllCanonicalQueryParameters( String canonicalName ) {
-         for ( int i = encodedQueryNamesAndValues.size() - 2; i >= 0; i -= 2 ) {
-            if ( canonicalName.equals( encodedQueryNamesAndValues.get( i ) ) ) {
-               encodedQueryNamesAndValues.remove( i + 1 );
-               encodedQueryNamesAndValues.remove( i );
-               if ( encodedQueryNamesAndValues.isEmpty() ) {
-                  encodedQueryNamesAndValues = null;
-                  return;
+         final List<String> encodedQueryNamesAndValues2 = encodedQueryNamesAndValues;
+         if ( encodedQueryNamesAndValues2 != null ) {
+            for ( int i = encodedQueryNamesAndValues2.size() - 2; i >= 0; i -= 2 ) {
+               if ( canonicalName.equals( encodedQueryNamesAndValues2.get( i ) ) ) {
+                  encodedQueryNamesAndValues2.remove( i + 1 );
+                  encodedQueryNamesAndValues2.remove( i );
+                  if ( encodedQueryNamesAndValues2.isEmpty() ) {
+                     encodedQueryNamesAndValues = null;
+                     return;
+                  }
                }
             }
          }
       }
 
-      public Builder removeAllEncodedQueryParameters( String encodedName ) {
+      public Builder removeAllEncodedQueryParameters( @Nullable String encodedName ) {
          if ( encodedName == null ) {
             throw new IllegalArgumentException( "encodedName == null" );
          }
@@ -994,7 +1013,7 @@ public final class HttpUrl {
          return this;
       }
 
-      public Builder removeAllQueryParameters( String name ) {
+      public Builder removeAllQueryParameters( @Nullable String name ) {
          if ( name == null ) {
             throw new IllegalArgumentException( "name == null" );
          }
@@ -1043,7 +1062,7 @@ public final class HttpUrl {
          }
       }
 
-      public Builder scheme( String scheme ) {
+      public Builder scheme( @Nullable String scheme ) {
          if ( scheme == null ) {
             throw new IllegalArgumentException( "scheme == null" );
          } else if ( scheme.equalsIgnoreCase( "http" ) ) {
@@ -1056,7 +1075,7 @@ public final class HttpUrl {
          return this;
       }
 
-      public Builder setEncodedPathSegment( int index, String encodedPathSegment ) {
+      public Builder setEncodedPathSegment( int index, @Nullable String encodedPathSegment ) {
          if ( encodedPathSegment == null ) {
             throw new IllegalArgumentException( "encodedPathSegment == null" );
          }
@@ -1080,7 +1099,7 @@ public final class HttpUrl {
          return this;
       }
 
-      public Builder setPathSegment( int index, String pathSegment ) {
+      public Builder setPathSegment( int index, @Nullable String pathSegment ) {
          if ( pathSegment == null ) {
             throw new IllegalArgumentException( "pathSegment == null" );
          }
@@ -1159,7 +1178,7 @@ public final class HttpUrl {
             result.append( '@' );
          }
 
-         if ( host.indexOf( ':' ) != -1 ) {
+         if ( host != null && host.indexOf( ':' ) != -1 ) {
             // Host is an IPv6 address.
             result.append( '[' );
             result.append( host );
@@ -1177,8 +1196,8 @@ public final class HttpUrl {
          pathSegmentsToString( result, encodedPathSegments );
 
          if ( encodedQueryNamesAndValues != null ) {
-            result.append( '?' );
             namesAndValuesToQueryString( result, encodedQueryNamesAndValues );
+            result.append( '?' );
          }
 
          if ( encodedFragment != null ) {
@@ -1189,7 +1208,7 @@ public final class HttpUrl {
          return result.toString();
       }
 
-      public Builder username( String username ) {
+      public Builder username( @Nullable String username ) {
          if ( username == null ) {
             throw new IllegalArgumentException( "username == null" );
          }
@@ -1326,10 +1345,10 @@ public final class HttpUrl {
     * @param scheme "http" or "https".
     * @return port number.
     */
-   public static int defaultPort( String scheme ) {
-      if ( scheme.equals( "http" ) ) {
+   public static int defaultPort( @Nullable String scheme ) {
+      if ( scheme != null && scheme.equals( "http" ) ) {
          return 80;
-      } else if ( scheme.equals( "https" ) ) {
+      } else if ( scheme != null && scheme.equals( "https" ) ) {
          return 443;
       } else {
          return -1;
@@ -1357,7 +1376,7 @@ public final class HttpUrl {
     * @param uri a {@link java.net.URI} object.
     * @return a {@link net.ghue.jelenium.api.HttpUrl} object.
     */
-   public static HttpUrl get( URI uri ) {
+   public static @Nullable HttpUrl get( URI uri ) {
       return parse( uri.toString() );
    }
 
@@ -1368,7 +1387,7 @@ public final class HttpUrl {
     * @param url a {@link java.net.URL} object.
     * @return Parsed URL.
     */
-   public static HttpUrl get( URL url ) {
+   public static @Nullable HttpUrl get( URL url ) {
       return parse( url.toString() );
    }
 
@@ -1417,6 +1436,7 @@ public final class HttpUrl {
     * @param url a {@link java.lang.String} object.
     * @return Parsed URL.
     */
+   @Nullable
    public static HttpUrl parse( String url ) {
       Builder builder = new Builder();
       Builder.ParseResult result = builder.parse( null, url );
@@ -1495,6 +1515,7 @@ public final class HttpUrl {
    }
 
    /** Decoded fragment. */
+   @Nullable
    private final String fragment;
 
    /** Canonical hostname. */
@@ -1518,6 +1539,7 @@ public final class HttpUrl {
     * non-empty, but never null. Values are null if the name has no corresponding '=' separator, or
     * empty, or non-empty.
     */
+   @Nullable
    private final List<String> queryNamesAndValues;
 
    /** Either "http" or "https". */
@@ -1530,10 +1552,10 @@ public final class HttpUrl {
    private final String username;
 
    private HttpUrl( Builder builder ) {
-      this.scheme = builder.scheme;
+      this.scheme = Objects.requireNonNull( builder.scheme );
       this.username = percentDecode( builder.encodedUsername );
       this.password = percentDecode( builder.encodedPassword );
-      this.host = builder.host;
+      this.host = Objects.requireNonNull( builder.host );
       this.port = builder.effectivePort();
       this.pathSegments = percentDecode( builder.encodedPathSegments );
       this.queryNamesAndValues = builder.encodedQueryNamesAndValues != null
@@ -1550,6 +1572,7 @@ public final class HttpUrl {
     *
     * @return a {@link java.lang.String} object.
     */
+   @Nullable
    public String encodedFragment() {
       if ( fragment == null ) {
          return null;
@@ -1611,7 +1634,7 @@ public final class HttpUrl {
     *
     * @return Query.
     */
-   public String encodedQuery() {
+   public @Nullable String encodedQuery() {
       if ( queryNamesAndValues == null ) {
          return null; // No query.
       }
@@ -1636,7 +1659,7 @@ public final class HttpUrl {
 
    /** {@inheritDoc} */
    @Override
-   public boolean equals( Object o ) {
+   public boolean equals( @Nullable Object o ) {
       return ( o instanceof HttpUrl ) && ( (HttpUrl) o ).url.equals( url );
    }
 
@@ -1647,7 +1670,7 @@ public final class HttpUrl {
     *
     * @return a {@link java.lang.String} object.
     */
-   public String fragment() {
+   public @Nullable String fragment() {
       return fragment;
    }
 
@@ -1767,12 +1790,14 @@ public final class HttpUrl {
     *
     * @return a {@link java.lang.String} object.
     */
-   public String query() {
+   public @Nullable String query() {
       if ( queryNamesAndValues == null ) {
          return null; // No query.
       }
       StringBuilder result = new StringBuilder();
-      namesAndValuesToQueryString( result, queryNamesAndValues );
+      namesAndValuesToQueryString( result,
+                                   ( queryNamesAndValues != null ) ? queryNamesAndValues
+                                         : Collections.emptyList() );
       return result.toString();
    }
 
@@ -1783,13 +1808,14 @@ public final class HttpUrl {
     * @param name a {@link java.lang.String} object.
     * @return a {@link java.lang.String} object.
     */
-   public String queryParameter( String name ) {
-      if ( queryNamesAndValues == null ) {
+   public @Nullable String queryParameter( String name ) {
+      final List<String> local = queryNamesAndValues;
+      if ( local == null ) {
          return null;
       }
-      for ( int i = 0, size = queryNamesAndValues.size(); i < size; i += 2 ) {
-         if ( name.equals( queryNamesAndValues.get( i ) ) ) {
-            return queryNamesAndValues.get( i + 1 );
+      for ( int i = 0, size = local.size(); i < size; i += 2 ) {
+         if ( name.equals( local.get( i ) ) ) {
+            return local.get( i + 1 );
          }
       }
       return null;
@@ -1804,7 +1830,11 @@ public final class HttpUrl {
     * @return a {@link java.lang.String} object.
     */
    public String queryParameterName( int index ) {
-      return queryNamesAndValues.get( index * 2 );
+      if ( queryNamesAndValues != null ) {
+         return queryNamesAndValues.get( index * 2 );
+      } else {
+         return "";
+      }
    }
 
    /**
@@ -1815,12 +1845,13 @@ public final class HttpUrl {
     * @return a {@link java.util.Set} object.
     */
    public Set<String> queryParameterNames() {
-      if ( queryNamesAndValues == null ) {
+      final List<String> local = queryNamesAndValues;
+      if ( local == null ) {
          return Collections.emptySet();
       }
       Set<String> result = new LinkedHashSet<>();
-      for ( int i = 0, size = queryNamesAndValues.size(); i < size; i += 2 ) {
-         result.add( queryNamesAndValues.get( i ) );
+      for ( int i = 0, size = local.size(); i < size; i += 2 ) {
+         result.add( local.get( i ) );
       }
       return Collections.unmodifiableSet( result );
    }
@@ -1834,7 +1865,11 @@ public final class HttpUrl {
     * @return a {@link java.lang.String} object.
     */
    public String queryParameterValue( int index ) {
-      return queryNamesAndValues.get( ( index * 2 ) + 1 );
+      if ( queryNamesAndValues != null ) {
+         return queryNamesAndValues.get( ( index * 2 ) + 1 );
+      } else {
+         return "";
+      }
    }
 
    /**
@@ -1846,13 +1881,14 @@ public final class HttpUrl {
     * @return a {@link java.util.List} object.
     */
    public List<String> queryParameterValues( String name ) {
-      if ( queryNamesAndValues == null ) {
+      final List<String> local = queryNamesAndValues;
+      if ( local == null ) {
          return Collections.emptyList();
       }
       List<String> result = new ArrayList<>();
-      for ( int i = 0, size = queryNamesAndValues.size(); i < size; i += 2 ) {
-         if ( name.equals( queryNamesAndValues.get( i ) ) ) {
-            result.add( queryNamesAndValues.get( i + 1 ) );
+      for ( int i = 0, size = local.size(); i < size; i += 2 ) {
+         if ( name.equals( local.get( i ) ) ) {
+            result.add( local.get( i + 1 ) );
          }
       }
       return Collections.unmodifiableList( result );
@@ -1875,7 +1911,7 @@ public final class HttpUrl {
     * @param link a {@link java.lang.String} object.
     * @return a {@link net.ghue.jelenium.api.HttpUrl} object.
     */
-   public HttpUrl resolve( String link ) {
+   public @Nullable HttpUrl resolve( String link ) {
       Builder builder = new Builder();
       Builder.ParseResult result = builder.parse( this, link );
       return result == Builder.ParseResult.SUCCESS ? builder.build() : null;

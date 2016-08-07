@@ -2,6 +2,7 @@ package net.ghue.jelenium;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
 import net.ghue.jelenium.impl.TestRunnerImpl;
 
@@ -22,7 +23,7 @@ public final class Runner {
     * @param args Command line arguments.
     * @throws java.lang.Exception if any.
     */
-   public static void main( String[] args ) throws Exception {
+   public static void main( @Nullable String[] args ) throws Exception {
 
       Map<String, String> parsedArgs = parseMainArgs( args );
       System.out.println( "Test Arguments: " );
@@ -39,7 +40,7 @@ public final class Runner {
     * Convert the arguments passed on the console to a key-value map. Each argument should be in the
     * format "key=value".
     */
-   private static Map<String, String> parseMainArgs( String[] args ) {
+   private static Map<String, String> parseMainArgs( @Nullable String[] args ) {
       if ( ( args == null ) || ( args.length == 0 ) ) {
          return ImmutableMap.of();
       }

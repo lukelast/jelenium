@@ -29,7 +29,9 @@ public final class WebNavigate {
     * @return a {@link net.ghue.jelenium.api.HttpUrl} object.
     */
    public HttpUrl getCurrentUrl() {
-      return HttpUrl.parse( this.driver.getCurrentUrl() );
+      final HttpUrl parsed = HttpUrl.parse( this.driver.getCurrentUrl() );
+      return ( parsed != null ) ? parsed
+            : new HttpUrl.Builder().scheme( "http" ).host( "localhost" ).build();
    }
 
    /**

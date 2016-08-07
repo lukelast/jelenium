@@ -1,6 +1,7 @@
 package net.ghue.jelenium.impl;
 
 import java.lang.reflect.InvocationTargetException;
+import javax.annotation.Nullable;
 import net.ghue.jelenium.api.TestLog;
 
 /**
@@ -16,7 +17,7 @@ final class StandardOutLog implements TestLog {
    }
 
    @Override
-   public void error( String message, Throwable ex ) {
+   public void error( String message, @Nullable Throwable ex ) {
       System.err.println( "ERROR: " + message );
 
       if ( ex instanceof InvocationTargetException ) {

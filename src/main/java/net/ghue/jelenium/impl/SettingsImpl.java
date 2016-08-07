@@ -35,9 +35,11 @@ final class SettingsImpl implements JeleniumSettings {
       if ( Strings.isNullOrEmpty( args.get( KEY_URL ) ) ) {
          this.url = defaultUrl();
       } else {
-         this.url = HttpUrl.parse( args.get( KEY_URL ) );
-         if ( this.url == null ) {
+         final HttpUrl parsedUrl = HttpUrl.parse( args.get( KEY_URL ) );
+         if ( parsedUrl == null ) {
             throw new IllegalArgumentException( "BAD URL: " + args.get( KEY_URL ) );
+         } else {
+            this.url = parsedUrl;
          }
       }
 
