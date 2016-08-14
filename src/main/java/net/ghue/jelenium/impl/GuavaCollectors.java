@@ -18,7 +18,9 @@ package net.ghue.jelenium.impl;
 
 import java.util.stream.Collector;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multiset;
 
 /**
  * Stream {@link Collector}'s for Guava types.
@@ -36,6 +38,13 @@ final class GuavaCollectors {
                            ImmutableList.Builder::add,
                            ( l, r ) -> l.addAll( r.build() ),
                            ImmutableList.Builder<T>::build );
+   }
+
+   public static <T> Collector<T, ImmutableMultiset.Builder<T>, Multiset<T>> immutableMultiset() {
+      return Collector.of( ImmutableMultiset.Builder::new,
+                           ImmutableMultiset.Builder::add,
+                           ( l, r ) -> l.addAll( r.build() ),
+                           ImmutableMultiset.Builder<T>::build );
    }
 
    /**

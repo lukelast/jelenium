@@ -593,16 +593,6 @@ public final class HttpUrl {
       @Nullable
       List<String> encodedQueryNamesAndValues;
 
-      private List<String> getEncodedQueryNamesAndValues() {
-         if ( this.encodedQueryNamesAndValues != null ) {
-            return this.encodedQueryNamesAndValues;
-         } else {
-            final List<String> newArray = new ArrayList<>();
-            this.encodedQueryNamesAndValues = newArray;
-            return newArray;
-         }
-      }
-
       String encodedUsername = "";
 
       @Nullable
@@ -742,6 +732,16 @@ public final class HttpUrl {
          }
          this.encodedFragment = canonicalize( fragment, FRAGMENT_ENCODE_SET, false, false );
          return this;
+      }
+
+      private List<String> getEncodedQueryNamesAndValues() {
+         if ( this.encodedQueryNamesAndValues != null ) {
+            return this.encodedQueryNamesAndValues;
+         } else {
+            final List<String> newArray = new ArrayList<>();
+            this.encodedQueryNamesAndValues = newArray;
+            return newArray;
+         }
       }
 
       /**

@@ -1,6 +1,6 @@
 package net.ghue.jelenium.impl;
 
-enum TestResult {
+public enum TestResult {
    /**
     * There was an error initializing the test environment. The test could not even run.
     */

@@ -3,6 +3,7 @@ package net.ghue.jelenium.api;
 import java.nio.file.Path;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import net.ghue.jelenium.api.action.ActionFactory;
 
 /**
  * Provides everything that a test needs to interact with the world.
@@ -10,6 +11,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  * @author Luke Last
  */
 public interface TestContext {
+
+   ActionFactory action();
 
    /**
     * Used for logging from a test.

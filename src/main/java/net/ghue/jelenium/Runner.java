@@ -15,6 +15,14 @@ import net.ghue.jelenium.impl.TestRunnerImpl;
  */
 public final class Runner {
 
+   private static void debugPrintParsedArgs( Map<String, String> parsedArgs ) {
+      System.out.println( "Test Arguments: " );
+      for ( Entry<String, String> arg : parsedArgs.entrySet() ) {
+         System.out.println( arg.getKey() + " = " + arg.getValue() );
+      }
+      System.out.println();
+   }
+
    /**
     * <p>
     * Standard java main method.
@@ -26,14 +34,9 @@ public final class Runner {
    public static void main( @Nullable String[] args ) throws Exception {
 
       Map<String, String> parsedArgs = parseMainArgs( args );
-      System.out.println( "Test Arguments: " );
-      for ( Entry<String, String> arg : parsedArgs.entrySet() ) {
-         System.out.println( arg.getKey() + " = " + arg.getValue() );
-      }
-      System.out.println();
-
-      final TestRunnerImpl runner = new TestRunnerImpl();
-      runner.run( parsedArgs );
+      debugPrintParsedArgs( parsedArgs );
+      final TestRunnerImpl runner = new TestRunnerImpl( parsedArgs );
+      runner.run();
    }
 
    /**

@@ -1,11 +1,11 @@
 package net.ghue.jelenium.impl;
 
+import static com.google.common.base.Strings.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import net.ghue.jelenium.api.HttpUrl;
 import net.ghue.jelenium.api.JeleniumSettings;
@@ -32,7 +32,7 @@ final class SettingsImpl implements JeleniumSettings {
     */
    public SettingsImpl( Map<String, String> rawArgs ) {
       this.args = ImmutableMap.copyOf( rawArgs );
-      if ( Strings.isNullOrEmpty( args.get( KEY_URL ) ) ) {
+      if ( isNullOrEmpty( args.get( KEY_URL ) ) ) {
          this.url = defaultUrl();
       } else {
          final HttpUrl parsedUrl = HttpUrl.parse( args.get( KEY_URL ) );
@@ -43,13 +43,13 @@ final class SettingsImpl implements JeleniumSettings {
          }
       }
 
-      final String dir = Strings.nullToEmpty( args.get( KEY_RESULTS_DIR ) );
+      final String dir = nullToEmpty( args.get( KEY_RESULTS_DIR ) );
       if ( dir.isEmpty() ) {
          this.resultsDir = DEFAULT_RESULTS_DIR;
       } else {
          this.resultsDir = Paths.get( dir ).toAbsolutePath().normalize();
       }
-      this.filter = Strings.nullToEmpty( args.get( KEY_FILTER ) ).toLowerCase( Locale.US );
+      this.filter = nullToEmpty( args.get( KEY_FILTER ) ).toLowerCase( Locale.US );
    }
 
    private HttpUrl defaultUrl() {
@@ -61,7 +61,7 @@ final class SettingsImpl implements JeleniumSettings {
       if ( KEY_URL.equals( key ) ) {
          return this.url.toString();
       }
-      return Strings.nullToEmpty( this.args.get( key ) );
+      return nullToEmpty( this.args.get( key ) );
    }
 
    @Override
@@ -82,6 +82,11 @@ final class SettingsImpl implements JeleniumSettings {
    @Override
    public HttpUrl getUrl() {
       return this.url;
+   }
+
+   @Override
+   public boolean is( String key, String expectedValue ) {
+      return get( key ).equalsIgnoreCase( nullToEmpty( expectedValue ) );
    }
 
 }

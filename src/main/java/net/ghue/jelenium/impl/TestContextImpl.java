@@ -9,8 +9,10 @@ import net.ghue.jelenium.api.ScreenshotSaver;
 import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.TestLog;
 import net.ghue.jelenium.api.WebNavigate;
+import net.ghue.jelenium.api.action.ActionFactory;
 import net.ghue.jelenium.api.annotation.TestName;
 import net.ghue.jelenium.api.annotation.TestResultDir;
+import net.ghue.jelenium.impl.action.ActionFactoryImpl;
 
 /**
  * This class should not contain any state directly in itself.
@@ -44,6 +46,11 @@ final class TestContextImpl implements TestContext {
       this.name = name;
       this.testResultsDir = testResultsDir;
       this.screenshotSaver = screenshotSaver;
+   }
+
+   @Override
+   public ActionFactory action() {
+      return new ActionFactoryImpl( this );
    }
 
    @Override

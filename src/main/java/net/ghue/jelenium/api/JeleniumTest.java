@@ -2,6 +2,8 @@ package net.ghue.jelenium.api;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.Options;
+import net.ghue.jelenium.api.ex.SkipTestException;
+import net.ghue.jelenium.impl.TestResult;
 
 /**
  * <p>
@@ -11,6 +13,16 @@ import org.openqa.selenium.WebDriver.Options;
  * @author Luke Last
  */
 public interface JeleniumTest {
+
+   /**
+    * Throws an exception to skip the currently running test.
+    * 
+    * @param reason Why is the test being skipped.
+    * @throws SkipTestException
+    */
+   static void skip( String reason ) throws SkipTestException {
+      throw new SkipTestException( reason );
+   }
 
    default void fail( String reason ) throws Exception {
       throw new Exception( reason );
@@ -45,9 +57,10 @@ public interface JeleniumTest {
     * test was skipped.
     * 
     * @param context The context of the test being executed.
+    * @param result The final result of the test.
     * @throws Exception If error occurs.
     */
-   default void onFinish( TestContext context ) throws Exception {}
+   default void onFinish( TestContext context, TestResult result ) throws Exception {}
 
    /**
     * Life-cycle event run after test execution if the test passed.
@@ -66,7 +79,7 @@ public interface JeleniumTest {
       return -1;
    }
 
-   void run( TestContext context ) throws Exception;;
+   void run( TestContext context ) throws Exception;
 
    /**
     * Beta.

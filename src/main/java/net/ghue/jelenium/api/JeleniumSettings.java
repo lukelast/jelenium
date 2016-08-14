@@ -6,7 +6,7 @@ import java.util.Optional;
 
 /**
  * <p>
- * TestArgs interface.
+ * Interface for JELENIUM settings. These settings specified at launch time and immutable.
  * </p>
  *
  * @author Luke Last
@@ -63,21 +63,33 @@ public interface JeleniumSettings {
 
    /**
     * <p>
-    * getSecondaryUrl.
+    * Fetch a secondary URL that is not the primary {@link #getUrl()}.
     * </p>
     *
-    * @param index If the key is "url2" then the index is 2.
+    * @param number Which URL to get. If the setting key is <b>url2</b> then the value should be 2.
     * @return a {@link net.ghue.jelenium.api.HttpUrl} object.
+    * @see #getUrl()
     */
-   Optional<HttpUrl> getSecondaryUrl( int index );
+   Optional<HttpUrl> getSecondaryUrl( int number );
 
    /**
     * <p>
-    * getUrl.
+    * Get the primary URL under test.
     * </p>
     *
     * @return a {@link net.ghue.jelenium.api.HttpUrl} object.
+    * @see #getSecondaryUrl(int)
     */
    HttpUrl getUrl();
+
+   /**
+    * Check if the given value matches the actual value for the key. Uses
+    * {@link String#equalsIgnoreCase(String)} for case insensitive equality test.
+    * 
+    * @param key
+    * @param expectedValue
+    * @return {@code true} if the actual value matches the expected value.
+    */
+   boolean is( String key, String expectedValue );
 
 }

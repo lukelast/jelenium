@@ -58,23 +58,24 @@
 						<!-- Save result files in MAVEN target directory. -->
 						<argument>results=${project.build.directory}/results</argument>
 						<!-- Provide the primary URL under test. -->
-						<argument>url=http://www.example.com/</argument>
+						<argument>url=http://the-internet.herokuapp.com/</argument>
+						<!-- Provide optional secondary URL to test. -->
+						<argument>url2=http://store.demoqa.com/</argument>
 						<!-- Use a local browser. -->
 						<argument>browser=firefox</argument>
 						<!-- Use a remote web driver. -->
 						<!--argument>hub=localhost</argument -->
 						<!-- Custom argument. -->
 						<argument>mykey=myvalue</argument>
+						<argument>filter=loading</argument>
 					</arguments>
 				</configuration>
-
 			</plugin>
 
 		</plugins>
 	</build>
 
 	<profiles>
-
 
 	</profiles>
 </project>
