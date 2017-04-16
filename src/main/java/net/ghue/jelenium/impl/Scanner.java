@@ -65,7 +65,7 @@ final class Scanner {
                       .filter( cl -> !cl.isInterface() )
                       .map( cl -> cl.<JeleniumTest> asSubclass( JeleniumTest.class ) )
                       //.peek( cl -> System.out.println( "Found Test: " + cl.getName() ) )
-                      .collect( GuavaCollectors.immutableList() );
+                      .collect( ImmutableList.toImmutableList() );
    }
 
    private static Stream<Class<?>> load( ClassInfo ci ) {

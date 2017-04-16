@@ -246,6 +246,7 @@ import okio.Buffer;
  * returns null if the input is an invalid URL. You can even be explicit about whether each
  * component has been encoded already.
  */
+@SuppressWarnings( "hiding" )
 public final class HttpUrl {
 
    public static final class Builder {

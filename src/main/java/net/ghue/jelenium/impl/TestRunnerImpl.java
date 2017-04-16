@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.Multiset;
 import net.ghue.jelenium.api.JeleniumSettings;
 import net.ghue.jelenium.api.JeleniumTest;
@@ -52,7 +54,7 @@ public final class TestRunnerImpl {
 
       final List<TestRun> tests = testClasses.stream()
                                              .map( tc -> new TestRun( tc, wdc, settings ) )
-                                             .collect( GuavaCollectors.immutableList() );
+                                             .collect( ImmutableList.toImmutableList() );
 
       tests.forEach( TestRun::checkIfSkip );
 
@@ -61,7 +63,9 @@ public final class TestRunnerImpl {
       wdc.close();
 
       final Multiset<TestResult> results =
-            tests.stream().map( TestRun::getResult ).collect( GuavaCollectors.immutableMultiset() );
+            tests.stream()
+                 .map( TestRun::getResult )
+                 .collect( ImmutableMultiset.toImmutableMultiset() );
 
       System.out.println( "\n========== PASSED " +
                           results.count( TestResult.PASSED ) +

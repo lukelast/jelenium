@@ -48,10 +48,10 @@ public final class WebNavigate {
    /**
     * Navigate to the given URL.
     *
-    * @param url a {@link net.ghue.jelenium.api.HttpUrl} object.
+    * @param destUrl a {@link net.ghue.jelenium.api.HttpUrl} object.
     */
-   public void to( HttpUrl url ) {
-      driver.navigate().to( url.url() );
+   public void to( HttpUrl destUrl ) {
+      driver.navigate().to( destUrl.url() );
    }
 
    /**
