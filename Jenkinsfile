@@ -6,9 +6,14 @@ pipeline {
     
   }
   stages {
-    stage('build') {
+    stage('Build') {
       steps {
         sh 'mvn install'
+      }
+    }
+    stage('Archive') {
+      steps {
+        archiveArtifacts(artifacts: '**/*jelenium*.jar', fingerprint: true, onlyIfSuccessful: true)
       }
     }
   }
