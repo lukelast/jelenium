@@ -13,7 +13,7 @@ pipeline {
     }
     stage('Archive') {
       steps {
-        archiveArtifacts(artifacts: '**/*jelenium*.jar', fingerprint: true, onlyIfSuccessful: true)
+        archiveArtifacts(artifacts: 'target/*jelenium*.jar', fingerprint: true, onlyIfSuccessful: true)
       }
     }
   }
