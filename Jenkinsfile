@@ -1,7 +1,7 @@
 pipeline {
   agent {
-    dockerfile {
-      filename 'test'
+    docker {
+      image 'maven:3.5-jdk-8-alpine'
     }
     
   }
