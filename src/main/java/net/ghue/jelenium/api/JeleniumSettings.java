@@ -2,11 +2,13 @@ package net.ghue.jelenium.api;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.Optional;
+import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
 
 /**
  * <p>
- * Interface for JELENIUM settings. These settings specified at launch time and immutable.
+ * Interface for JELENIUM settings. These settings are specified at launch time and immutable.
  * </p>
  *
  * @author Luke Last
@@ -14,6 +16,10 @@ import java.util.Optional;
 public interface JeleniumSettings {
 
    Path DEFAULT_RESULTS_DIR = Paths.get( ".", "results" ).toAbsolutePath().normalize();
+
+   static Duration DEFAULT_RETRY_DELAY = Duration.ofSeconds( 1 );
+
+   static Duration DEFAULT_RETRY_TIMEOUT = Duration.ofSeconds( 10 );
 
    /**
     * Constant <code>KEY_BROWSER="browser"</code>
@@ -34,6 +40,21 @@ public interface JeleniumSettings {
     * The directory that stores all the test results.
     */
    String KEY_RESULTS_DIR = "results";
+
+   /**
+    * The default amount of time in milliseconds to wait after an error before trying again.
+    */
+   String KEY_RETRY_DELAY = "retry-delay-ms";
+
+   /**
+    * The default timeout in milliseconds to keep retrying actions before giving up.
+    */
+   String KEY_RETRY_TIMEOUT = "retry-timeout-ms";
+
+   /**
+    * Full class name of the {@link JeleniumSuiteRunner} implementation to use to run tests.
+    */
+   String KEY_TEST_SUITE = "suite";
 
    /**
     * Constant <code>KEY_URL="url"</code>
@@ -62,6 +83,22 @@ public interface JeleniumSettings {
    Path getResultsDir();
 
    /**
+    * If not set the default is {@link #DEFAULT_RETRY_DELAY}.
+    * 
+    * @return The amount of time to pause after a failure before trying again.
+    * @see #KEY_RETRY_DELAY
+    */
+   Duration getRetryDelay();
+
+   /**
+    * If not set the default is {@link #DEFAULT_RETRY_TIMEOUT}.
+    * 
+    * @return The amount of time to retry actions before giving up.
+    * @see #KEY_RETRY_TIMEOUT
+    */
+   Duration getRetryTimeout();
+
+   /**
     * <p>
     * Fetch a secondary URL that is not the primary {@link #getUrl()}.
     * </p>
@@ -71,6 +108,8 @@ public interface JeleniumSettings {
     * @see #getUrl()
     */
    Optional<HttpUrl> getSecondaryUrl( int number );
+
+   Optional<Class<JeleniumSuiteRunner>> getSuite();
 
    /**
     * <p>

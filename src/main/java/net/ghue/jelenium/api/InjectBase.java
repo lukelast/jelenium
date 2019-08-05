@@ -3,6 +3,11 @@ package net.ghue.jelenium.api;
 import javax.inject.Inject;
 import org.openqa.selenium.WebDriver;
 
+/**
+ * A base class used to inject a bunch of services.
+ * 
+ * @author Luke Last
+ */
 public abstract class InjectBase {
 
    @Inject
@@ -17,19 +22,19 @@ public abstract class InjectBase {
    @Inject
    private HttpUrl url;
 
-   public TestContext getContext() {
+   protected TestContext getContext() {
       return context;
    }
 
-   public WebDriver getDriver() {
+   protected WebDriver getDriver() {
       return driver;
    }
 
-   public HttpUrl getUrl() {
+   protected HttpUrl getUrl() {
       return url;
    }
 
-   public TestLog log() {
+   protected TestLog log() {
       return log;
    }
 

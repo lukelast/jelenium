@@ -14,8 +14,6 @@ public final class ScreenshotDemo implements JeleniumTest {
 
       context.getWebNavigate().toPrimaryUrl();
 
-      context.getScreenshotSaver().saveScreenshot( "example.com" );
-
+      context.getScreenshotSaver().saveScreenshot( "capture pixels" );
    }
-
 }

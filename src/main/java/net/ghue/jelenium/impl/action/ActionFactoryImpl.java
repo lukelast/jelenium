@@ -18,7 +18,10 @@ public final class ActionFactoryImpl implements ActionFactory {
 
    @Override
    public SimpleAction build( Runnable simpleAction ) {
-      return new SimpleActionExecutor( simpleAction );
+      return start( () -> {
+         simpleAction.run();
+         return null;
+      } ).buildSimple();
    }
 
    @Override
@@ -28,7 +31,7 @@ public final class ActionFactoryImpl implements ActionFactory {
 
    @Override
    public <O> ActionBuilder<O> start( Supplier<O> action ) {
-      return new ActionBuilderImpl<>( action );
+      return new ActionBuilderImpl<>( action, this.testContext );
    }
 
 }

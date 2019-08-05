@@ -50,8 +50,8 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.5.0</version>
 				<configuration>
-					<!-- The JELENIUM test runner. -->
-					<mainClass>net.ghue.jelenium.Runner</mainClass>
+					<!-- The JELENIUM test runner entry point. -->
+					<mainClass>net.ghue.jelenium.Main</mainClass>
 					<!-- SELENIUM keeps daemon threads alive in thread pools. -->
 					<cleanupDaemonThreads>false</cleanupDaemonThreads>
 					<arguments>
@@ -67,7 +67,7 @@
 						<!--argument>hub=localhost</argument -->
 						<!-- Custom argument. -->
 						<argument>mykey=myvalue</argument>
-						<argument>filter=loading</argument>
+						<!--argument>filter=loading</argument-->
 					</arguments>
 				</configuration>
 			</plugin>

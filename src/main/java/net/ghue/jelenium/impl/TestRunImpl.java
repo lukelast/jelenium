@@ -18,20 +18,23 @@ import com.google.inject.Module;
 import net.ghue.jelenium.api.HttpUrl;
 import net.ghue.jelenium.api.JeleniumSettings;
 import net.ghue.jelenium.api.JeleniumTest;
+import net.ghue.jelenium.api.JeleniumTestRun;
+import net.ghue.jelenium.api.ScreenshotSaver;
 import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.TestLog;
+import net.ghue.jelenium.api.TestName;
+import net.ghue.jelenium.api.TestResult;
 import net.ghue.jelenium.api.annotation.GuiceModule;
-import net.ghue.jelenium.api.annotation.TestName;
 import net.ghue.jelenium.api.annotation.TestResultDir;
 import net.ghue.jelenium.api.ex.SkipTestException;
 
-final class TestRun {
+final class TestRunImpl implements JeleniumTestRun {
 
    private Optional<Injector> injector = empty();
 
    private final TestLog log = new StandardOutLog();
 
-   private final String name;
+   private final TestName name;
 
    private volatile TestResult result = TestResult.NOT_RUN;
 
@@ -43,28 +46,24 @@ final class TestRun {
 
    private Optional<RemoteWebDriver> webDriver = empty();
 
-   private final WebDriverManager webDriverManager;
-
    /**
     * <p>
-    * Constructor for TestRun.
+    * Constructor.
     * </p>
     *
     * @param testClass a {@link java.lang.Class} object.
     * @param webDriver a {@link org.openqa.selenium.WebDriver} object.
     * @param settings a {@link net.ghue.jelenium.api.JeleniumSettings} object.
     */
-   TestRun( Class<? extends JeleniumTest> testClass, WebDriverManager webDriverProvider,
-            JeleniumSettings settings ) {
+   TestRunImpl( Class<? extends JeleniumTest> testClass, JeleniumSettings settings ) {
       this.testClass = requireNonNull( testClass );
-      this.webDriverManager = requireNonNull( webDriverProvider );
       this.settings = requireNonNull( settings );
-      this.name = testClass.getName();
+      this.name = new TestNameImpl( testClass );
    }
 
    void checkIfSkip() {
       if ( !settings.getFilter().isEmpty() &&
-           !name.toLowerCase().contains( settings.getFilter() ) ) {
+           !name.getFullName().toLowerCase().contains( settings.getFilter() ) ) {
          this.result = TestResult.SKIPPED;
          log.info( "Skipping %s because it did not match filter", name );
       }
@@ -86,6 +85,8 @@ final class TestRun {
             log.warn( "Failed: %s", name );
             try {
                jt.onFail( getContext() );
+               // Take a screenshot at the end on failure.
+               getContext().getScreenshotSaver().saveScreenshot( "failed" );
             } catch ( Throwable ex ) {
                log.error( "", ex );
             }
@@ -98,14 +99,6 @@ final class TestRun {
          }
 
       } );
-
-      this.webDriver.ifPresent( rwd -> {
-         try {
-            webDriverManager.giveBack( rwd );
-         } catch ( Throwable ex ) {
-            log.error( "", ex );
-         }
-      } );
    }
 
    private TestContext getContext() {
@@ -113,7 +106,13 @@ final class TestRun {
                      .getInstance( TestContext.class );
    }
 
-   TestResult getResult() {
+   @Override
+   public TestName getName() {
+      return this.name;
+   }
+
+   @Override
+   public TestResult getResult() {
       return requireNonNull( this.result );
    }
 
@@ -124,8 +123,9 @@ final class TestRun {
    /**
     * Run the test.
     */
-   void run() {
-      log.info( "Starting Test: %s", name );
+   @Override
+   public void run( RemoteWebDriver remoteWebDriver ) {
+      log.info( "\nStarting Test: %s", name );
 
       try {
          final List<Module> modules = new ArrayList<>();
@@ -138,7 +138,7 @@ final class TestRun {
             }
          }
 
-         this.webDriver = of( this.webDriverManager.take() );
+         this.webDriver = of( remoteWebDriver );
 
          modules.add( new AbstractModule() {
 
@@ -149,12 +149,13 @@ final class TestRun {
                bind( RemoteWebDriver.class ).toInstance( webDriver.get() );
                bind( TestLog.class ).toInstance( log );
                bind( JeleniumSettings.class ).toInstance( settings );
+               bind( ScreenshotSaver.class ).to( ScreenshotSaverImpl.class );
                bind( TestContext.class ).to( TestContextImpl.class );
                bind( HttpUrl.class ).toInstance( settings.getUrl() );
-               bind( String.class ).annotatedWith( TestName.class ).toInstance( name );
+               bind( TestName.class ).toInstance( name );
                bind( Path.class ).annotatedWith( TestResultDir.class )
                                  .toInstance( settings.getResultsDir()
-                                                      .resolve( name )
+                                                      .resolve( name.getFullName() )
                                                       .toAbsolutePath() );
             }
          } );
@@ -175,9 +176,8 @@ final class TestRun {
                        new IllegalStateException( "Failed to create guice injector" ) );
          } else if ( !this.testInstance.isPresent() ) {
             this.result = TestResult.ERROR;
-            log.error( "Failed to instantiate test class " +
-                       testClass.getName(),
-                       new IllegalStateException( "Failed to instantiate " + testClass ) );
+            log.error( "Failed to instantiate test class " + testClass.getName(),
+                       new IllegalStateException( "Failed to instantiate " + testClass, ex ) );
          } else {
             log.error( "", ex );
             this.result = TestResult.FAILED;

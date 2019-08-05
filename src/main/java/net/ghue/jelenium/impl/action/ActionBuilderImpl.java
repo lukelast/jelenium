@@ -1,7 +1,8 @@
 package net.ghue.jelenium.impl.action;
 
-import java.util.function.Consumer;
+import java.time.Duration;
 import java.util.function.Supplier;
+import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.action.Action;
 import net.ghue.jelenium.api.action.ActionBuilder;
 import net.ghue.jelenium.api.action.ActionStep;
@@ -9,10 +10,19 @@ import net.ghue.jelenium.api.action.SimpleAction;
 
 final class ActionBuilderImpl<I> implements ActionBuilder<I> {
 
-   private Supplier<I> action;
+   Supplier<I> action;
 
-   ActionBuilderImpl( Supplier<I> action ) {
+   Duration retryDelay = Duration.ofSeconds( 1 );
+
+   Duration retryTimeout = Duration.ofSeconds( 10 );
+
+   final TestContext testContext;
+
+   ActionBuilderImpl( Supplier<I> action, TestContext testContext ) {
       this.action = action;
+      this.testContext = testContext;
+
+      // TODO Pull default retry settings from settings.
    }
 
    @Override
@@ -29,17 +39,38 @@ final class ActionBuilderImpl<I> implements ActionBuilder<I> {
 
    @Override
    public Action<I> build() {
-      return new ActionExecutor<>( this.action );
+      return new ActionExecutor<>( this );
    }
 
    @Override
    public SimpleAction buildSimple() {
-      return new SimpleActionExecutor( () -> this.action.get() );
+      return new SimpleAction() {
+
+         @Override
+         public void execute() {
+            build().execute();
+         }
+      };
    }
 
    @Override
-   public SimpleAction buildSimple( Consumer<I> finalAction ) {
-      return new SimpleActionExecutor( () -> finalAction.accept( this.action.get() ) );
+   public Duration getRetryDelay() {
+      return this.retryDelay;
+   }
+
+   @Override
+   public Duration getRetryTimeout() {
+      return this.retryTimeout;
+   }
+
+   @Override
+   public void setRetryDelay( Duration delay ) {
+      this.retryDelay = delay;
+   }
+
+   @Override
+   public void setRetryTimeout( Duration timeout ) {
+      this.retryTimeout = timeout;
    }
 
 }

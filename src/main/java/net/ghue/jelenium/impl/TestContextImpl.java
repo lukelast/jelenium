@@ -8,9 +8,9 @@ import net.ghue.jelenium.api.JeleniumSettings;
 import net.ghue.jelenium.api.ScreenshotSaver;
 import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.TestLog;
+import net.ghue.jelenium.api.TestName;
 import net.ghue.jelenium.api.WebNavigate;
 import net.ghue.jelenium.api.action.ActionFactory;
-import net.ghue.jelenium.api.annotation.TestName;
 import net.ghue.jelenium.api.annotation.TestResultDir;
 import net.ghue.jelenium.impl.action.ActionFactoryImpl;
 
@@ -23,7 +23,7 @@ final class TestContextImpl implements TestContext {
 
    private final TestLog log;
 
-   private final String name;
+   private final TestName name;
 
    private final ScreenshotSaver screenshotSaver;
 
@@ -37,8 +37,8 @@ final class TestContextImpl implements TestContext {
 
    @Inject
    TestContextImpl( RemoteWebDriver webDriver, TestLog log, JeleniumSettings testArgs,
-                    WebNavigate webNavigate, @TestName String name,
-                    @TestResultDir Path testResultsDir, ScreenshotSaver screenshotSaver ) {
+                    WebNavigate webNavigate, TestName name, @TestResultDir Path testResultsDir,
+                    ScreenshotSaver screenshotSaver ) {
       this.webDriver = webDriver;
       this.log = log;
       this.settings = testArgs;
@@ -59,7 +59,7 @@ final class TestContextImpl implements TestContext {
    }
 
    @Override
-   public String getName() {
+   public TestName getName() {
       return this.name;
    }
 

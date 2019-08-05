@@ -3,24 +3,23 @@ package net.ghue.jelenium.demo.action.page;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 import net.ghue.jelenium.api.Page;
-import net.ghue.jelenium.api.WebNavigate;
 
 public final class PageDynamicLoading1 extends Page {
 
+   WebElement blah;
+
+   @FindBy( css = "div#start button" )
+   private WebElement startButton;
+
    public void clickStart() {
-      getDriver().findElement( By.cssSelector( "div#start button" ) ).click();
+      //getDriver().findElement( By.cssSelector( "div#start button" ) ).click();
+      this.startButton.click();
    }
 
-   @Override
-   protected void go( WebNavigate navigate ) {
-      navigate.to( url -> url.addPathSegment( "dynamic_loading" ).addPathSegment( "1" ) );
-   }
-
-   public void verifyFinishNoAction() {
-      WebElement element = getDriver().findElement( By.cssSelector( "div#finish h4" ) );
-      String text = element.getText();
-      Assertions.assertThat( text ).containsIgnoringCase( "Hello World" );
+   public void go() {
+      navigate().to( url -> url.addPathSegment( "dynamic_loading" ).addPathSegment( "1" ) );
    }
 
    public void verifyFinishUsingAction() {
@@ -28,8 +27,18 @@ public final class PageDynamicLoading1 extends Page {
                   .start( driver -> driver.findElement( By.cssSelector( "div#finish h4" ) ) )
                   .add( WebElement::getText )
                   .add( Assertions::assertThat )
-                  .buildSimple( assertion -> assertion.containsIgnoringCase( "Hello World" ) )
+                  .add( assertion -> assertion.containsIgnoringCase( "Hello World" ) )
+                  .buildSimple()
                   .execute();
+   }
+
+   public void verifyFinishUsingWait() {
+      getContext().webDriverWait().ignoring( AssertionError.class ).until( wd -> {
+         WebElement element = getDriver().findElement( By.cssSelector( "div#finish h4" ) );
+         String text = element.getText();
+         Assertions.assertThat( text ).containsIgnoringCase( "Hello World" );
+         return true;
+      } );
    }
 
    public void verifyHeader() {

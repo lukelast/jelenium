@@ -3,7 +3,6 @@ package net.ghue.jelenium.api;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.Options;
 import net.ghue.jelenium.api.ex.SkipTestException;
-import net.ghue.jelenium.impl.TestResult;
 
 /**
  * <p>

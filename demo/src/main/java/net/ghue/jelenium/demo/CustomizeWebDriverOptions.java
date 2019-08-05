@@ -21,9 +21,8 @@ public final class CustomizeWebDriverOptions implements JeleniumTest {
     */
    @Override
    public void run( TestContext context ) throws Exception {
-
-      context.getLog().info( "Browser Window Size: %s",
-                             context.getWebDriver().manage().window().getSize() );
+      context.getLog()
+             .info( "Browser Window Size: %s", context.getWebDriver().manage().window().getSize() );
    }
 
 }

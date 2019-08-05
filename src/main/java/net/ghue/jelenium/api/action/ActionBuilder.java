@@ -1,6 +1,6 @@
 package net.ghue.jelenium.api.action;
 
-import java.util.function.Consumer;
+import java.time.Duration;
 
 public interface ActionBuilder<I> {
 
@@ -14,8 +14,6 @@ public interface ActionBuilder<I> {
 
    SimpleAction buildSimple();
 
-   SimpleAction buildSimple( Consumer<I> finalAction );
-
    /**
     * Build and execute.
     * 
@@ -28,4 +26,18 @@ public interface ActionBuilder<I> {
    default void executeSimple() {
       buildSimple().execute();
    }
+
+   Duration getRetryDelay();
+
+   Duration getRetryTimeout();
+
+   /**
+    * @param delay How long to pause after a failure before trying again.
+    */
+   void setRetryDelay( Duration delay );
+
+   /**
+    * @param timeout How long to keep retrying the action if it fails.
+    */
+   void setRetryTimeout( Duration timeout );
 }

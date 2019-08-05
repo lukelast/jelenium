@@ -1,7 +1,6 @@
 package net.ghue.jelenium;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
 import net.ghue.jelenium.impl.TestRunnerImpl;
@@ -13,15 +12,7 @@ import net.ghue.jelenium.impl.TestRunnerImpl;
  *
  * @author Luke Last
  */
-public final class Runner {
-
-   private static void debugPrintParsedArgs( Map<String, String> parsedArgs ) {
-      System.out.println( "Test Arguments: " );
-      for ( Entry<String, String> arg : parsedArgs.entrySet() ) {
-         System.out.println( arg.getKey() + " = " + arg.getValue() );
-      }
-      System.out.println();
-   }
+public final class Main {
 
    /**
     * <p>
@@ -32,9 +23,7 @@ public final class Runner {
     * @throws java.lang.Exception if any.
     */
    public static void main( @Nullable String[] args ) throws Exception {
-
       Map<String, String> parsedArgs = parseMainArgs( args );
-      debugPrintParsedArgs( parsedArgs );
       final TestRunnerImpl runner = new TestRunnerImpl( parsedArgs );
       runner.run();
    }
@@ -43,7 +32,7 @@ public final class Runner {
     * Convert the arguments passed on the console to a key-value map. Each argument should be in the
     * format "key=value".
     */
-   private static Map<String, String> parseMainArgs( @Nullable String[] args ) {
+   static Map<String, String> parseMainArgs( @Nullable String[] args ) {
       if ( ( args == null ) || ( args.length == 0 ) ) {
          return ImmutableMap.of();
       }

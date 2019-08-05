@@ -1,5 +1,6 @@
 package net.ghue.jelenium.demo.action.test;
 
+import java.time.Duration;
 import javax.inject.Inject;
 import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.TestContext;
@@ -16,9 +17,10 @@ public final class DynamicLoading implements JeleniumTest {
       pageDynamicLoading1.go();
       pageDynamicLoading1.verifyHeader();
       pageDynamicLoading1.clickStart();
-      pageDynamicLoading1.verifyFinishUsingAction();
+      //pageDynamicLoading1.verifyFinishUsingAction();
+      pageDynamicLoading1.verifyFinishUsingWait();
 
-      Thread.sleep( 5_000 );
+      context.pause( Duration.ofSeconds( 5 ) );
    }
 
 }

@@ -1,8 +1,11 @@
 package net.ghue.jelenium.api;
 
 import java.nio.file.Path;
+import java.time.Duration;
+import javax.annotation.Nullable;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import net.ghue.jelenium.api.action.ActionFactory;
 
 /**
@@ -24,7 +27,7 @@ public interface TestContext {
    /**
     * @return The name of the test.
     */
-   String getName();
+   TestName getName();
 
    /**
     * @return The directory that all results for this test should be saved.
@@ -64,4 +67,30 @@ public interface TestContext {
     * @return a {@link net.ghue.jelenium.api.WebNavigate} object.
     */
    WebNavigate getWebNavigate();
+
+   /**
+    * Fixed pauses are bad, don't do it. But if you must, at least this will log it.
+    * 
+    * @param pauseDuration Time to sleep.
+    */
+   default void pause( @Nullable Duration pauseDuration ) {
+      if ( pauseDuration == null ) {
+         throw new IllegalArgumentException( "Duration must not be null" );
+      }
+      if ( pauseDuration.isNegative() ) {
+         throw new IllegalArgumentException( "Pause duration must be positive" );
+      }
+      getLog().info( "Pausing for %s", pauseDuration );
+      try {
+         Thread.sleep( pauseDuration.toMillis() );
+      } catch ( InterruptedException iex ) {
+         throw new RuntimeException( iex );
+      }
+   }
+
+   default WebDriverWait webDriverWait() {
+      return new WebDriverWait( getWebDriver(),
+                                getSettings().getRetryTimeout().toMillis(),
+                                getSettings().getRetryDelay().toMillis() );
+   }
 }

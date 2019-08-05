@@ -1,19 +1,24 @@
 package net.ghue.jelenium.api;
 
+import javax.inject.Inject;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
 public abstract class Page extends InjectBase {
 
    /**
-    * Load this page.
+    * Initializes {@link WebElement} fields. Override this to disable the feature.
+    * 
+    * @see FindBy
     */
-   public final void go() {
-      this.go( getContext().getWebNavigate() );
+   @Inject
+   protected void initPageFactory() {
+      PageFactory.initElements( this.getDriver(), this );
    }
 
-   /**
-    * Navigate to this page.
-    * 
-    * @param navigate Used to navigate to web pages.
-    */
-   protected abstract void go( WebNavigate navigate );
+   protected WebNavigate navigate() {
+      return getContext().getWebNavigate();
+   }
 
 }
