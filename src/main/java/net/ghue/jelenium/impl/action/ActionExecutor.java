@@ -2,13 +2,22 @@ package net.ghue.jelenium.impl.action;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.function.Supplier;
+import com.google.common.base.Throwables;
 import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.action.Action;
+import net.ghue.jelenium.api.action.ThrowableAction;
 
 final class ActionExecutor<R> implements Action<R> {
 
-   private final Supplier<R> action;
+   private static Duration findDuration( Duration local, Duration global ) {
+      if ( local.isZero() || local.isNegative() ) {
+         return global;
+      } else {
+         return local;
+      }
+   }
+
+   private final ThrowableAction<R> action;
 
    private final Duration retryDelay;
 
@@ -16,11 +25,12 @@ final class ActionExecutor<R> implements Action<R> {
 
    private final TestContext testContext;
 
-   ActionExecutor( ActionBuilderImpl<R> actionBuilder ) {
-      this.action = actionBuilder.action;
-      this.testContext = actionBuilder.testContext;
-      this.retryTimeout = actionBuilder.retryTimeout;
-      this.retryDelay = actionBuilder.retryDelay;
+   public ActionExecutor( ThrowableAction<R> action, Duration retryDelay, Duration retryTimeout,
+                          TestContext testContext ) {
+      this.action = action;
+      this.testContext = testContext;
+      this.retryDelay = findDuration( retryDelay, testContext.getSettings().getRetryDelay() );
+      this.retryTimeout = findDuration( retryTimeout, testContext.getSettings().getRetryTimeout() );
    }
 
    @Override
@@ -29,10 +39,11 @@ final class ActionExecutor<R> implements Action<R> {
 
       while ( true ) {
          try {
-            return this.action.get();
+            return this.action.execute();
          } catch ( Throwable ex ) {
             if ( Instant.now().minus( retryTimeout ).isAfter( start ) ) {
-               throw ex;
+               Throwables.throwIfUnchecked( ex );
+               throw new RuntimeException( ex );
             } else {
                // Retry.
                try {

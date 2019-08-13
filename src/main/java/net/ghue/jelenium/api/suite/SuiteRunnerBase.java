@@ -35,6 +35,7 @@ public abstract class SuiteRunnerBase implements JeleniumSuiteRunner {
       sb.append( "Total Tests: " ).append( results.size() ).append( '\n' );
       sb.append( "Passed: " ).append( results.count( TestResult.PASSED ) ).append( '\n' );
       sb.append( "Failed: " ).append( results.count( TestResult.FAILED ) ).append( '\n' );
+      sb.append( "Errored: " ).append( results.count( TestResult.ERROR ) ).append( '\n' );
       sb.append( "Skipped: " ).append( results.count( TestResult.SKIPPED ) ).append( '\n' );
 
       System.out.println( sb.toString() );

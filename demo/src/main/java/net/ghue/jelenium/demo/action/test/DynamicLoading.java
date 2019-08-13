@@ -17,10 +17,12 @@ public final class DynamicLoading implements JeleniumTest {
       pageDynamicLoading1.go();
       pageDynamicLoading1.verifyHeader();
       pageDynamicLoading1.clickStart();
-      //pageDynamicLoading1.verifyFinishUsingAction();
-      pageDynamicLoading1.verifyFinishUsingWait();
 
-      context.pause( Duration.ofSeconds( 5 ) );
+      //pageDynamicLoading1.verifyFinishUsingActionMethod();
+      pageDynamicLoading1.verifyFinishUsingAction();
+      //pageDynamicLoading1.verifyFinishUsingWait();
+
+      context.pause( Duration.ofSeconds( 1 ) );
    }
 
 }

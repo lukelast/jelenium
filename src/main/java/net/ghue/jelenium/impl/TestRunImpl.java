@@ -15,24 +15,19 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import net.ghue.jelenium.api.HttpUrl;
-import net.ghue.jelenium.api.JeleniumSettings;
-import net.ghue.jelenium.api.JeleniumTest;
-import net.ghue.jelenium.api.JeleniumTestRun;
-import net.ghue.jelenium.api.ScreenshotSaver;
-import net.ghue.jelenium.api.TestContext;
-import net.ghue.jelenium.api.TestLog;
-import net.ghue.jelenium.api.TestName;
-import net.ghue.jelenium.api.TestResult;
+import com.google.inject.matcher.Matchers;
+import net.ghue.jelenium.api.*;
+import net.ghue.jelenium.api.action.RetryableAction;
 import net.ghue.jelenium.api.annotation.GuiceModule;
 import net.ghue.jelenium.api.annotation.TestResultDir;
 import net.ghue.jelenium.api.ex.SkipTestException;
+import net.ghue.jelenium.impl.action.ActionMethodInterceptor;
 
 final class TestRunImpl implements JeleniumTestRun {
 
    private Optional<Injector> injector = empty();
 
-   private final TestLog log = new StandardOutLog();
+   private final TestLog log;
 
    private final TestName name;
 
@@ -43,6 +38,8 @@ final class TestRunImpl implements JeleniumTestRun {
    private final Class<? extends JeleniumTest> testClass;
 
    private Optional<JeleniumTest> testInstance = empty();
+
+   private final Path testResultsDir;
 
    private Optional<RemoteWebDriver> webDriver = empty();
 
@@ -59,6 +56,8 @@ final class TestRunImpl implements JeleniumTestRun {
       this.testClass = requireNonNull( testClass );
       this.settings = requireNonNull( settings );
       this.name = new TestNameImpl( testClass );
+      this.testResultsDir = createTestResultsDir( settings, name );
+      this.log = new TestLogImpl( testResultsDir );
    }
 
    void checkIfSkip() {
@@ -67,6 +66,47 @@ final class TestRunImpl implements JeleniumTestRun {
          this.result = TestResult.SKIPPED;
          log.info( "Skipping %s because it did not match filter", name );
       }
+   }
+
+   private Injector createGuiceInjector() {
+      final List<Module> modules = new ArrayList<>();
+
+      for ( GuiceModule guiceModAnnotation : testClass.getDeclaredAnnotationsByType( GuiceModule.class ) ) {
+         try {
+            modules.add( guiceModAnnotation.value().newInstance() );
+         } catch ( InstantiationException | IllegalAccessException ex ) {
+            ex.printStackTrace();
+         }
+      }
+
+      modules.add( new AbstractModule() {
+
+         @Override
+         protected void configure() {
+            bindInterceptor( Matchers.subclassesOf( Page.class ),
+                             Matchers.annotatedWith( RetryableAction.class ),
+                             new ActionMethodInterceptor( getProvider( TestContext.class ) ) );
+            bind( testClass ).in( Singleton.class );
+            bind( WebDriver.class ).toInstance( webDriver.get() );
+            bind( RemoteWebDriver.class ).toInstance( webDriver.get() );
+            bind( TestLog.class ).toInstance( log );
+            bind( JeleniumSettings.class ).toInstance( settings );
+            bind( ScreenshotSaver.class ).to( ScreenshotSaverImpl.class );
+            bind( TestContext.class ).to( TestContextImpl.class );
+            bind( HttpUrl.class ).toInstance( settings.getUrl() );
+            bind( TestName.class ).toInstance( name );
+            bind( Path.class ).annotatedWith( TestResultDir.class ).toInstance( testResultsDir );
+         }
+      } );
+      return Guice.createInjector( modules );
+   }
+
+   /**
+    * TODO need to handle when the directory already exists or it is a retry, or multiple web
+    * drivers.
+    */
+   private Path createTestResultsDir( JeleniumSettings jelSettings, TestName testName ) {
+      return jelSettings.getResultsDir().resolve( testName.getFullName() ).toAbsolutePath();
    }
 
    private void finish() {
@@ -128,39 +168,9 @@ final class TestRunImpl implements JeleniumTestRun {
       log.info( "\nStarting Test: %s", name );
 
       try {
-         final List<Module> modules = new ArrayList<>();
-
-         for ( GuiceModule guiceModAnnotation : testClass.getDeclaredAnnotationsByType( GuiceModule.class ) ) {
-            try {
-               modules.add( guiceModAnnotation.value().newInstance() );
-            } catch ( InstantiationException | IllegalAccessException ex ) {
-               ex.printStackTrace();
-            }
-         }
-
          this.webDriver = of( remoteWebDriver );
-
-         modules.add( new AbstractModule() {
-
-            @Override
-            protected void configure() {
-               bind( testClass ).in( Singleton.class );
-               bind( WebDriver.class ).toInstance( webDriver.get() );
-               bind( RemoteWebDriver.class ).toInstance( webDriver.get() );
-               bind( TestLog.class ).toInstance( log );
-               bind( JeleniumSettings.class ).toInstance( settings );
-               bind( ScreenshotSaver.class ).to( ScreenshotSaverImpl.class );
-               bind( TestContext.class ).to( TestContextImpl.class );
-               bind( HttpUrl.class ).toInstance( settings.getUrl() );
-               bind( TestName.class ).toInstance( name );
-               bind( Path.class ).annotatedWith( TestResultDir.class )
-                                 .toInstance( settings.getResultsDir()
-                                                      .resolve( name.getFullName() )
-                                                      .toAbsolutePath() );
-            }
-         } );
-
-         this.injector = of( Guice.createInjector( modules ) );
+         // Web driver must be set before creating injector.
+         this.injector = of( createGuiceInjector() );
          this.testInstance = of( injector.get().getInstance( testClass ) );
 
          final Options manage = this.webDriver.get().manage();
@@ -172,8 +182,7 @@ final class TestRunImpl implements JeleniumTestRun {
       } catch ( Exception ex ) {
          if ( !this.injector.isPresent() ) {
             this.result = TestResult.ERROR;
-            log.error( "Failed to create guice injector",
-                       new IllegalStateException( "Failed to create guice injector" ) );
+            log.error( "Failed to create guice injector", ex );
          } else if ( !this.testInstance.isPresent() ) {
             this.result = TestResult.ERROR;
             log.error( "Failed to instantiate test class " + testClass.getName(),

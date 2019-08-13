@@ -1,6 +1,5 @@
 package net.ghue.jelenium.api.action;
 
-import java.util.function.Supplier;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public interface ActionFactory {
@@ -9,5 +8,5 @@ public interface ActionFactory {
 
    <O> ActionBuilder<O> start( ActionStep<RemoteWebDriver, O> firstAction );
 
-   <O> ActionBuilder<O> start( Supplier<O> firstAction );
+   <O> ActionBuilder<O> start( ThrowableAction<O> firstAction );
 }

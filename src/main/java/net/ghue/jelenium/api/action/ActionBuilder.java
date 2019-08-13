@@ -1,6 +1,7 @@
 package net.ghue.jelenium.api.action;
 
 import java.time.Duration;
+import javax.annotation.Nullable;
 
 public interface ActionBuilder<I> {
 
@@ -31,13 +32,17 @@ public interface ActionBuilder<I> {
 
    Duration getRetryTimeout();
 
+   ActionBuilder<I> withRetry( RetryableAction annotation );
+
    /**
     * @param delay How long to pause after a failure before trying again.
+    * @return self.
     */
-   void setRetryDelay( Duration delay );
+   ActionBuilder<I> withRetryDelay( @Nullable Duration delay );
 
    /**
     * @param timeout How long to keep retrying the action if it fails.
+    * @return self.
     */
-   void setRetryTimeout( Duration timeout );
+   ActionBuilder<I> withRetryTimeout( @Nullable Duration timeout );
 }

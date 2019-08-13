@@ -1,12 +1,12 @@
 package net.ghue.jelenium.impl.action;
 
-import java.util.function.Supplier;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.action.ActionBuilder;
 import net.ghue.jelenium.api.action.ActionFactory;
 import net.ghue.jelenium.api.action.ActionStep;
 import net.ghue.jelenium.api.action.SimpleAction;
+import net.ghue.jelenium.api.action.ThrowableAction;
 
 public final class ActionFactoryImpl implements ActionFactory {
 
@@ -30,8 +30,8 @@ public final class ActionFactoryImpl implements ActionFactory {
    }
 
    @Override
-   public <O> ActionBuilder<O> start( Supplier<O> action ) {
-      return new ActionBuilderImpl<>( action, this.testContext );
+   public <O> ActionBuilder<O> start( ThrowableAction<O> firstAction ) {
+      return new ActionBuilderImpl<>( firstAction.toSupplier(), this.testContext );
    }
 
 }

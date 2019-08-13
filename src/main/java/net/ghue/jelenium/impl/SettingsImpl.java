@@ -58,7 +58,7 @@ final class SettingsImpl implements JeleniumSettings {
       }
       this.filter = nullToEmpty( args.get( KEY_FILTER ) ).toLowerCase( Locale.US );
       this.retryTimeout = findDuration( rawArgs, KEY_RETRY_TIMEOUT, DEFAULT_RETRY_TIMEOUT );
-      this.retryDelay = findDuration( rawArgs, KEY_RETRY_DELAY, Duration.ofSeconds( 1 ) );
+      this.retryDelay = findDuration( rawArgs, KEY_RETRY_DELAY, DEFAULT_RETRY_DELAY );
    }
 
    private HttpUrl defaultUrl() {

@@ -1,20 +1,24 @@
 package net.ghue.jelenium.impl.action;
 
 import java.time.Duration;
+import java.util.Objects;
 import java.util.function.Supplier;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.action.Action;
 import net.ghue.jelenium.api.action.ActionBuilder;
 import net.ghue.jelenium.api.action.ActionStep;
+import net.ghue.jelenium.api.action.RetryableAction;
 import net.ghue.jelenium.api.action.SimpleAction;
 
 final class ActionBuilderImpl<I> implements ActionBuilder<I> {
 
    Supplier<I> action;
 
-   Duration retryDelay = Duration.ofSeconds( 1 );
+   Duration retryDelay = Duration.ZERO;
 
-   Duration retryTimeout = Duration.ofSeconds( 10 );
+   Duration retryTimeout = Duration.ZERO;
 
    final TestContext testContext;
 
@@ -39,7 +43,10 @@ final class ActionBuilderImpl<I> implements ActionBuilder<I> {
 
    @Override
    public Action<I> build() {
-      return new ActionExecutor<>( this );
+      return new ActionExecutor<>( () -> action.get(),
+                                   this.retryDelay,
+                                   this.retryTimeout,
+                                   this.testContext );
    }
 
    @Override
@@ -64,13 +71,25 @@ final class ActionBuilderImpl<I> implements ActionBuilder<I> {
    }
 
    @Override
-   public void setRetryDelay( Duration delay ) {
-      this.retryDelay = delay;
+   @Nonnull
+   public ActionBuilder<I> withRetry( @Nullable RetryableAction annotation ) {
+      if ( annotation != null ) {
+         this.retryDelay = Duration.ofMillis( (long) ( annotation.retryDelaySec() * 1_000 ) );
+         this.retryTimeout = Duration.ofMillis( (long) ( annotation.retryTimeoutSec() * 1_000 ) );
+      }
+      return this;
    }
 
    @Override
-   public void setRetryTimeout( Duration timeout ) {
-      this.retryTimeout = timeout;
+   public ActionBuilderImpl<I> withRetryDelay( @Nullable Duration delay ) {
+      this.retryDelay = Objects.requireNonNull( delay );
+      return this;
+   }
+
+   @Override
+   public ActionBuilderImpl<I> withRetryTimeout( @Nullable Duration timeout ) {
+      this.retryTimeout = Objects.requireNonNull( timeout );
+      return this;
    }
 
 }

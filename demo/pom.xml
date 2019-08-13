@@ -67,7 +67,7 @@
 						<!--argument>hub=localhost</argument -->
 						<!-- Custom argument. -->
 						<argument>mykey=myvalue</argument>
-						<!--argument>filter=loading</argument-->
+						<argument>filter=automation</argument>
 					</arguments>
 				</configuration>
 			</plugin>

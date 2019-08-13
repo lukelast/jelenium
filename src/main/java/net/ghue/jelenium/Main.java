@@ -3,7 +3,7 @@ package net.ghue.jelenium;
 import java.util.Map;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
-import net.ghue.jelenium.impl.TestRunnerImpl;
+import net.ghue.jelenium.impl.JeleniumRunner;
 
 /**
  * <p>
@@ -24,7 +24,7 @@ public final class Main {
     */
    public static void main( @Nullable String[] args ) throws Exception {
       Map<String, String> parsedArgs = parseMainArgs( args );
-      final TestRunnerImpl runner = new TestRunnerImpl( parsedArgs );
+      final JeleniumRunner runner = new JeleniumRunner( parsedArgs );
       runner.run();
    }
 

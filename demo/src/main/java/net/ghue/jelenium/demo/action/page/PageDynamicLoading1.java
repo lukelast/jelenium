@@ -1,12 +1,14 @@
 package net.ghue.jelenium.demo.action.page;
 
+import java.time.Duration;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import net.ghue.jelenium.api.Page;
+import net.ghue.jelenium.api.action.RetryableAction;
 
-public final class PageDynamicLoading1 extends Page {
+public class PageDynamicLoading1 extends Page {
 
    WebElement blah;
 
@@ -28,8 +30,17 @@ public final class PageDynamicLoading1 extends Page {
                   .add( WebElement::getText )
                   .add( Assertions::assertThat )
                   .add( assertion -> assertion.containsIgnoringCase( "Hello World" ) )
+                  .withRetryDelay( Duration.ofSeconds( 1 ) )
+                  .withRetryTimeout( Duration.ofSeconds( 2 ) )
                   .buildSimple()
                   .execute();
+   }
+
+   @RetryableAction( retryDelaySec = .5, retryTimeoutSec = 2 )
+   public void verifyFinishUsingActionMethod() {
+      WebElement element = getDriver().findElement( By.cssSelector( "div#finish h4" ) );
+      String text = element.getText();
+      Assertions.assertThat( text ).containsIgnoringCase( "Hello World" );
    }
 
    public void verifyFinishUsingWait() {

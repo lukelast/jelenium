@@ -1,6 +1,7 @@
 package net.ghue.jelenium.impl;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 import javax.annotation.Nullable;
 import net.ghue.jelenium.api.TestLog;
 
@@ -9,7 +10,11 @@ import net.ghue.jelenium.api.TestLog;
  * 
  * @author Luke Last
  */
-final class StandardOutLog implements TestLog {
+final class TestLogImpl implements TestLog {
+
+   public TestLogImpl( Path testResultsDir ) {
+
+   }
 
    @Override
    public void debug( String message, Object... args ) {

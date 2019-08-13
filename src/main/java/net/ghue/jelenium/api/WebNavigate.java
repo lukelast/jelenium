@@ -1,7 +1,9 @@
 package net.ghue.jelenium.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Objects;
 import java.util.function.Consumer;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import org.openqa.selenium.WebDriver;
 import net.ghue.jelenium.api.HttpUrl.Builder;
@@ -50,7 +52,8 @@ public final class WebNavigate {
     *
     * @param destUrl a {@link net.ghue.jelenium.api.HttpUrl} object.
     */
-   public void to( HttpUrl destUrl ) {
+   public void to( @Nullable HttpUrl destUrl ) {
+      Objects.requireNonNull( destUrl );
       driver.navigate().to( destUrl.url() );
    }
 

@@ -16,14 +16,14 @@ import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
  *
  * @author Luke Last
  */
-public final class TestRunnerImpl {
+public final class JeleniumRunner {
 
    private final JeleniumSettings settings;
 
    /**
     * @param parsedArgs a {@link java.util.Map} object.
     */
-   public TestRunnerImpl( Map<String, String> parsedArgs ) {
+   public JeleniumRunner( Map<String, String> parsedArgs ) {
       this.settings = new SettingsImpl( parsedArgs );
    }
 
