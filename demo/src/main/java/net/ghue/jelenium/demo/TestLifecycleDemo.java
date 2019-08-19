@@ -2,7 +2,7 @@ package net.ghue.jelenium.demo;
 
 import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.TestContext;
-import net.ghue.jelenium.api.TestResult;
+import net.ghue.jelenium.api.TestResultState;
 
 /**
  * Demonstrate the available life cycle methods of a test run.
@@ -20,7 +20,7 @@ public final class TestLifecycleDemo implements JeleniumTest {
    }
 
    @Override
-   public void onFinish( TestContext context, TestResult result ) throws Exception {
+   public void onFinish( TestContext context, TestResultState result ) throws Exception {
       context.getLog().info( "Test Passed or Failed %s", result );
    }
 

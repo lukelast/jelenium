@@ -16,22 +16,30 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.matcher.Matchers;
-import net.ghue.jelenium.api.*;
+import net.ghue.jelenium.api.HttpUrl;
+import net.ghue.jelenium.api.JeleniumSettings;
+import net.ghue.jelenium.api.JeleniumTest;
+import net.ghue.jelenium.api.Page;
+import net.ghue.jelenium.api.ScreenshotSaver;
+import net.ghue.jelenium.api.TestContext;
+import net.ghue.jelenium.api.TestLog;
+import net.ghue.jelenium.api.TestName;
+import net.ghue.jelenium.api.TestResultState;
 import net.ghue.jelenium.api.action.RetryableAction;
 import net.ghue.jelenium.api.annotation.GuiceModule;
 import net.ghue.jelenium.api.annotation.TestResultDir;
 import net.ghue.jelenium.api.ex.SkipTestException;
 import net.ghue.jelenium.impl.action.ActionMethodInterceptor;
 
-final class TestRunImpl implements JeleniumTestRun {
+final class TestExecution {
 
    private Optional<Injector> injector = empty();
 
    private final TestLog log;
 
-   private final TestName name;
+   final TestName name;
 
-   private volatile TestResult result = TestResult.NOT_RUN;
+   volatile TestResultState result = TestResultState.NOT_RUN;
 
    private final JeleniumSettings settings;
 
@@ -52,20 +60,12 @@ final class TestRunImpl implements JeleniumTestRun {
     * @param webDriver a {@link org.openqa.selenium.WebDriver} object.
     * @param settings a {@link net.ghue.jelenium.api.JeleniumSettings} object.
     */
-   TestRunImpl( Class<? extends JeleniumTest> testClass, JeleniumSettings settings ) {
+   TestExecution( Class<? extends JeleniumTest> testClass, JeleniumSettings settings ) {
       this.testClass = requireNonNull( testClass );
       this.settings = requireNonNull( settings );
       this.name = new TestNameImpl( testClass );
       this.testResultsDir = createTestResultsDir( settings, name );
       this.log = new TestLogImpl( testResultsDir );
-   }
-
-   void checkIfSkip() {
-      if ( !settings.getFilter().isEmpty() &&
-           !name.getFullName().toLowerCase().contains( settings.getFilter() ) ) {
-         this.result = TestResult.SKIPPED;
-         log.info( "Skipping %s because it did not match filter", name );
-      }
    }
 
    private Injector createGuiceInjector() {
@@ -112,7 +112,7 @@ final class TestRunImpl implements JeleniumTestRun {
    private void finish() {
       this.testInstance.ifPresent( jt -> {
 
-         if ( this.result == TestResult.PASSED ) {
+         if ( this.result == TestResultState.PASSED ) {
             log.info( "Passed: %s", name );
             try {
                jt.onPass( getContext() );
@@ -121,7 +121,7 @@ final class TestRunImpl implements JeleniumTestRun {
             }
          }
 
-         if ( this.result == TestResult.FAILED ) {
+         if ( this.result == TestResultState.FAILED ) {
             log.warn( "Failed: %s", name );
             try {
                jt.onFail( getContext() );
@@ -146,24 +146,11 @@ final class TestRunImpl implements JeleniumTestRun {
                      .getInstance( TestContext.class );
    }
 
-   @Override
-   public TestName getName() {
-      return this.name;
-   }
-
-   @Override
-   public TestResult getResult() {
-      return requireNonNull( this.result );
-   }
-
-   boolean readyToRun() {
-      return this.result == TestResult.NOT_RUN;
-   }
-
    /**
     * Run the test.
+    * 
+    * @param remoteWebDriver driver.
     */
-   @Override
    public void run( RemoteWebDriver remoteWebDriver ) {
       log.info( "\nStarting Test: %s", name );
 
@@ -181,15 +168,15 @@ final class TestRunImpl implements JeleniumTestRun {
 
       } catch ( Exception ex ) {
          if ( !this.injector.isPresent() ) {
-            this.result = TestResult.ERROR;
+            this.result = TestResultState.ERROR;
             log.error( "Failed to create guice injector", ex );
          } else if ( !this.testInstance.isPresent() ) {
-            this.result = TestResult.ERROR;
+            this.result = TestResultState.ERROR;
             log.error( "Failed to instantiate test class " + testClass.getName(),
                        new IllegalStateException( "Failed to instantiate " + testClass, ex ) );
          } else {
             log.error( "", ex );
-            this.result = TestResult.FAILED;
+            this.result = TestResultState.FAILED;
          }
       }
 
@@ -198,7 +185,7 @@ final class TestRunImpl implements JeleniumTestRun {
       this.finish();
    }
 
-   private TestResult runTest( JeleniumTest test ) {
+   private TestResultState runTest( JeleniumTest test ) {
       try {
 
          if ( test.skipTest() ) {
@@ -213,7 +200,7 @@ final class TestRunImpl implements JeleniumTestRun {
          for ( int attempt = 1; attempt <= attempts; attempt++ ) {
             try {
                test.run( getContext() );
-               return TestResult.PASSED;
+               return TestResultState.PASSED;
             } catch ( SkipTestException ex ) {
                throw ex;
             } catch ( Exception ex ) {
@@ -225,12 +212,12 @@ final class TestRunImpl implements JeleniumTestRun {
       } catch ( SkipTestException ex ) {
 
          log.info( "Skipping test: %s because %s", name, ex.getMessage() );
-         return TestResult.SKIPPED;
+         return TestResultState.SKIPPED;
 
       } catch ( Throwable ex ) {
 
          log.error( "", ex );
-         return TestResult.FAILED;
+         return TestResultState.FAILED;
       }
    }
 

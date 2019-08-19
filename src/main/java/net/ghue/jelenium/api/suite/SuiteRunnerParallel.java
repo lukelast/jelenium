@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import net.ghue.jelenium.api.JeleniumTestRun;
+import net.ghue.jelenium.api.TestManager;
 
 public abstract class SuiteRunnerParallel extends SuiteRunnerBase {
 
@@ -16,9 +16,9 @@ public abstract class SuiteRunnerParallel extends SuiteRunnerBase {
    }
 
    @Override
-   public void runTests( Collection<? extends JeleniumTestRun> tests ) throws Exception {
+   public void runTests( Collection<TestManager> tests ) throws Exception {
       ExecutorService exec = Executors.newFixedThreadPool( this.threads );
-      for ( JeleniumTestRun test : tests ) {
+      for ( TestManager test : tests ) {
          exec.execute( () -> {
             final RemoteWebDriver webDriver = this.createWebDriver();
             test.run( webDriver );

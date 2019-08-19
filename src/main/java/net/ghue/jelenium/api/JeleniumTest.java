@@ -59,7 +59,7 @@ public interface JeleniumTest {
     * @param result The final result of the test.
     * @throws Exception If error occurs.
     */
-   default void onFinish( TestContext context, TestResult result ) throws Exception {}
+   default void onFinish( TestContext context, TestResultState result ) throws Exception {}
 
    /**
     * Life-cycle event run after test execution if the test passed.
@@ -72,7 +72,7 @@ public interface JeleniumTest {
    /**
     * Beta.
     * 
-    * @return The desired number of test retries.
+    * @return The desired number of test retries. A value less than 0 means use the global default.
     */
    default int retries() {
       return -1;

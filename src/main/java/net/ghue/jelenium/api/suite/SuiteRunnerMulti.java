@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import net.ghue.jelenium.api.JeleniumTestRun;
+import net.ghue.jelenium.api.TestManager;
 
 public abstract class SuiteRunnerMulti extends SuiteRunnerBase {
 
@@ -23,7 +23,7 @@ public abstract class SuiteRunnerMulti extends SuiteRunnerBase {
    }
 
    @Override
-   public void runTests( Collection<? extends JeleniumTestRun> tests ) throws Exception {
+   public void runTests( Collection<TestManager> tests ) throws Exception {
       ExecutorService exec = Executors.newFixedThreadPool( this.threads );
 
       for ( JeleniumSuiteRunner runner : subRunners ) {

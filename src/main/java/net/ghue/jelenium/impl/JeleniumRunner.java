@@ -1,6 +1,7 @@
 package net.ghue.jelenium.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -8,7 +9,9 @@ import java.util.stream.Collectors;
 import com.google.common.collect.ImmutableList;
 import net.ghue.jelenium.api.JeleniumSettings;
 import net.ghue.jelenium.api.JeleniumTest;
-import net.ghue.jelenium.api.JeleniumTestRun;
+import net.ghue.jelenium.api.JeleniumTestResult;
+import net.ghue.jelenium.api.TestManager;
+import net.ghue.jelenium.api.TestResultsHandler;
 import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
 
 /**
@@ -24,21 +27,25 @@ public final class JeleniumRunner {
     * @param parsedArgs a {@link java.util.Map} object.
     */
    public JeleniumRunner( Map<String, String> parsedArgs ) {
-      this.settings = new SettingsImpl( parsedArgs );
+      this.settings = createSettings( parsedArgs );
+   }
+
+   private JeleniumSettings createSettings( Map<String, String> parsedArgs ) {
+      //TODO Allow adding of default values.
+      return new SettingsImpl( parsedArgs );
    }
 
    /**
     * Scan the class path to find all {@link JeleniumTest}'s to run and turn them in to
-    * {@link TestRunImpl}'s and filter.
+    * {@link TestExecution}'s and filter.
     */
-   private List<TestRunImpl> findTests() throws IOException {
+   private List<TestManagerImpl> findTests() throws IOException {
       final List<Class<? extends JeleniumTest>> testClasses = Scanner.findTests();
 
-      final List<TestRunImpl> tests =
-            testClasses.stream().map( tc -> new TestRunImpl( tc, settings ) ).filter( testRun -> {
-               testRun.checkIfSkip();
-               return testRun.readyToRun();
-            } ).collect( ImmutableList.toImmutableList() );
+      final List<TestManagerImpl> tests =
+            testClasses.stream()
+                       .map( tc -> new TestManagerImpl( tc, settings ) )
+                       .collect( ImmutableList.toImmutableList() );
       return tests;
    }
 
@@ -46,8 +53,8 @@ public final class JeleniumRunner {
     * Scan settings and the class path looking for the {@link JeleniumSuiteRunner} to use.
     */
    private JeleniumSuiteRunner findTestSuite() throws InstantiationException,
-                                             IllegalAccessException,
-                                             IOException {
+                                               IllegalAccessException,
+                                               IOException {
       final Optional<Class<JeleniumSuiteRunner>> suiteFromSettings = this.settings.getSuite();
 
       if ( suiteFromSettings.isPresent() ) {
@@ -77,20 +84,53 @@ public final class JeleniumRunner {
       // Print all settings for debugging.
       System.out.println( this.settings.toString() );
 
-      final List<TestRunImpl> tests = findTests();
+      final List<TestManagerImpl> testManagers = findTests();
       final JeleniumSuiteRunner suite = findTestSuite();
       suite.setSettings( this.settings );
 
       System.out.println( "Using Test Suite:  " + suite.getClass().getCanonicalName() );
       System.out.println();
       System.out.println( "The following tests were found:\n" +
-                          tests.stream()
-                               .map( JeleniumTestRun::getName )
-                               .map( str -> "  " + str )
-                               .collect( Collectors.joining( "\n" ) ) );
+                          testManagers.stream()
+                                      .map( TestManagerImpl::getName )
+                                      .map( str -> "  " + str )
+                                      .collect( Collectors.joining( "\n" ) ) );
       System.out.println();
 
-      suite.runTests( tests );
-      suite.processResults( tests );
+      final List<TestManager> testsToRun = new ArrayList<>();
+      final List<TestManager> skipped = new ArrayList<>();
+
+      for ( TestManagerImpl tm : testManagers ) {
+         if ( tm.isSkipped() ) {
+            skipped.add( tm );
+         } else {
+            testsToRun.add( tm );
+         }
+      }
+
+      if ( !skipped.isEmpty() ) {
+         System.out.println( "The following tests are being skipped because they did not match the filter: '" +
+                             settings.getFilter() +
+                             "'" );
+         for ( TestManager tm : skipped ) {
+            System.out.println( "  " + tm.getName().getFullName() );
+         }
+         System.out.println();
+      }
+
+      suite.runTests( testsToRun );
+
+      // Collect all results.
+      final List<JeleniumTestResult> testResults =
+            testsToRun.stream().flatMap( TestManager::getResults ).collect( Collectors.toList() );
+
+      // Add skipped tests to results.
+      skipped.stream()
+             .map( vm -> new TestResultSkipped( vm.getName() ) )
+             .forEach( testResults::add );
+
+      // TODO Allow adding/changing handlers.
+      final TestResultsHandler resultsHandler = new TestResultsHandlerStdOut();
+      resultsHandler.processResults( testResults );
    }
 }
