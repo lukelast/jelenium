@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import com.google.common.base.Strings;
 import net.ghue.jelenium.api.ScreenshotSaver;
 import net.ghue.jelenium.api.TestLog;
@@ -22,18 +22,25 @@ import net.ghue.jelenium.api.annotation.TestResultDir;
  */
 final class ScreenshotSaverImpl implements ScreenshotSaver {
 
-   @Inject
-   private RemoteWebDriver driver;
+   private final Clock clock;
+
+   private final TakesScreenshot driver;
+
+   private final TestLog log;
+
+   private final Path resultsDir;
+
+   private final TestName testName;
 
    @Inject
-   private TestLog log;
-
-   @Inject
-   @TestResultDir
-   private Path resultsDir;
-
-   @Inject
-   private TestName testName;
+   ScreenshotSaverImpl( TakesScreenshot driver, TestLog log, @TestResultDir Path resultsDir,
+                        TestName testName, Clock clock ) {
+      this.driver = driver;
+      this.log = log;
+      this.resultsDir = resultsDir;
+      this.testName = testName;
+      this.clock = clock;
+   }
 
    /**
     * Make sure input text is valid for file names.
@@ -76,7 +83,7 @@ final class ScreenshotSaverImpl implements ScreenshotSaver {
       appendFilteredText( filenameBuilder, name, 50 );
       filenameBuilder.append( '-' );
       appendFilteredText( filenameBuilder,
-                          LocalDateTime.now( ZoneOffset.UTC )
+                          LocalDateTime.now( clock )
                                        .format( DateTimeFormatter.ISO_LOCAL_DATE_TIME ),
                           40 );
       filenameBuilder.append( ".png" );

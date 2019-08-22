@@ -3,11 +3,13 @@ package net.ghue.jelenium.impl;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.*;
 import java.nio.file.Path;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Singleton;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.Options;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -86,9 +88,11 @@ final class TestExecution {
             bindInterceptor( Matchers.subclassesOf( Page.class ),
                              Matchers.annotatedWith( RetryableAction.class ),
                              new ActionMethodInterceptor( getProvider( TestContext.class ) ) );
+            bind( Clock.class ).toInstance( Clock.systemUTC() );
             bind( testClass ).in( Singleton.class );
-            bind( WebDriver.class ).toInstance( webDriver.get() );
             bind( RemoteWebDriver.class ).toInstance( webDriver.get() );
+            bind( WebDriver.class ).to( RemoteWebDriver.class );
+            bind( TakesScreenshot.class ).to( RemoteWebDriver.class );
             bind( TestLog.class ).toInstance( log );
             bind( JeleniumSettings.class ).toInstance( settings );
             bind( ScreenshotSaver.class ).to( ScreenshotSaverImpl.class );
