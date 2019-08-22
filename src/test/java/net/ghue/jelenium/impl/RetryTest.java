@@ -58,18 +58,6 @@ public class RetryTest {
    }
 
    @Test
-   public void noRetries() throws Exception {
-      TestManagerImpl manager =
-            new TestManagerImpl( NoRetries.class, new SettingsImpl( ImmutableMap.of() ) );
-
-      manager.run( mock( RemoteWebDriver.class ) );
-
-      Assertions.assertThat( manager.getResults().map( JeleniumTestResult::getResult ) )
-                .hasSize( 1 )
-                .containsExactly( TestResultState.FAILED );
-   }
-
-   @Test
    public void fail1ThenPass() throws Exception {
       JeleniumSettings settings = new SettingsImpl( ImmutableMap.of() );
       TestManagerImpl manager = new TestManagerImpl( Fail1ThenPassTest.class, settings );
@@ -79,6 +67,18 @@ public class RetryTest {
       Assertions.assertThat( manager.getResults().map( JeleniumTestResult::getResult ) )
                 .hasSize( 2 )
                 .containsExactly( TestResultState.FAILED, TestResultState.PASSED );
+   }
+
+   @Test
+   public void noRetries() throws Exception {
+      TestManagerImpl manager =
+            new TestManagerImpl( NoRetries.class, new SettingsImpl( ImmutableMap.of() ) );
+
+      manager.run( mock( RemoteWebDriver.class ) );
+
+      Assertions.assertThat( manager.getResults().map( JeleniumTestResult::getResult ) )
+                .hasSize( 1 )
+                .containsExactly( TestResultState.FAILED );
    }
 
 }

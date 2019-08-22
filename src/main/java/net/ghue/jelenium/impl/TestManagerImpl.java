@@ -12,26 +12,18 @@ import net.ghue.jelenium.api.TestName;
 
 public class TestManagerImpl implements TestManager {
 
-   private final JeleniumSettings settings;
-
-   private final Class<? extends JeleniumTest> testClass;
-
    private final TestNameImpl name;
 
    private final Collection<JeleniumTestResult> results = new ConcurrentLinkedQueue<>();
+
+   private final JeleniumSettings settings;
+
+   private final Class<? extends JeleniumTest> testClass;
 
    TestManagerImpl( Class<? extends JeleniumTest> testClass, JeleniumSettings settings ) {
       this.testClass = testClass;
       this.settings = settings;
       this.name = new TestNameImpl( testClass );
-   }
-
-   boolean isSkipped() {
-      if ( !settings.getFilter().isEmpty() &&
-           !name.getFullName().toLowerCase().contains( settings.getFilter() ) ) {
-         return true;
-      }
-      return false;
    }
 
    @Override
@@ -42,6 +34,14 @@ public class TestManagerImpl implements TestManager {
    @Override
    public Stream<JeleniumTestResult> getResults() {
       return this.results.stream();
+   }
+
+   boolean isSkipped() {
+      if ( !settings.getFilter().isEmpty() &&
+           !name.getFullName().toLowerCase().contains( settings.getFilter() ) ) {
+         return true;
+      }
+      return false;
    }
 
    @Override

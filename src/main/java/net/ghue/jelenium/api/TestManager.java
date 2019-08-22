@@ -5,10 +5,10 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 public interface TestManager {
 
-   JeleniumTestResult run( RemoteWebDriver remoteWebDriver );
+   TestName getName();
 
    Stream<JeleniumTestResult> getResults();
 
-   TestName getName();
+   JeleniumTestResult run( RemoteWebDriver remoteWebDriver );
 
 }

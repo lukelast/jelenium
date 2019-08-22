@@ -13,12 +13,12 @@ public class TestResultSkipped implements JeleniumTestResult {
    }
 
    @Override
-   public TestResultState getResult() {
-      return TestResultState.SKIPPED;
+   public TestName getName() {
+      return this.name;
    }
 
    @Override
-   public TestName getName() {
-      return this.name;
+   public TestResultState getResult() {
+      return TestResultState.SKIPPED;
    }
 }

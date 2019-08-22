@@ -6,9 +6,9 @@ import net.ghue.jelenium.api.TestResultState;
 
 class TestResultImpl implements JeleniumTestResult {
 
-   private final TestResultState result;
-
    private final TestName name;
+
+   private final TestResultState result;
 
    public TestResultImpl( TestExecution test ) {
       this.result = test.result;
@@ -16,12 +16,12 @@ class TestResultImpl implements JeleniumTestResult {
    }
 
    @Override
-   public TestResultState getResult() {
-      return this.result;
+   public TestName getName() {
+      return this.name;
    }
 
    @Override
-   public TestName getName() {
-      return this.name;
+   public TestResultState getResult() {
+      return this.result;
    }
 }
