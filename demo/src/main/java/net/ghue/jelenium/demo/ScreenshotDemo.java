@@ -8,9 +8,12 @@ public final class ScreenshotDemo implements JeleniumTest {
    @Override
    public void run( TestContext context ) throws Exception {
 
-      context.getLog().info( "Root results directory: %s", context.getSettings().getResultsDir() );
+      context.log()
+             .info()
+             .msg( "Root results directory: %s", context.getSettings().getResultsDir() )
+             .log();
 
-      context.getLog().info( "Test results directory: %s", context.getResultDir() );
+      context.log().info().msg( "Test results directory: %s", context.getResultDir() ).log();
 
       context.getWebNavigate().toPrimaryUrl();
 

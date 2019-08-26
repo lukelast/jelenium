@@ -18,7 +18,7 @@ public final class GuiceDemoTest implements JeleniumTest {
 
    @Override
    public void run( TestContext context ) throws Exception {
-      context.getLog().info( "Stuff: %s", myService.getStuff() );
+      context.log().info().msg( "Stuff: %s", myService.getStuff() ).log();
    }
 
 }

@@ -7,6 +7,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import net.ghue.jelenium.api.action.ActionFactory;
+import net.ghue.jelenium.api.log.TestLog;
 
 /**
  * Provides everything that a test needs to interact with the world.
@@ -16,13 +17,6 @@ import net.ghue.jelenium.api.action.ActionFactory;
 public interface TestContext {
 
    ActionFactory action();
-
-   /**
-    * Used for logging from a test.
-    *
-    * @return a {@link net.ghue.jelenium.api.TestLog} object.
-    */
-   TestLog getLog();
 
    /**
     * @return The name of the test.
@@ -69,6 +63,13 @@ public interface TestContext {
    WebNavigate getWebNavigate();
 
    /**
+    * Used for logging from a test.
+    *
+    * @return a {@link net.ghue.jelenium.api.log.TestLog} object.
+    */
+   TestLog log();
+
+   /**
     * Fixed pauses are bad, don't do it. But if you must, at least this will log it.
     * 
     * @param pauseDuration Time to sleep.
@@ -80,7 +81,7 @@ public interface TestContext {
       if ( pauseDuration.isNegative() ) {
          throw new IllegalArgumentException( "Pause duration must be positive" );
       }
-      getLog().info( "Pausing for %s", pauseDuration );
+      log().info().msg( "Pausing for %s", pauseDuration ).log();
       try {
          Thread.sleep( pauseDuration.toMillis() );
       } catch ( InterruptedException iex ) {

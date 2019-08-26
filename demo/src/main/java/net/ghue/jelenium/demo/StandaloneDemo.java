@@ -32,18 +32,18 @@ public final class StandaloneDemo implements JeleniumTest {
    @Override
    public void run( TestContext context ) throws Exception {
 
-      context.getLog().info( "hi" );
+      context.log().info().msg( "hi" ).log();
 
       // How to fetch an argument passed in via the MAVEN POM.
-      context.getLog().info( "Value of my arg: %s", context.getSettings().get( "mykey" ) );
+      context.log().info().msg( "Value of my arg: %s", context.getSettings().get( "mykey" ) ).log();
 
       context.getWebNavigate().toPrimaryUrl();
 
       WebElement header = context.getWebDriver().findElement( By.tagName( "h1" ) );
 
-      context.getLog().info( "H1 tag text: %s", header.getText() );
+      context.log().info().msg( "H1 tag text: %s", header.getText() ).log();
 
-      context.getLog().info( "goodbye" );
+      context.log().info().msg( "goodbye" ).log();
    }
 
 }

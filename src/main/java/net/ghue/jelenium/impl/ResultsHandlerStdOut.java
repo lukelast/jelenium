@@ -9,7 +9,7 @@ import net.ghue.jelenium.api.TestResultsHandler;
 import net.ghue.jelenium.api.ex.TestErrorException;
 import net.ghue.jelenium.api.ex.TestFailedException;
 
-public class TestResultsHandlerStdOut implements TestResultsHandler {
+public class ResultsHandlerStdOut implements TestResultsHandler {
 
    @Override
    public void processResults( Collection<JeleniumTestResult> testResults ) {

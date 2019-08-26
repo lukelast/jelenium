@@ -1,8 +1,10 @@
 package net.ghue.jelenium;
 
-import java.util.Map;
+import java.util.Objects;
 import javax.annotation.Nullable;
-import com.google.common.collect.ImmutableMap;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import net.ghue.jelenium.impl.JeleniumGuiceModule;
 import net.ghue.jelenium.impl.JeleniumRunner;
 
 /**
@@ -23,26 +25,10 @@ public final class Main {
     * @throws java.lang.Exception if any.
     */
    public static void main( @Nullable String[] args ) throws Exception {
-      Map<String, String> parsedArgs = parseMainArgs( args );
-      final JeleniumRunner runner = new JeleniumRunner( parsedArgs );
-      runner.run();
-   }
+      Objects.requireNonNull( args );
 
-   /**
-    * Convert the arguments passed on the console to a key-value map. Each argument should be in the
-    * format "key=value".
-    */
-   static Map<String, String> parseMainArgs( @Nullable String[] args ) {
-      if ( ( args == null ) || ( args.length == 0 ) ) {
-         return ImmutableMap.of();
-      }
-      ImmutableMap.Builder<String, String> argBuilder = ImmutableMap.builder();
-      for ( String arg : args ) {
-         final int splitIndex = arg.indexOf( '=' );
-         if ( 0 < splitIndex ) {
-            argBuilder.put( arg.substring( 0, splitIndex ), arg.substring( splitIndex + 1 ) );
-         }
-      }
-      return argBuilder.build();
+      final Injector injector = Guice.createInjector( new JeleniumGuiceModule( args ) );
+      final JeleniumRunner jelenium = injector.getInstance( JeleniumRunner.class );
+      jelenium.run();
    }
 }

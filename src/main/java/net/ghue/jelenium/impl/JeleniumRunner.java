@@ -1,14 +1,11 @@
 package net.ghue.jelenium.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.PrintStream;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import com.google.common.collect.ImmutableList;
+import javax.inject.Inject;
+import javax.inject.Provider;
 import net.ghue.jelenium.api.JeleniumSettings;
-import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.JeleniumTestResult;
 import net.ghue.jelenium.api.TestManager;
 import net.ghue.jelenium.api.TestResultsHandler;
@@ -23,53 +20,23 @@ public final class JeleniumRunner {
 
    private final JeleniumSettings settings;
 
-   /**
-    * @param parsedArgs a {@link java.util.Map} object.
-    */
-   public JeleniumRunner( Map<String, String> parsedArgs ) {
-      this.settings = createSettings( parsedArgs );
-   }
+   private final Provider<JeleniumSuiteRunner> suiteRunnerProvider;
 
-   private JeleniumSettings createSettings( Map<String, String> parsedArgs ) {
-      //TODO Allow adding of default values.
-      return new SettingsImpl( parsedArgs );
-   }
+   private final Provider<List<TestResultsHandler>> resultsHandlersProvider;
 
-   /**
-    * Scan the class path to find all {@link JeleniumTest}'s to run and turn them in to
-    * {@link TestExecution}'s and filter.
-    */
-   private List<TestManagerImpl> findTests() throws IOException {
-      final List<Class<? extends JeleniumTest>> testClasses = Scanner.findTests();
+   private final Provider<TestFactory> testFactoryProvider;
 
-      final List<TestManagerImpl> tests =
-            testClasses.stream()
-                       .map( tc -> new TestManagerImpl( tc, settings ) )
-                       .collect( ImmutableList.toImmutableList() );
-      return tests;
-   }
+   private final PrintStream out;
 
-   /**
-    * Scan settings and the class path looking for the {@link JeleniumSuiteRunner} to use.
-    */
-   private JeleniumSuiteRunner findTestSuite() throws InstantiationException,
-                                               IllegalAccessException,
-                                               IOException {
-      final Optional<Class<JeleniumSuiteRunner>> suiteFromSettings = this.settings.getSuite();
-
-      if ( suiteFromSettings.isPresent() ) {
-         return suiteFromSettings.get().newInstance();
-      }
-
-      final List<Class<? extends JeleniumSuiteRunner>> suites = Scanner.findSuites();
-      if ( suites.isEmpty() ) {
-         return new DefaultTestSuite();
-      } else if ( suites.size() == 1 ) {
-         return suites.get( 0 ).newInstance();
-      } else {
-         //TODO find default using annotations.
-         return suites.get( 0 ).newInstance();
-      }
+   @Inject
+   JeleniumRunner( JeleniumSettings settings, Provider<JeleniumSuiteRunner> suiteRunnerProvider,
+                   Provider<List<TestResultsHandler>> resultsHandlersProvider,
+                   Provider<TestFactory> testFactoryProvider, PrintStream stdOut ) {
+      this.settings = settings;
+      this.suiteRunnerProvider = suiteRunnerProvider;
+      this.resultsHandlersProvider = resultsHandlersProvider;
+      this.testFactoryProvider = testFactoryProvider;
+      this.out = stdOut;
    }
 
    /**
@@ -79,58 +46,54 @@ public final class JeleniumRunner {
     */
    public void run() throws Exception {
 
-      System.out.println();
-      System.out.println( "##### STARTING JELENIUM #####" );
+      out.println();
+      out.println( "##### STARTING JELENIUM #####" );
       // Print all settings for debugging.
-      System.out.println( this.settings.toString() );
+      out.println( this.settings.toString() );
 
-      final List<TestManagerImpl> testManagers = findTests();
-      final JeleniumSuiteRunner suite = findTestSuite();
-      suite.setSettings( this.settings );
+      final JeleniumSuiteRunner suite = this.suiteRunnerProvider.get();
 
-      System.out.println( "Using Test Suite:  " + suite.getClass().getCanonicalName() );
-      System.out.println();
-      System.out.println( "The following tests were found:\n" +
-                          testManagers.stream()
-                                      .map( TestManagerImpl::getName )
-                                      .map( str -> "  " + str )
-                                      .collect( Collectors.joining( "\n" ) ) );
-      System.out.println();
+      out.println( "Using Test Suite:  " + suite.getClass().getCanonicalName() );
+      out.println();
 
-      final List<TestManager> testsToRun = new ArrayList<>();
-      final List<TestManager> skipped = new ArrayList<>();
+      final TestFactory testFactory = this.testFactoryProvider.get();
 
-      for ( TestManagerImpl tm : testManagers ) {
-         if ( tm.isSkipped() ) {
-            skipped.add( tm );
-         } else {
-            testsToRun.add( tm );
+      if ( !testFactory.getSkippedTests().isEmpty() ) {
+         out.println( "The following tests are being skipped because they did not match the filter: '" +
+                      settings.getFilter() +
+                      "'" );
+         for ( TestManager tm : testFactory.getSkippedTests() ) {
+            out.println( "  " + tm.getName().getFullName() );
          }
+         out.println();
       }
 
-      if ( !skipped.isEmpty() ) {
-         System.out.println( "The following tests are being skipped because they did not match the filter: '" +
-                             settings.getFilter() +
-                             "'" );
-         for ( TestManager tm : skipped ) {
-            System.out.println( "  " + tm.getName().getFullName() );
-         }
-         System.out.println();
-      }
+      out.println( "The following tests will be run:\n" +
+                   testFactory.getTestsToRun()
+                              .stream()
+                              .map( TestManager::getName )
+                              .map( str -> "  " + str )
+                              .collect( Collectors.joining( "\n" ) ) );
+      out.println();
 
-      suite.runTests( testsToRun );
+      suite.runTests( testFactory.getTestsToRun() );
 
       // Collect all results.
-      final List<JeleniumTestResult> testResults =
-            testsToRun.stream().flatMap( TestManager::getResults ).collect( Collectors.toList() );
+      final List<JeleniumTestResult> testResults = testFactory.getTestsToRun()
+                                                              .stream()
+                                                              .flatMap( TestManager::getResults )
+                                                              .collect( Collectors.toList() );
 
       // Add skipped tests to results.
-      skipped.stream()
-             .map( vm -> new TestResultSkipped( vm.getName() ) )
-             .forEach( testResults::add );
+      testFactory.getSkippedTests()
+                 .stream()
+                 .map( vm -> new TestResultSkipped( vm.getName() ) )
+                 .forEach( testResults::add );
 
-      // TODO Allow adding/changing handlers.
-      final TestResultsHandler resultsHandler = new TestResultsHandlerStdOut();
-      resultsHandler.processResults( testResults );
+      final List<TestResultsHandler> resultsHandlers = this.resultsHandlersProvider.get();
+      for ( TestResultsHandler handler : resultsHandlers ) {
+         handler.processResults( testResults );
+      }
+
    }
 }

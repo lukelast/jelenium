@@ -17,6 +17,7 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import net.ghue.jelenium.api.TestName;
 import net.ghue.jelenium.demo.SampleTest;
+import net.ghue.jelenium.log.TestLogMock;
 
 class ScreenshotSaverImplTest {
 

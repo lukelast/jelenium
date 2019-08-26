@@ -4,8 +4,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import com.google.common.collect.ImmutableMap;
-import net.ghue.jelenium.api.JeleniumSettings;
 import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.JeleniumTestResult;
 import net.ghue.jelenium.api.TestContext;
@@ -59,8 +57,7 @@ public class RetryTest {
 
    @Test
    public void fail1ThenPass() throws Exception {
-      JeleniumSettings settings = new SettingsImpl( ImmutableMap.of() );
-      TestManagerImpl manager = new TestManagerImpl( Fail1ThenPassTest.class, settings );
+      TestManagerImpl manager = new TestManagerImpl( Fail1ThenPassTest.class, new SettingsMock() );
 
       manager.run( mock( RemoteWebDriver.class ) );
 
@@ -71,8 +68,7 @@ public class RetryTest {
 
    @Test
    public void noRetries() throws Exception {
-      TestManagerImpl manager =
-            new TestManagerImpl( NoRetries.class, new SettingsImpl( ImmutableMap.of() ) );
+      TestManagerImpl manager = new TestManagerImpl( NoRetries.class, new SettingsMock() );
 
       manager.run( mock( RemoteWebDriver.class ) );
 

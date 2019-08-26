@@ -51,7 +51,7 @@ final class ActionExecutor<R> implements Action<R> {
                } catch ( InterruptedException iex ) {
                   throw new RuntimeException( iex );
                }
-               this.testContext.getLog().debug( "Retrying Action" );
+               this.testContext.log().debug().msg( "Retrying Action" ).log();
             }
          }
       }

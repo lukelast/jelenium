@@ -7,11 +7,11 @@ import net.ghue.jelenium.api.HttpUrl;
 import net.ghue.jelenium.api.JeleniumSettings;
 import net.ghue.jelenium.api.ScreenshotSaver;
 import net.ghue.jelenium.api.TestContext;
-import net.ghue.jelenium.api.TestLog;
 import net.ghue.jelenium.api.TestName;
 import net.ghue.jelenium.api.WebNavigate;
 import net.ghue.jelenium.api.action.ActionFactory;
 import net.ghue.jelenium.api.annotation.TestResultDir;
+import net.ghue.jelenium.api.log.TestLog;
 import net.ghue.jelenium.impl.action.ActionFactoryImpl;
 
 /**
@@ -54,11 +54,6 @@ final class TestContextImpl implements TestContext {
    }
 
    @Override
-   public TestLog getLog() {
-      return log;
-   }
-
-   @Override
    public TestName getName() {
       return this.name;
    }
@@ -91,5 +86,10 @@ final class TestContextImpl implements TestContext {
    @Override
    public WebNavigate getWebNavigate() {
       return this.webNavigate;
+   }
+
+   @Override
+   public TestLog log() {
+      return log;
    }
 }

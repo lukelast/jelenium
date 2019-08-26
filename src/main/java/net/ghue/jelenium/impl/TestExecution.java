@@ -2,8 +2,10 @@ package net.ghue.jelenium.impl;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.*;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Clock;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,26 +26,32 @@ import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.Page;
 import net.ghue.jelenium.api.ScreenshotSaver;
 import net.ghue.jelenium.api.TestContext;
-import net.ghue.jelenium.api.TestLog;
 import net.ghue.jelenium.api.TestName;
 import net.ghue.jelenium.api.TestResultState;
 import net.ghue.jelenium.api.action.RetryableAction;
 import net.ghue.jelenium.api.annotation.GuiceModule;
 import net.ghue.jelenium.api.annotation.TestResultDir;
 import net.ghue.jelenium.api.ex.SkipTestException;
+import net.ghue.jelenium.api.log.TestLog;
 import net.ghue.jelenium.impl.action.ActionMethodInterceptor;
+import net.ghue.jelenium.impl.log.LogHandlerFile;
+import net.ghue.jelenium.impl.log.LogHandlerStdOut;
+import net.ghue.jelenium.impl.log.LogLevel;
+import net.ghue.jelenium.impl.log.TestLogImpl;
 
 final class TestExecution {
 
    private Optional<Injector> injector = empty();
 
-   private final TestLog log;
+   private final TestLogImpl log;
 
    final TestName name;
 
    volatile TestResultState result = TestResultState.NOT_RUN;
 
    private final JeleniumSettings settings;
+
+   private final Instant startTime = Instant.now();
 
    private final Class<? extends JeleniumTest> testClass;
 
@@ -67,7 +75,14 @@ final class TestExecution {
       this.settings = requireNonNull( settings );
       this.name = new TestNameImpl( testClass );
       this.testResultsDir = createTestResultsDir( settings, name );
-      this.log = new TestLogImpl( testResultsDir );
+      this.log = new TestLogImpl( this.startTime,
+                                  new LogHandlerStdOut( LogLevel.DEBUG ),
+                                  new LogHandlerFile( LogLevel.DEBUG,
+                                                      testResultsDir.resolve( name.getShortName() +
+                                                                              "-debug.log" ) ),
+                                  new LogHandlerFile( LogLevel.WARN,
+                                                      testResultsDir.resolve( name.getShortName() +
+                                                                              "-warn.log" ) ) );
    }
 
    private Injector createGuiceInjector() {
@@ -114,35 +129,40 @@ final class TestExecution {
    }
 
    private void finish() {
-      this.testInstance.ifPresent( jt -> {
+      final JeleniumTest jt = this.testInstance.get();
 
-         if ( this.result == TestResultState.PASSED ) {
-            log.info( "Passed: %s", name );
-            try {
-               jt.onPass( getContext() );
-            } catch ( Throwable ex ) {
-               log.error( "", ex );
-            }
-         }
-
-         if ( this.result == TestResultState.FAILED ) {
-            log.warn( "Failed: %s", name );
-            try {
-               jt.onFail( getContext() );
-               // Take a screenshot at the end on failure.
-               getContext().getScreenshotSaver().saveScreenshot( "failed" );
-            } catch ( Throwable ex ) {
-               log.error( "", ex );
-            }
-         }
-
+      if ( this.result == TestResultState.PASSED ) {
+         log.info().msg( "Passed: %s", name ).log();
          try {
-            jt.onFinish( getContext(), this.result );
-         } catch ( Exception ex ) {
-            log.error( "", ex );
+            jt.onPass( getContext() );
+         } catch ( Throwable ex ) {
+            log.error().ex( ex ).log();
          }
+      }
 
-      } );
+      if ( this.result == TestResultState.FAILED ) {
+         log.warn().msg( "Failed: %s", name ).log();
+         try {
+            jt.onFail( getContext() );
+            // Take a screenshot at the end on failure.
+            getContext().getScreenshotSaver().saveScreenshot( "failed" );
+         } catch ( Throwable ex ) {
+            log.error().ex( ex ).log();
+         }
+      }
+
+      try {
+         jt.onFinish( getContext(), this.result );
+      } catch ( Exception ex ) {
+         log.error().ex( ex ).log();
+      }
+
+      // Close log files.
+      try {
+         this.log.close();
+      } catch ( IOException ex ) {
+         throw new RuntimeException( ex );
+      }
    }
 
    private TestContext getContext() {
@@ -156,7 +176,7 @@ final class TestExecution {
     * @param remoteWebDriver driver.
     */
    public void run( RemoteWebDriver remoteWebDriver ) {
-      log.info( "\nStarting Test: %s", name );
+      log.info().msg( "Starting Test: %s", name ).log();
 
       try {
          this.webDriver = of( remoteWebDriver );
@@ -173,18 +193,20 @@ final class TestExecution {
       } catch ( Exception ex ) {
          if ( !this.injector.isPresent() ) {
             this.result = TestResultState.ERROR;
-            log.error( "Failed to create guice injector", ex );
+            log.error().msg( "Failed to create guice injector" ).ex( ex ).log();
          } else if ( !this.testInstance.isPresent() ) {
             this.result = TestResultState.ERROR;
-            log.error( "Failed to instantiate test class " + testClass.getName(),
-                       new IllegalStateException( "Failed to instantiate " + testClass, ex ) );
+            log.error()
+               .msg( "Failed to instantiate test class %s", testClass.getName() )
+               .ex( ex )
+               .log();
          } else {
-            log.error( "", ex );
+            log.error().ex( ex ).log();
             this.result = TestResultState.FAILED;
          }
       }
 
-      this.testInstance.map( this::runTest ).ifPresent( tr -> this.result = tr );
+      this.result = this.runTest( this.testInstance.get() );
 
       this.finish();
    }
@@ -215,14 +237,12 @@ final class TestExecution {
 
       } catch ( SkipTestException ex ) {
 
-         log.info( "Skipping test: %s because %s", name, ex.getMessage() );
+         log.info().msg( "Skipping test: %s because %s", name, ex.getMessage() ).log();
          return TestResultState.SKIPPED;
 
       } catch ( Throwable ex ) {
-
-         log.error( "", ex );
+         log.error().ex( ex ).log();
          return TestResultState.FAILED;
       }
    }
-
 }

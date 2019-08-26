@@ -50,8 +50,8 @@ final class Scanner {
 
    static List<Class<? extends JeleniumSuiteRunner>> findSuites() throws IOException {
       return scanAndLoadClasses().filter( JeleniumSuiteRunner.class::isAssignableFrom )
-                         .map( cl -> cl.<JeleniumSuiteRunner> asSubclass( JeleniumSuiteRunner.class ) )
-                         .collect( ImmutableList.toImmutableList() );
+                                 .map( cl -> cl.<JeleniumSuiteRunner> asSubclass( JeleniumSuiteRunner.class ) )
+                                 .collect( ImmutableList.toImmutableList() );
    }
 
    /**
@@ -61,10 +61,14 @@ final class Scanner {
     * @return List of classes.
     * @throws java.io.IOException if any.
     */
-   static List<Class<? extends JeleniumTest>> findTests() throws IOException {
-      return scanAndLoadClasses().filter( JeleniumTest.class::isAssignableFrom )
-                         .map( cl -> cl.<JeleniumTest> asSubclass( JeleniumTest.class ) )
-                         .collect( ImmutableList.toImmutableList() );
+   static List<Class<? extends JeleniumTest>> findTests() {
+      try {
+         return scanAndLoadClasses().filter( JeleniumTest.class::isAssignableFrom )
+                                    .map( cl -> cl.<JeleniumTest> asSubclass( JeleniumTest.class ) )
+                                    .collect( ImmutableList.toImmutableList() );
+      } catch ( IOException ex ) {
+         throw new RuntimeException( ex );
+      }
    }
 
    private static Stream<Class<?>> load( ClassInfo ci ) {
