@@ -3,9 +3,8 @@ package net.ghue.jelenium.impl.log;
 import java.io.Closeable;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import net.ghue.jelenium.api.log.LogApi;
 import net.ghue.jelenium.api.log.TestLog;
@@ -17,16 +16,14 @@ import net.ghue.jelenium.api.log.TestLog;
  */
 public final class TestLogImpl implements TestLog, Closeable {
 
-   private final List<LogHandler> handlers = new ArrayList<>();
+   private final List<LogHandler> handlers;
 
    private LogApiImpl lastLogger;
 
    private final Instant startTime;
 
-   public TestLogImpl( Instant startTime, @Nullable LogHandler... handlers ) {
-      if ( handlers != null ) {
-         this.handlers.addAll( ImmutableList.copyOf( handlers ) );
-      }
+   public TestLogImpl( Instant startTime, Collection<LogHandler> handlers ) {
+      this.handlers = ImmutableList.copyOf( handlers );
       this.startTime = startTime;
    }
 

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.ghue.jelenium.api.log.LogApi;
+import net.ghue.jelenium.api.log.LogData;
 
 final class LogApiImpl implements LogApi {
 
@@ -77,6 +78,11 @@ final class LogApiImpl implements LogApi {
    @Override
    public LogApi msg( String message, Object... formatArgs ) {
       return msg( String.format( message, formatArgs ) );
+   }
+
+   @Override
+   public LogApi newline() {
+      return msg( "\n" );
    }
 
 }

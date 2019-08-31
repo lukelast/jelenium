@@ -4,21 +4,21 @@ import java.util.List;
 import javax.inject.Inject;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
-import net.ghue.jelenium.api.JeleniumSettings;
 import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.TestManager;
+import net.ghue.jelenium.api.config.JeleniumConfig;
 
 final class TestFactory {
 
-   private final JeleniumSettings settings;
-
-   private final List<TestManager> testsToRun;
+   private final JeleniumConfig config;
 
    private final List<TestManager> testsSkipped;
 
+   private final List<TestManager> testsToRun;
+
    @Inject
-   TestFactory( JeleniumSettings settings ) {
-      this.settings = settings;
+   TestFactory( JeleniumConfig config ) {
+      this.config = config;
 
       final List<TestManagerImpl> testManagers = findTests();
 
@@ -36,14 +36,6 @@ final class TestFactory {
       this.testsSkipped = skipped.build();
    }
 
-   public List<TestManager> getTestsToRun() {
-      return this.testsToRun;
-   }
-
-   public List<TestManager> getSkippedTests() {
-      return this.testsSkipped;
-   }
-
    /**
     * Scan the class path to find all {@link JeleniumTest}'s to run and turn them in to
     * {@link TestManagerImpl}'s.
@@ -53,9 +45,17 @@ final class TestFactory {
 
       final List<TestManagerImpl> tests =
             testClasses.stream()
-                       .map( tc -> new TestManagerImpl( tc, settings ) )
+                       .map( tc -> new TestManagerImpl( tc, config ) )
                        .collect( ImmutableList.toImmutableList() );
       return tests;
+   }
+
+   public List<TestManager> getSkippedTests() {
+      return this.testsSkipped;
+   }
+
+   public List<TestManager> getTestsToRun() {
+      return this.testsToRun;
    }
 
 }

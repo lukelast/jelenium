@@ -6,7 +6,8 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import org.openqa.selenium.WebDriver;
-import net.ghue.jelenium.api.HttpUrl.Builder;
+import okhttp3.HttpUrl;
+import okhttp3.HttpUrl.Builder;
 
 /**
  * <p>
@@ -28,7 +29,7 @@ public final class WebNavigate {
     * getCurrentUrl.
     * </p>
     *
-    * @return a {@link net.ghue.jelenium.api.HttpUrl} object.
+    * @return a {@link HttpUrl} object.
     */
    public HttpUrl getCurrentUrl() {
       final HttpUrl parsed = HttpUrl.parse( this.driver.getCurrentUrl() );
@@ -50,7 +51,7 @@ public final class WebNavigate {
    /**
     * Navigate to the given URL.
     *
-    * @param destUrl a {@link net.ghue.jelenium.api.HttpUrl} object.
+    * @param destUrl a {@link HttpUrl} object.
     */
    public void to( @Nullable HttpUrl destUrl ) {
       Objects.requireNonNull( destUrl );

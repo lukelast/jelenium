@@ -5,34 +5,54 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.time.Instant;
+import java.util.Locale;
+import javax.annotation.concurrent.NotThreadSafe;
+import net.ghue.jelenium.api.TestName;
+import net.ghue.jelenium.api.log.LogData;
+import net.ghue.jelenium.api.log.LogFormatter;
 
+@NotThreadSafe
 public final class LogHandlerFile extends LogHandlerBase {
 
-   final Path file;
+   private final Path file;
 
-   final Writer writer;
+   private Writer writer;
 
-   public LogHandlerFile( LogLevel level, Path file ) {
-      super( level );
-      this.file = file;
-      try {
-         Files.createDirectories( file.getParent() );
-         this.writer = Files.newBufferedWriter( file,
-                                                StandardOpenOption.CREATE_NEW,
-                                                StandardOpenOption.TRUNCATE_EXISTING );
-      } catch ( IOException ex ) {
-         throw new RuntimeException( ex );
-      }
+   public LogHandlerFile( LogLevel level, LogFormatter formatter, TestName name, Instant startTime,
+                          Path testResultsDir ) {
+      super( level, formatter );
+      this.file = testResultsDir.resolve( name.getShortName() +
+                                          "-" +
+                                          level.toString().toLowerCase( Locale.ENGLISH ) +
+                                          ".log" );
    }
 
    @Override
    public void close() throws IOException {
-      this.writer.close();
+      if ( this.writer != null ) {
+         this.writer.close();
+      }
+   }
+
+   private Writer getOrCreateWriter() {
+      // These handlers should only be used from 1 thread.
+      if ( this.writer == null ) {
+         try {
+            Files.createDirectories( file.getParent() );
+            this.writer = Files.newBufferedWriter( file,
+                                                   StandardOpenOption.CREATE_NEW,
+                                                   StandardOpenOption.TRUNCATE_EXISTING );
+         } catch ( IOException ex ) {
+            throw new RuntimeException( ex );
+         }
+      }
+      return this.writer;
    }
 
    @Override
    public void handle( LogData data ) throws IOException {
-      this.writer.append( LogFormatter.format( data ) ).append( '\n' );
+      getOrCreateWriter().append( this.formatter.format( data ) ).append( '\n' );
    }
 
 }

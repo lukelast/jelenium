@@ -1,5 +1,6 @@
 package net.ghue.jelenium.impl;
 
+import static net.ghue.jelenium.api.TestResultState.*;
 import java.util.Collection;
 import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.Multiset;
@@ -19,23 +20,23 @@ public class ResultsHandlerStdOut implements TestResultsHandler {
                        .collect( ImmutableMultiset.toImmutableMultiset() );
       final StringBuilder sb = new StringBuilder( 64 );
 
-      sb.append( '\n' ).append( "========== PASSED ==========" ).append( '\n' );
+      sb.append( '\n' ).append( "========== FINISHED ==========" ).append( '\n' );
 
-      sb.append( "Total Tests: " ).append( results.size() ).append( '\n' );
-      sb.append( "Passed: " ).append( results.count( TestResultState.PASSED ) ).append( '\n' );
-      sb.append( "Failed: " ).append( results.count( TestResultState.FAILED ) ).append( '\n' );
-      sb.append( "Errored: " ).append( results.count( TestResultState.ERROR ) ).append( '\n' );
-      sb.append( "Skipped: " ).append( results.count( TestResultState.SKIPPED ) ).append( '\n' );
+      sb.append( "Total Test Results: " ).append( results.size() ).append( '\n' );
+      sb.append( "Passed: " ).append( results.count( PASSED ) ).append( '\n' );
+      sb.append( "Failed-Retried: " ).append( results.count( FAILED_RETRIED ) ).append( '\n' );
+      sb.append( "Failed: " ).append( results.count( FAILED ) ).append( '\n' );
+      sb.append( "Errored: " ).append( results.count( ERROR ) ).append( '\n' );
+      sb.append( "Skipped: " ).append( results.count( SKIPPED ) ).append( '\n' );
 
       System.out.println( sb.toString() );
 
-      if ( 0 < results.count( TestResultState.ERROR ) ) {
-         throw new TestErrorException( results.count( TestResultState.ERROR ) +
-                                       " tests had an ERROR" );
+      if ( 0 < results.count( ERROR ) ) {
+         throw new TestErrorException( results.count( ERROR ) + " tests had an ERROR" );
       }
 
-      if ( 0 < results.count( TestResultState.FAILED ) ) {
-         throw new TestFailedException( results.count( TestResultState.FAILED ) + " tests failed" );
+      if ( 0 < results.count( FAILED ) ) {
+         throw new TestFailedException( results.count( FAILED ) + " tests failed" );
       }
    }
 

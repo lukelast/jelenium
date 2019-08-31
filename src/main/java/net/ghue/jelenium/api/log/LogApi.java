@@ -15,4 +15,6 @@ public interface LogApi {
    LogApi msg( String message );
 
    LogApi msg( String message, Object... formatArgs );
+
+   LogApi newline();
 }

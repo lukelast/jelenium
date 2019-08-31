@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 import net.ghue.jelenium.api.JeleniumTest;
+import net.ghue.jelenium.api.config.JeleniumConfigUpdater;
 import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
 
 /**
@@ -15,7 +16,7 @@ import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
  *
  * @author Luke Last
  */
-final class Scanner {
+public final class Scanner {
 
    private static final List<String> CLASSES_TO_IGNORE =
          ImmutableList.of( "cern.",
@@ -47,6 +48,16 @@ final class Scanner {
                            "org.w3c.",
                            "org.webbitserver.",
                            "org.xml." );
+
+   public static List<Class<? extends JeleniumConfigUpdater>> findSettings() {
+      try {
+         return scanAndLoadClasses().filter( JeleniumConfigUpdater.class::isAssignableFrom )
+                                    .map( cl -> cl.<JeleniumConfigUpdater> asSubclass( JeleniumConfigUpdater.class ) )
+                                    .collect( ImmutableList.toImmutableList() );
+      } catch ( IOException ex ) {
+         throw new RuntimeException( ex );
+      }
+   }
 
    static List<Class<? extends JeleniumSuiteRunner>> findSuites() throws IOException {
       return scanAndLoadClasses().filter( JeleniumSuiteRunner.class::isAssignableFrom )

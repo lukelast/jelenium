@@ -1,18 +1,19 @@
-package net.ghue.jelenium.impl;
+package net.ghue.jelenium.impl.config;
 
 import static com.google.common.truth.Truth.assertThat;
 import org.junit.jupiter.api.Test;
 import com.google.common.truth.MapSubject;
+import net.ghue.jelenium.impl.config.ConfigProvider;
 
-class SettingsProviderTest {
+class ConfigProviderTest {
 
    private static MapSubject parse( String... args ) {
-      return assertThat( SettingsProvider.parseMainArgs( args ) );
+      return assertThat( ConfigProvider.parseMainArgs( args ) );
    }
 
    @Test
    void testMain() {
-      assertThat( SettingsProvider.parseMainArgs( new String[] {} ) ).isEmpty();
+      assertThat( ConfigProvider.parseMainArgs( new String[] {} ) ).isEmpty();
       parse( "" ).isEmpty();
       parse( "blah" ).isEmpty();
       parse( "=value" ).isEmpty();

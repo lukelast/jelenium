@@ -5,35 +5,24 @@ import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import net.ghue.jelenium.api.JeleniumSettings;
+import net.ghue.jelenium.api.config.JeleniumConfig;
 import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
 
 final class SuiteRunnerProvider implements Provider<JeleniumSuiteRunner> {
 
-   private final JeleniumSettings settings;
+   private final JeleniumConfig config;
 
    @Inject
-   SuiteRunnerProvider( JeleniumSettings settings ) {
-      this.settings = settings;
-   }
-
-   @Override
-   public JeleniumSuiteRunner get() {
-      try {
-         Class<? extends JeleniumSuiteRunner> suiteClass = findTestSuite();
-         final JeleniumSuiteRunner suite = suiteClass.newInstance();
-         suite.setSettings( this.settings );
-         return suite;
-      } catch ( InstantiationException | IllegalAccessException | IOException ex ) {
-         throw new RuntimeException( ex );
-      }
+   SuiteRunnerProvider( JeleniumConfig config ) {
+      this.config = config;
    }
 
    /**
-    * Scan settings and the class path looking for the {@link JeleniumSuiteRunner} to use.
+    * Scan config and the class path looking for the {@link JeleniumSuiteRunner} to use.
     */
    Class<? extends JeleniumSuiteRunner> findTestSuite() throws IOException {
-      final Optional<Class<JeleniumSuiteRunner>> suiteFromSettings = this.settings.getSuite();
+      final Optional<Class<JeleniumSuiteRunner>> suiteFromSettings =
+            Optional.ofNullable( this.config.suite() );
 
       if ( suiteFromSettings.isPresent() ) {
          return suiteFromSettings.get();
@@ -47,6 +36,18 @@ final class SuiteRunnerProvider implements Provider<JeleniumSuiteRunner> {
       } else {
          //TODO find default using annotations.
          return suites.get( 0 );
+      }
+   }
+
+   @Override
+   public JeleniumSuiteRunner get() {
+      try {
+         Class<? extends JeleniumSuiteRunner> suiteClass = findTestSuite();
+         final JeleniumSuiteRunner suite = suiteClass.newInstance();
+         suite.setConfig( this.config );
+         return suite;
+      } catch ( InstantiationException | IllegalAccessException | IOException ex ) {
+         throw new RuntimeException( ex );
       }
    }
 }

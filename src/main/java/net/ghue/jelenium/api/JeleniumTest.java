@@ -23,6 +23,12 @@ public interface JeleniumTest {
       throw new SkipTestException( reason );
    }
 
+   /**
+    * Force an exception to fail the test.
+    * 
+    * @param reason Why is this test failing.
+    * @throws Exception
+    */
    default void fail( String reason ) throws Exception {
       throw new Exception( reason );
    }

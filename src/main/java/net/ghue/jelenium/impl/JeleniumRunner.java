@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import net.ghue.jelenium.api.JeleniumSettings;
 import net.ghue.jelenium.api.JeleniumTestResult;
 import net.ghue.jelenium.api.TestManager;
 import net.ghue.jelenium.api.TestResultsHandler;
+import net.ghue.jelenium.api.config.JeleniumConfig;
 import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
 
 /**
@@ -18,23 +18,19 @@ import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
  */
 public final class JeleniumRunner {
 
-   private final JeleniumSettings settings;
-
-   private final Provider<JeleniumSuiteRunner> suiteRunnerProvider;
-
-   private final Provider<List<TestResultsHandler>> resultsHandlersProvider;
-
-   private final Provider<TestFactory> testFactoryProvider;
+   private final JeleniumConfig config;
 
    private final PrintStream out;
 
+   private final Provider<JeleniumSuiteRunner> suiteRunnerProvider;
+
+   private final Provider<TestFactory> testFactoryProvider;
+
    @Inject
-   JeleniumRunner( JeleniumSettings settings, Provider<JeleniumSuiteRunner> suiteRunnerProvider,
-                   Provider<List<TestResultsHandler>> resultsHandlersProvider,
+   JeleniumRunner( JeleniumConfig config, Provider<JeleniumSuiteRunner> suiteRunnerProvider,
                    Provider<TestFactory> testFactoryProvider, PrintStream stdOut ) {
-      this.settings = settings;
+      this.config = config;
       this.suiteRunnerProvider = suiteRunnerProvider;
-      this.resultsHandlersProvider = resultsHandlersProvider;
       this.testFactoryProvider = testFactoryProvider;
       this.out = stdOut;
    }
@@ -48,8 +44,8 @@ public final class JeleniumRunner {
 
       out.println();
       out.println( "##### STARTING JELENIUM #####" );
-      // Print all settings for debugging.
-      out.println( this.settings.toString() );
+      // Print all config for debugging.
+      out.println( this.config.print() );
 
       final JeleniumSuiteRunner suite = this.suiteRunnerProvider.get();
 
@@ -60,7 +56,7 @@ public final class JeleniumRunner {
 
       if ( !testFactory.getSkippedTests().isEmpty() ) {
          out.println( "The following tests are being skipped because they did not match the filter: '" +
-                      settings.getFilter() +
+                      config.filter() +
                       "'" );
          for ( TestManager tm : testFactory.getSkippedTests() ) {
             out.println( "  " + tm.getName().getFullName() );
@@ -90,8 +86,7 @@ public final class JeleniumRunner {
                  .map( vm -> new TestResultSkipped( vm.getName() ) )
                  .forEach( testResults::add );
 
-      final List<TestResultsHandler> resultsHandlers = this.resultsHandlersProvider.get();
-      for ( TestResultsHandler handler : resultsHandlers ) {
+      for ( TestResultsHandler handler : this.config.resultHandlers() ) {
          handler.processResults( testResults );
       }
 

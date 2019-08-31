@@ -2,7 +2,9 @@ package net.ghue.jelenium.api.suite;
 
 import java.util.Collection;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import net.ghue.jelenium.api.JeleniumTestResult;
 import net.ghue.jelenium.api.TestManager;
+import net.ghue.jelenium.api.TestResultState;
 
 /**
  * Run all tests through a single web driver instance.
@@ -13,10 +15,34 @@ public abstract class SuiteRunnerSharedDriver extends SuiteRunnerBase {
 
    @Override
    public void runTests( Collection<TestManager> tests ) {
-      final RemoteWebDriver webDriver = this.createWebDriver();
+
+      final WebDriverProvider driverProvider = new WebDriverProvider() {
+
+         RemoteWebDriver webDriver = createWebDriver();
+
+         @Override
+         public void finished( JeleniumTestResult result, RemoteWebDriver driver ) {
+            if ( result.getResult() == TestResultState.FAILED ) {
+               driver.quit();
+               webDriver = createWebDriver();
+            }
+         }
+
+         @Override
+         public RemoteWebDriver get() {
+            return webDriver;
+         }
+
+         @Override
+         public String getWebDriverName() {
+            return "";
+         }
+      };
+
       for ( TestManager test : tests ) {
-         test.run( webDriver );
+         test.runWithRetries( driverProvider );
       }
-      webDriver.quit();
+
+      driverProvider.get().quit();
    }
 }

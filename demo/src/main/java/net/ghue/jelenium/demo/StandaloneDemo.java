@@ -35,7 +35,10 @@ public final class StandaloneDemo implements JeleniumTest {
       context.log().info().msg( "hi" ).log();
 
       // How to fetch an argument passed in via the MAVEN POM.
-      context.log().info().msg( "Value of my arg: %s", context.getSettings().get( "mykey" ) ).log();
+      context.log()
+             .info()
+             .msg( "Value of my arg: %s", context.getConfig().getProperty( "mykey", "" ) )
+             .log();
 
       context.getWebNavigate().toPrimaryUrl();
 

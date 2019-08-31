@@ -58,7 +58,7 @@ class ScreenshotSaverImplTest {
 
       screenshotSaver.saveScreenshot( "NAME" );
 
-      verify( "SampleTest-NAME-1970-01-01T00-00-00.png" );
+      verify( "SampleTest-NAME-700101@00-00-00.png" );
    }
 
    @Test
@@ -76,7 +76,7 @@ class ScreenshotSaverImplTest {
 
       screenshotSaver.saveScreenshot( element, "NAME" );
 
-      verify( "SampleTest-ElementClassName-NAME-1970-01-01T00-00-00.png" );
+      verify( "SampleTest-ElementClassName-NAME-700101@00-00-00.png" );
    }
 
    private void verify( String filename ) throws IOException {

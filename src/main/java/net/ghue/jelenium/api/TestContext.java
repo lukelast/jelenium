@@ -7,7 +7,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import net.ghue.jelenium.api.action.ActionFactory;
+import net.ghue.jelenium.api.config.JeleniumConfig;
 import net.ghue.jelenium.api.log.TestLog;
+import okhttp3.HttpUrl;
 
 /**
  * Provides everything that a test needs to interact with the world.
@@ -17,6 +19,13 @@ import net.ghue.jelenium.api.log.TestLog;
 public interface TestContext {
 
    ActionFactory action();
+
+   /**
+    * Global settings.
+    *
+    * @return a {@link net.ghue.jelenium.api.config.JeleniumConfig} object.
+    */
+   JeleniumConfig getConfig();
 
    /**
     * @return The name of the test.
@@ -34,17 +43,10 @@ public interface TestContext {
    ScreenshotSaver getScreenshotSaver();
 
    /**
-    * Global settings.
-    *
-    * @return a {@link net.ghue.jelenium.api.JeleniumSettings} object.
-    */
-   JeleniumSettings getSettings();
-
-   /**
     * The primary URL as configured.
     *
-    * @return a {@link net.ghue.jelenium.api.HttpUrl} object.
-    * @see JeleniumSettings#getUrl()
+    * @return a {@link HttpUrl} object.
+    * @see JeleniumConfig#url()
     */
    HttpUrl getUrl();
 
@@ -91,7 +93,7 @@ public interface TestContext {
 
    default WebDriverWait webDriverWait() {
       return new WebDriverWait( getWebDriver(),
-                                getSettings().getRetryTimeout().toMillis(),
-                                getSettings().getRetryDelay().toMillis() );
+                                getConfig().retryTimeout().toMillis(),
+                                getConfig().retryDelay().toMillis() );
    }
 }

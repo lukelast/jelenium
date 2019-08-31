@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -82,10 +81,7 @@ final class ScreenshotSaverImpl implements ScreenshotSaver {
 
       appendFilteredText( filenameBuilder, name, 50 );
       filenameBuilder.append( '-' );
-      appendFilteredText( filenameBuilder,
-                          LocalDateTime.now( clock )
-                                       .format( DateTimeFormatter.ISO_LOCAL_DATE_TIME ),
-                          40 );
+      filenameBuilder.append( Utils.formatDateForFilename( LocalDateTime.now( clock ) ) );
       filenameBuilder.append( ".png" );
 
       return filenameBuilder.toString();

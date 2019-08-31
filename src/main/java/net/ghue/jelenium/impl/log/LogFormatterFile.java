@@ -3,28 +3,34 @@ package net.ghue.jelenium.impl.log;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import net.ghue.jelenium.api.log.LogData;
+import net.ghue.jelenium.api.log.LogFormatter;
 
-class LogFormatter {
+public final class LogFormatterFile implements LogFormatter {
 
-   static String format( LogData data ) {
+   @Override
+   public String format( LogData data ) {
       final StringBuilder sb = new StringBuilder();
 
-      //sb.append( '+' );
+      // Log level.
+      sb.append( "    " ).append( data.level.toUniformLengthString() ).append( " " );
+
+      // Elapsed time from test start.
+      sb.append( "+" );
       final int seconds = (int) data.elapsed.getSeconds();
       if ( seconds < 10 ) {
          sb.append( '0' );
       }
       sb.append( seconds ).append( '.' );
-
       final int ms = (int) ( data.elapsed.toMillis() % 1_000 );
       if ( ms < 10 ) {
          sb.append( "00" );
       } else if ( ms < 100 ) {
          sb.append( "0" );
       }
-      sb.append( ms ).append( "s " );
-      sb.append( data.level.toUniformLengthString() ).append( "  " );
+      sb.append( ms ).append( "s  " );
 
+      // Log site.
       sb.append( data.caller.getClassName() )
         .append( '#' )
         .append( data.caller.getMethodName() )
@@ -32,7 +38,9 @@ class LogFormatter {
         .append( data.caller.getLineNumber() )
         .append( ')' );
 
-      sb.append( "\n  " ).append( data.message );
+      if ( !data.message.isEmpty() ) {
+         sb.append( "\n" ).append( data.message );
+      }
       data.throwable.ifPresent( ex -> {
          if ( ex instanceof InvocationTargetException ) {
             ex = ex.getCause();
@@ -41,8 +49,12 @@ class LogFormatter {
          PrintWriter pw = new PrintWriter( sw );
          ex.printStackTrace( pw );
          pw.flush();
-         sb.append( "\n  " ).append( sw.toString() );
+         sb.append( "\n\n" ).append( sw.toString().replace( "\t", "  " ) );
       } );
+
+      if ( data.level != LogLevel.DEBUG ) {
+         sb.append( '\n' );
+      }
 
       return sb.toString();
    }

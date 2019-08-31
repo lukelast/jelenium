@@ -4,7 +4,7 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import net.ghue.jelenium.impl.JeleniumGuiceModule;
+import net.ghue.jelenium.impl.GuiceModule;
 import net.ghue.jelenium.impl.JeleniumRunner;
 
 /**
@@ -27,7 +27,7 @@ public final class Main {
    public static void main( @Nullable String[] args ) throws Exception {
       Objects.requireNonNull( args );
 
-      final Injector injector = Guice.createInjector( new JeleniumGuiceModule( args ) );
+      final Injector injector = Guice.createInjector( new GuiceModule( args ) );
       final JeleniumRunner jelenium = injector.getInstance( JeleniumRunner.class );
       jelenium.run();
    }

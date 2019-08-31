@@ -10,9 +10,14 @@ class TestResultImpl implements JeleniumTestResult {
 
    private final TestResultState result;
 
+   private final int testRetries;
+
+   private volatile boolean wasRetried = false;
+
    public TestResultImpl( TestExecution test ) {
       this.result = test.result;
       this.name = test.name;
+      this.testRetries = test.getTestRetries();
    }
 
    @Override
@@ -22,6 +27,22 @@ class TestResultImpl implements JeleniumTestResult {
 
    @Override
    public TestResultState getResult() {
-      return this.result;
+      if ( this.wasRetried ) {
+         return TestResultState.FAILED_RETRIED;
+      } else {
+         return this.result;
+      }
+   }
+
+   public void setRetried( boolean retried ) {
+      this.wasRetried = retried;
+   }
+
+   public boolean shouldTryAgain( int attemptsFinished ) {
+      if ( this.result == TestResultState.FAILED ) {
+         final int maxAttempts = this.testRetries + 1;
+         return attemptsFinished < maxAttempts;
+      }
+      return false;
    }
 }

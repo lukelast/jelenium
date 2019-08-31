@@ -84,7 +84,7 @@
 		<dependency>
 			<groupId>com.squareup.okio</groupId>
 			<artifactId>okio</artifactId>
-			<version>1.17.4</version>
+			<version>2.4.0</version>
 		</dependency>
 
 		<dependency>
@@ -116,6 +116,17 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.5.9</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.aeonbits.owner</groupId>
+			<artifactId>owner-java8</artifactId>
+			<version>1.0.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aeonbits.owner</groupId>
+			<artifactId>owner-java8-extras</artifactId>
+			<version>1.0.10</version>
 		</dependency>
 
 		<dependency>
@@ -217,8 +228,6 @@
 					<mainClass>net.ghue.jelenium.Main</mainClass>
 					<arguments>
 						<argument>url=https://example.com/</argument>
-						<argument>browser=firefox</argument>
-						<argument>hub=http://localhost:4444/ws/hub</argument>
 					</arguments>
 				</configuration>
 			</plugin>

@@ -15,13 +15,12 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.Options;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import com.google.common.collect.ImmutableList;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.matcher.Matchers;
-import net.ghue.jelenium.api.HttpUrl;
-import net.ghue.jelenium.api.JeleniumSettings;
 import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.Page;
 import net.ghue.jelenium.api.ScreenshotSaver;
@@ -31,15 +30,21 @@ import net.ghue.jelenium.api.TestResultState;
 import net.ghue.jelenium.api.action.RetryableAction;
 import net.ghue.jelenium.api.annotation.GuiceModule;
 import net.ghue.jelenium.api.annotation.TestResultDir;
+import net.ghue.jelenium.api.config.JeleniumConfig;
 import net.ghue.jelenium.api.ex.SkipTestException;
 import net.ghue.jelenium.api.log.TestLog;
 import net.ghue.jelenium.impl.action.ActionMethodInterceptor;
-import net.ghue.jelenium.impl.log.LogHandlerFile;
-import net.ghue.jelenium.impl.log.LogHandlerStdOut;
-import net.ghue.jelenium.impl.log.LogLevel;
 import net.ghue.jelenium.impl.log.TestLogImpl;
+import okhttp3.HttpUrl;
 
+/**
+ * Performs one run of a test.
+ * 
+ * @author Luke Last
+ */
 final class TestExecution {
+
+   private final JeleniumConfig config;
 
    private Optional<Injector> injector = empty();
 
@@ -49,8 +54,6 @@ final class TestExecution {
 
    volatile TestResultState result = TestResultState.NOT_RUN;
 
-   private final JeleniumSettings settings;
-
    private final Instant startTime = Instant.now();
 
    private final Class<? extends JeleniumTest> testClass;
@@ -59,7 +62,7 @@ final class TestExecution {
 
    private final Path testResultsDir;
 
-   private Optional<RemoteWebDriver> webDriver = empty();
+   private final RemoteWebDriver webDriver;
 
    /**
     * <p>
@@ -68,21 +71,22 @@ final class TestExecution {
     *
     * @param testClass a {@link java.lang.Class} object.
     * @param webDriver a {@link org.openqa.selenium.WebDriver} object.
-    * @param settings a {@link net.ghue.jelenium.api.JeleniumSettings} object.
+    * @param config a {@link net.ghue.jelenium.api.config.JeleniumSettings} object.
     */
-   TestExecution( Class<? extends JeleniumTest> testClass, JeleniumSettings settings ) {
+   TestExecution( Class<? extends JeleniumTest> testClass, JeleniumConfig config,
+                  Path testResultsDir, RemoteWebDriver webDriver ) {
       this.testClass = requireNonNull( testClass );
-      this.settings = requireNonNull( settings );
+      this.config = requireNonNull( config );
+      this.webDriver = requireNonNull( webDriver );
       this.name = new TestNameImpl( testClass );
-      this.testResultsDir = createTestResultsDir( settings, name );
+      this.testResultsDir = testResultsDir;
       this.log = new TestLogImpl( this.startTime,
-                                  new LogHandlerStdOut( LogLevel.DEBUG ),
-                                  new LogHandlerFile( LogLevel.DEBUG,
-                                                      testResultsDir.resolve( name.getShortName() +
-                                                                              "-debug.log" ) ),
-                                  new LogHandlerFile( LogLevel.WARN,
-                                                      testResultsDir.resolve( name.getShortName() +
-                                                                              "-warn.log" ) ) );
+                                  config.logHandlers()
+                                        .stream()
+                                        .map( factory -> factory.create( name,
+                                                                         startTime,
+                                                                         testResultsDir ) )
+                                        .collect( ImmutableList.toImmutableList() ) );
    }
 
    private Injector createGuiceInjector() {
@@ -105,27 +109,19 @@ final class TestExecution {
                              new ActionMethodInterceptor( getProvider( TestContext.class ) ) );
             bind( Clock.class ).toInstance( Clock.systemUTC() );
             bind( testClass ).in( Singleton.class );
-            bind( RemoteWebDriver.class ).toInstance( webDriver.get() );
+            bind( RemoteWebDriver.class ).toInstance( webDriver );
             bind( WebDriver.class ).to( RemoteWebDriver.class );
             bind( TakesScreenshot.class ).to( RemoteWebDriver.class );
             bind( TestLog.class ).toInstance( log );
-            bind( JeleniumSettings.class ).toInstance( settings );
+            bind( JeleniumConfig.class ).toInstance( config );
             bind( ScreenshotSaver.class ).to( ScreenshotSaverImpl.class );
             bind( TestContext.class ).to( TestContextImpl.class );
-            bind( HttpUrl.class ).toInstance( settings.getUrl() );
+            bind( HttpUrl.class ).toInstance( config.url() );
             bind( TestName.class ).toInstance( name );
             bind( Path.class ).annotatedWith( TestResultDir.class ).toInstance( testResultsDir );
          }
       } );
       return Guice.createInjector( modules );
-   }
-
-   /**
-    * TODO need to handle when the directory already exists or it is a retry, or multiple web
-    * drivers.
-    */
-   private Path createTestResultsDir( JeleniumSettings jelSettings, TestName testName ) {
-      return jelSettings.getResultsDir().resolve( testName.getFullName() ).toAbsolutePath();
    }
 
    private void finish() {
@@ -170,21 +166,27 @@ final class TestExecution {
                      .getInstance( TestContext.class );
    }
 
+   int getTestRetries() {
+      final int fromTest = testInstance.get().retries();
+      if ( 0 <= fromTest ) {
+         return fromTest;
+      } else {
+         return this.config.testRetries();
+      }
+   }
+
    /**
     * Run the test.
-    * 
-    * @param remoteWebDriver driver.
     */
-   public void run( RemoteWebDriver remoteWebDriver ) {
-      log.info().msg( "Starting Test: %s", name ).log();
+   public void run() {
+      log.info().msg( "Starting Test %s @ %s", name, this.startTime.toString() ).log();
 
       try {
-         this.webDriver = of( remoteWebDriver );
          // Web driver must be set before creating injector.
          this.injector = of( createGuiceInjector() );
          this.testInstance = of( injector.get().getInstance( testClass ) );
 
-         final Options manage = this.webDriver.get().manage();
+         final Options manage = this.webDriver.manage();
          manage.timeouts().implicitlyWait( 10, TimeUnit.SECONDS );
          manage.timeouts().pageLoadTimeout( 20, TimeUnit.SECONDS );
          manage.timeouts().setScriptTimeout( 20, TimeUnit.SECONDS );
@@ -206,6 +208,14 @@ final class TestExecution {
          }
       }
 
+      log.info()
+         .msg( "Using webdriver '%s'", this.webDriver.toString() )
+         .newline()
+         .msg( "Browser: %s %s",
+               webDriver.getCapabilities().getBrowserName(),
+               webDriver.getCapabilities().getVersion() )
+         .log();
+
       this.result = this.runTest( this.testInstance.get() );
 
       this.finish();
@@ -219,21 +229,8 @@ final class TestExecution {
          }
 
          test.onBeforeRun( getContext() );
-
-         final int attempts = Math.max( test.retries() + 1, 1 );
-
-         Optional<Exception> lastEx = empty();
-         for ( int attempt = 1; attempt <= attempts; attempt++ ) {
-            try {
-               test.run( getContext() );
-               return TestResultState.PASSED;
-            } catch ( SkipTestException ex ) {
-               throw ex;
-            } catch ( Exception ex ) {
-               lastEx = of( ex );
-            }
-         }
-         throw lastEx.orElse( new RuntimeException() );
+         test.run( getContext() );
+         return TestResultState.PASSED;
 
       } catch ( SkipTestException ex ) {
 

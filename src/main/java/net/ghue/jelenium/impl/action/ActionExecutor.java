@@ -29,8 +29,8 @@ final class ActionExecutor<R> implements Action<R> {
                           TestContext testContext ) {
       this.action = action;
       this.testContext = testContext;
-      this.retryDelay = findDuration( retryDelay, testContext.getSettings().getRetryDelay() );
-      this.retryTimeout = findDuration( retryTimeout, testContext.getSettings().getRetryTimeout() );
+      this.retryDelay = findDuration( retryDelay, testContext.getConfig().retryDelay() );
+      this.retryTimeout = findDuration( retryTimeout, testContext.getConfig().retryTimeout() );
    }
 
    @Override

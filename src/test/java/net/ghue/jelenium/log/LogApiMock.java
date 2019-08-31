@@ -22,4 +22,9 @@ public final class LogApiMock implements LogApi {
       return this;
    }
 
+   @Override
+   public LogApi newline() {
+      return this;
+   }
+
 }
