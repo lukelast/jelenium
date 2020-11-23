@@ -14,10 +14,14 @@ class TestResultImpl implements JeleniumTestResult {
 
    private volatile boolean wasRetried = false;
 
-   public TestResultImpl( TestExecution test ) {
-      this.result = test.result;
-      this.name = test.name;
-      this.testRetries = test.getTestRetries();
+   private final String webDriverName;
+
+   TestResultImpl( TestName name, TestResultState result, int testRetries, String webDriverName ) {
+      this.name = name;
+      this.result = result;
+      this.testRetries = testRetries;
+      this.wasRetried = wasRetried;
+      this.webDriverName = webDriverName;
    }
 
    @Override
@@ -34,15 +38,22 @@ class TestResultImpl implements JeleniumTestResult {
       }
    }
 
+   @Override
    public void setRetried( boolean retried ) {
       this.wasRetried = retried;
    }
 
+   @Override
    public boolean shouldTryAgain( int attemptsFinished ) {
       if ( this.result == TestResultState.FAILED ) {
          final int maxAttempts = this.testRetries + 1;
          return attemptsFinished < maxAttempts;
       }
       return false;
+   }
+
+   @Override
+   public String getWebDriverName() {
+      return this.webDriverName;
    }
 }

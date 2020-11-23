@@ -12,7 +12,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.truth.Truth;
 import net.ghue.jelenium.api.config.JeleniumConfig;
 import net.ghue.jelenium.demo.SampleSuite;
-import net.ghue.jelenium.impl.config.ConfigFactoryProvider;
 
 class JeleniumConfigTest {
 

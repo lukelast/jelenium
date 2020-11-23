@@ -21,4 +21,19 @@ public class TestResultSkipped implements JeleniumTestResult {
    public TestResultState getResult() {
       return TestResultState.SKIPPED;
    }
+
+   @Override
+   public boolean shouldTryAgain( int attempt ) {
+      return false;
+   }
+
+   @Override
+   public void setRetried( boolean wasRetried ) {
+      throw new IllegalStateException( "A skipped test cannot be retried." );
+   }
+
+   @Override
+   public String getWebDriverName() {
+      return "";
+   }
 }

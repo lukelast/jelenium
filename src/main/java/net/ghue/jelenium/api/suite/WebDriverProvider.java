@@ -9,8 +9,4 @@ public interface WebDriverProvider {
 
    RemoteWebDriver get();
 
-   default String getWebDriverName() {
-      return "";
-   }
-
 }

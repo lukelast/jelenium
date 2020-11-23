@@ -31,11 +31,6 @@ public final class LoggingDemo implements JeleniumTest {
    }
 
    @Override
-   public int retries() {
-      return 1;
-   }
-
-   @Override
    public void run( TestContext context ) throws Exception {
 
       context.log().info().msg( "Start" ).log();
@@ -52,6 +47,5 @@ public final class LoggingDemo implements JeleniumTest {
              .ex( new IllegalStateException( "is bad" ) )
              .msg( "Testing exception" )
              .log();
-      throw new RuntimeException( "fail" );
    }
 }

@@ -9,7 +9,7 @@ import net.ghue.jelenium.impl.JeleniumRunner;
 
 /**
  * <p>
- * A test runner main class that can be used as an entry point to run selenium tests.
+ * A test runner main class that can be used as an entry point to run SELENIUM tests.
  * </p>
  *
  * @author Luke Last

@@ -7,7 +7,7 @@ import org.aeonbits.owner.ConfigFactory;
 import org.aeonbits.owner.Factory;
 import org.aeonbits.owner.converters.DurationConverter;
 import net.ghue.jelenium.api.TestResultsHandler;
-import net.ghue.jelenium.impl.log.LogHandlerFactory;
+import net.ghue.jelenium.api.log.LogHandlerFactory;
 import okhttp3.HttpUrl;
 
 public final class ConfigFactoryProvider implements Provider<Factory> {

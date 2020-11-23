@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<!-- If both exist, XML takes precedence over properties files. -->
+<properties>
+	<entry key="filter"></entry>
+	<entry key="log.handlers"></entry>
+	<entry key="xml-key">xml-value</entry>
+</properties>

@@ -13,14 +13,16 @@ import org.aeonbits.owner.Config.DisableFeature;
 import org.aeonbits.owner.Config.DisableableFeature;
 import org.aeonbits.owner.Config.LoadPolicy;
 import org.aeonbits.owner.Config.LoadType;
+import org.aeonbits.owner.Config.Sources;
 import net.ghue.jelenium.api.TestResultsHandler;
+import net.ghue.jelenium.api.log.LogHandlerFactory;
 import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
-import net.ghue.jelenium.impl.log.LogHandlerFactory;
 import okhttp3.HttpUrl;
 
 @LoadPolicy( LoadType.MERGE )
 @DisableFeature( {
       DisableableFeature.VARIABLE_EXPANSION, DisableableFeature.PARAMETER_FORMATTING } )
+@Sources( { "classpath:jelenium.xml", "classpath:jelenium.properties" } )
 public interface JeleniumConfig extends Accessible {
 
    String KEY_FILTER = "filter";

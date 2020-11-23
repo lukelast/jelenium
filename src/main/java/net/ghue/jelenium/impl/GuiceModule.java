@@ -30,7 +30,6 @@ public final class GuiceModule extends AbstractModule {
       bind( JeleniumSuiteRunner.class ).toProvider( SuiteRunnerProvider.class );
       bind( new TypeLiteral<Collection<JeleniumConfigUpdater>>() {} ).toProvider( ConfigUpdaterProvider.class );
       bind( PrintStream.class ).toInstance( System.out );
-
    }
 
    @Provides

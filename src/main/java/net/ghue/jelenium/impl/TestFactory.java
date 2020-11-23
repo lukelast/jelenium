@@ -8,6 +8,9 @@ import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.TestManager;
 import net.ghue.jelenium.api.config.JeleniumConfig;
 
+/**
+ * Scan for and collect all tests to run and check which should be skipped.
+ */
 final class TestFactory {
 
    private final JeleniumConfig config;
@@ -43,10 +46,9 @@ final class TestFactory {
    private List<TestManagerImpl> findTests() {
       final List<Class<? extends JeleniumTest>> testClasses = Scanner.findTests();
 
-      final List<TestManagerImpl> tests =
-            testClasses.stream()
-                       .map( tc -> new TestManagerImpl( tc, config ) )
-                       .collect( ImmutableList.toImmutableList() );
+      final List<TestManagerImpl> tests = testClasses.stream()
+                                                     .map( tc -> new TestManagerImpl( tc, config ) )
+                                                     .collect( ImmutableList.toImmutableList() );
       return tests;
    }
 

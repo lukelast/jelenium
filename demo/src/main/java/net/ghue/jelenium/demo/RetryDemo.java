@@ -25,7 +25,7 @@ public final class RetryDemo implements JeleniumTest {
    @Override
    public void run( TestContext context ) throws Exception {
       final int currentRun = TEST_RUN_COUNTER.getAndIncrement();
-      if ( currentRun < FAIL_RUNS ) {
+      if ( currentRun <= FAIL_RUNS ) {
          fail( "Failing test" );
       }
    }

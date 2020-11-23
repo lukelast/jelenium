@@ -6,9 +6,5 @@ import net.ghue.jelenium.api.config.JeleniumConfig;
 
 public interface JeleniumSuiteRunner {
 
-   JeleniumConfig getConfig();
-
-   void runTests( Collection<TestManager> tests ) throws Exception;
-
-   void setConfig( JeleniumConfig config );
+   void runTests( Collection<TestManager> tests, JeleniumConfig config ) throws Exception;
 }

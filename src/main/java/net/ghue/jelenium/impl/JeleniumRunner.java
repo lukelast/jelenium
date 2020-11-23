@@ -44,12 +44,12 @@ public final class JeleniumRunner {
 
       out.println();
       out.println( "##### STARTING JELENIUM #####" );
-      // Print all config for debugging.
+      // Print all configuration for debugging.
       out.println( this.config.print() );
 
       final JeleniumSuiteRunner suite = this.suiteRunnerProvider.get();
 
-      out.println( "Using Test Suite:  " + suite.getClass().getCanonicalName() );
+      out.println( "Using Test Suite Runner:  " + suite.getClass().getCanonicalName() );
       out.println();
 
       final TestFactory testFactory = this.testFactoryProvider.get();
@@ -72,7 +72,7 @@ public final class JeleniumRunner {
                               .collect( Collectors.joining( "\n" ) ) );
       out.println();
 
-      suite.runTests( testFactory.getTestsToRun() );
+      suite.runTests( testFactory.getTestsToRun(), this.config );
 
       // Collect all results.
       final List<JeleniumTestResult> testResults = testFactory.getTestsToRun()

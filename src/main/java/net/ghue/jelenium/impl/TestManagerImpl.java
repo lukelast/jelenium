@@ -78,16 +78,15 @@ class TestManagerImpl implements TestManager {
    }
 
    @Override
-   public JeleniumTestResult run( RemoteWebDriver remoteWebDriver,
-                                  String webDriverName,
-                                  int attempt ) {
+   public JeleniumTestResult run( RemoteWebDriver remoteWebDriver, int attempt ) {
       final TestExecution testExec =
             new TestExecution( testClass,
                                config,
-                               buildTestResultsDir( webDriverName, attempt ),
+                               buildTestResultsDir( Utils.findWebDriverName( remoteWebDriver ),
+                                                    attempt ),
                                remoteWebDriver );
       testExec.run();
-      final TestResultImpl result = new TestResultImpl( testExec );
+      final JeleniumTestResult result = testExec.toResult();
       this.results.add( result );
       return result;
    }
@@ -100,8 +99,7 @@ class TestManagerImpl implements TestManager {
       for ( int attempt = 1; attempt < 10; attempt++ ) {
 
          final RemoteWebDriver webDriver = driverProvider.get();
-         final JeleniumTestResult result =
-               this.run( webDriver, driverProvider.getWebDriverName(), attempt );
+         final JeleniumTestResult result = this.run( webDriver, attempt );
          driverProvider.finished( result, webDriver );
          builder.add( result );
 

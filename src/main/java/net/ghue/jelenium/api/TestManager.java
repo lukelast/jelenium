@@ -11,7 +11,7 @@ public interface TestManager {
 
    Stream<JeleniumTestResult> getResults();
 
-   JeleniumTestResult run( RemoteWebDriver remoteWebDriver, String webDriverName, int attempt );
+   JeleniumTestResult run( RemoteWebDriver remoteWebDriver, int attempt );
 
    List<JeleniumTestResult> runWithRetries( WebDriverProvider driverProvider );
 

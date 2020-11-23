@@ -3,7 +3,6 @@ package net.ghue.jelenium.impl.config;
 import static com.google.common.truth.Truth.assertThat;
 import org.junit.jupiter.api.Test;
 import com.google.common.truth.MapSubject;
-import net.ghue.jelenium.impl.config.ConfigProvider;
 
 class ConfigProviderTest {
 

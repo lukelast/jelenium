@@ -22,6 +22,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.matcher.Matchers;
 import net.ghue.jelenium.api.JeleniumTest;
+import net.ghue.jelenium.api.JeleniumTestResult;
 import net.ghue.jelenium.api.Page;
 import net.ghue.jelenium.api.ScreenshotSaver;
 import net.ghue.jelenium.api.TestContext;
@@ -241,5 +242,12 @@ final class TestExecution {
          log.error().ex( ex ).log();
          return TestResultState.FAILED;
       }
+   }
+
+   JeleniumTestResult toResult() {
+      return new TestResultImpl( this.name,
+                                 this.result,
+                                 this.getTestRetries(),
+                                 Utils.findWebDriverName( this.webDriver ) );
    }
 }

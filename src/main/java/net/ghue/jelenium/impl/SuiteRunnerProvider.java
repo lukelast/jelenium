@@ -18,7 +18,7 @@ final class SuiteRunnerProvider implements Provider<JeleniumSuiteRunner> {
    }
 
    /**
-    * Scan config and the class path looking for the {@link JeleniumSuiteRunner} to use.
+    * Scan CONFIG and the class path looking for the {@link JeleniumSuiteRunner} to use.
     */
    Class<? extends JeleniumSuiteRunner> findTestSuite() throws IOException {
       final Optional<Class<JeleniumSuiteRunner>> suiteFromSettings =
@@ -44,7 +44,6 @@ final class SuiteRunnerProvider implements Provider<JeleniumSuiteRunner> {
       try {
          Class<? extends JeleniumSuiteRunner> suiteClass = findTestSuite();
          final JeleniumSuiteRunner suite = suiteClass.newInstance();
-         suite.setConfig( this.config );
          return suite;
       } catch ( InstantiationException | IllegalAccessException | IOException ex ) {
          throw new RuntimeException( ex );

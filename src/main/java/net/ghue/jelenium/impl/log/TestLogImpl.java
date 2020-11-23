@@ -27,6 +27,9 @@ public final class TestLogImpl implements TestLog, Closeable {
       this.startTime = startTime;
    }
 
+   /**
+    * Closes handlers. Mainly used to close files.
+    */
    @Override
    public void close() throws IOException {
       for ( LogHandler handler : this.handlers ) {
