@@ -49,7 +49,7 @@ public final class Scanner {
                            "org.webbitserver.",
                            "org.xml." );
 
-   public static List<Class<? extends JeleniumConfigUpdater>> findSettings() {
+   public static List<Class<? extends JeleniumConfigUpdater>> findConfigUpdaters() {
       try {
          return scanAndLoadClasses().filter( JeleniumConfigUpdater.class::isAssignableFrom )
                                     .map( cl -> cl.<JeleniumConfigUpdater> asSubclass( JeleniumConfigUpdater.class ) )

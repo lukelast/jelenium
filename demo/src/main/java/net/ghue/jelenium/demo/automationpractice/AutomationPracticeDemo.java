@@ -2,6 +2,8 @@ package net.ghue.jelenium.demo.automationpractice;
 
 import java.time.Duration;
 import javax.inject.Inject;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.WebDriver.Options;
 import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.TestContext;
 
@@ -15,6 +17,12 @@ public class AutomationPracticeDemo implements JeleniumTest {
 
    @Inject
    PageSearch search;
+
+   @Override
+   public void manage( Options options ) {
+      // Limit the window width because the UI will change at larger resolutions.
+      options.window().setSize( new Dimension( 1024, 800 ) );
+   }
 
    @Override
    public void run( TestContext context ) throws Exception {
@@ -41,7 +49,7 @@ public class AutomationPracticeDemo implements JeleniumTest {
       search.verifyFirstProductName( "Blouse" );
       search.addFirstToCart().clickProceedToCheckout();
 
-      context.pause( Duration.ofSeconds( 5 ) );
+      context.pause( Duration.ofSeconds( 2 ) );
    }
 
 }

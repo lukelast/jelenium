@@ -31,7 +31,7 @@ public class PageDynamicLoading1 extends Page {
                   .add( Assertions::assertThat )
                   .add( assertion -> assertion.containsIgnoringCase( "Hello World" ) )
                   .withRetryDelay( Duration.ofSeconds( 1 ) )
-                  .withRetryTimeout( Duration.ofSeconds( 2 ) )
+                  .withRetryTimeout( Duration.ofSeconds( 8 ) )
                   .buildSimple()
                   .execute();
    }

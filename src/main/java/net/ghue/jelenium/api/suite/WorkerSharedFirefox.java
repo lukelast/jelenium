@@ -2,19 +2,19 @@ package net.ghue.jelenium.api.suite;
 
 import java.util.Objects;
 import javax.annotation.Nullable;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import net.ghue.jelenium.api.JeleniumTestResult;
 import net.ghue.jelenium.api.TestManager;
 
-public class WorkerSharedChrome implements Worker {
+public class WorkerSharedFirefox implements Worker {
 
    @Nullable
    private RemoteWebDriver driver;
 
    @Override
    public void init() {
-      this.driver = new ChromeDriver();
+      this.driver = new FirefoxDriver();
    }
 
    @Override

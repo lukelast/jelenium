@@ -8,6 +8,9 @@ import net.ghue.jelenium.api.TestManager;
 import net.ghue.jelenium.api.config.JeleniumConfig;
 import net.ghue.jelenium.api.ex.TestErrorException;
 
+/**
+ * Runs one and only one test.
+ */
 public class SuiteRunnerSingle implements JeleniumSuiteRunner {
 
    @Override
@@ -20,17 +23,11 @@ public class SuiteRunnerSingle implements JeleniumSuiteRunner {
       }
 
       final TestManager testToRun = maybeTestToRun.get();
-
-      final Worker worker = new WorkerSharedChrome();
-
-      worker.init();
-
       final Queue<TestManager> queue = new LinkedList<>();
       queue.add( testToRun );
 
-      worker.work( queue );
-
-      worker.finish();
+      final Worker worker = new WorkerSharedChrome();
+      new QueueRunner( worker, queue ).run();
 
    }
 

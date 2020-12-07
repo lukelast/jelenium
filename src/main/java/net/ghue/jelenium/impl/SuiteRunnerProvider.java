@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import net.ghue.jelenium.api.config.JeleniumConfig;
 import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
+import net.ghue.jelenium.api.suite.SuiteRunnerDefault;
 
 final class SuiteRunnerProvider implements Provider<JeleniumSuiteRunner> {
 
@@ -30,7 +31,7 @@ final class SuiteRunnerProvider implements Provider<JeleniumSuiteRunner> {
 
       final List<Class<? extends JeleniumSuiteRunner>> suites = Scanner.findSuites();
       if ( suites.isEmpty() ) {
-         return DefaultTestSuite.class;
+         return SuiteRunnerDefault.class;
       } else if ( suites.size() == 1 ) {
          return suites.get( 0 );
       } else {

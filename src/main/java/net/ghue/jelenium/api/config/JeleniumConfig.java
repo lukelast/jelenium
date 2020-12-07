@@ -90,6 +90,14 @@ public interface JeleniumConfig extends Accessible {
    @DefaultValue( "0" )
    int testRetries();
 
+   @Key( "suite.threads" )
+   @DefaultValue( "1" )
+   int suiteThreads();
+
+   @Key( "suite.driver" )
+   @DefaultValue( "chrome" )
+   String suiteDriver();
+
    @DefaultValue( "http://localhost" )
    HttpUrl url();
 

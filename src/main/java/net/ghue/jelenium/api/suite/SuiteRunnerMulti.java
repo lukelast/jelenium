@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import net.ghue.jelenium.api.TestManager;
 import net.ghue.jelenium.api.config.JeleniumConfig;
 
-public abstract class SuiteRunnerMulti extends SuiteRunnerBase {
+public abstract class SuiteRunnerMulti implements JeleniumSuiteRunner {
 
    private final List<JeleniumSuiteRunner> subRunners = new ArrayList<>();
 
@@ -38,7 +38,7 @@ public abstract class SuiteRunnerMulti extends SuiteRunnerBase {
       }
 
       exec.shutdown();
-      exec.awaitTermination( 2, TimeUnit.HOURS );
+      exec.awaitTermination( 12, TimeUnit.HOURS );
    }
 
    public void setThreads( int threads ) {

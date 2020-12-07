@@ -6,14 +6,11 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.JeleniumTestResult;
 import net.ghue.jelenium.api.TestManager;
 import net.ghue.jelenium.api.TestName;
 import net.ghue.jelenium.api.config.JeleniumConfig;
-import net.ghue.jelenium.api.suite.WebDriverProvider;
 
 class TestManagerImpl implements TestManager {
 
@@ -90,28 +87,4 @@ class TestManagerImpl implements TestManager {
       this.results.add( result );
       return result;
    }
-
-   @Override
-   public List<JeleniumTestResult> runWithRetries( WebDriverProvider driverProvider ) {
-      final Builder<JeleniumTestResult> builder = ImmutableList.builder();
-
-      // Use a max attempts limit to prevent running forever.
-      for ( int attempt = 1; attempt < 10; attempt++ ) {
-
-         final RemoteWebDriver webDriver = driverProvider.get();
-         final JeleniumTestResult result = this.run( webDriver, attempt );
-         driverProvider.finished( result, webDriver );
-         builder.add( result );
-
-         TestResultImpl resultImpl = (TestResultImpl) result;
-         if ( resultImpl.shouldTryAgain( attempt ) ) {
-            resultImpl.setRetried( true );
-         } else {
-            break;// DONE
-         }
-      }
-
-      return builder.build();
-   }
-
 }

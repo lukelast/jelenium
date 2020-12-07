@@ -13,7 +13,7 @@ public final class ConfigUpdaterProvider implements Provider<Collection<Jelenium
 
       //TODO support ordering.
 
-      return Scanner.findSettings().stream().map( cl -> {
+      return Scanner.findConfigUpdaters().stream().map( cl -> {
          try {
             return cl.newInstance();
          } catch ( InstantiationException | IllegalAccessException ex ) {
