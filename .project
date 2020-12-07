@@ -11,6 +11,11 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
+			<name>org.eclipse.buildship.core.gradleprojectbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
 			<name>org.eclipse.m2e.core.maven2Builder</name>
 			<arguments>
 			</arguments>
@@ -19,10 +24,11 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.m2e.core.maven2Nature</nature>
+		<nature>org.eclipse.buildship.core.gradleprojectnature</nature>
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1482056712852</id>
+			<id>1606102631203</id>
 			<name></name>
 			<type>10</type>
 			<matcher>
@@ -31,7 +37,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1482056712857</id>
+			<id>1606102631210</id>
 			<name></name>
 			<type>10</type>
 			<matcher>
