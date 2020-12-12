@@ -25,18 +25,6 @@ public class WdpLocalBrowser implements WebDriverProvider {
    private Class<? extends RemoteWebDriver> driverClass = ChromeDriver.class;
 
    @Override
-   public void init( JeleniumConfig config ) {
-
-      final String webDriverName = config.suiteBrowser().toLowerCase( Locale.ROOT );
-
-      for ( Class<? extends RemoteWebDriver> cls : DRIVERS ) {
-         if ( cls.getName().toLowerCase( Locale.ROOT ).contains( webDriverName ) ) {
-            driverClass = cls;
-         }
-      }
-   }
-
-   @Override
    public void close() {}
 
    @Override
@@ -45,6 +33,18 @@ public class WdpLocalBrowser implements WebDriverProvider {
          return this.driverClass.newInstance();
       } catch ( InstantiationException | IllegalAccessException ex ) {
          throw new RuntimeException( ex );
+      }
+   }
+
+   @Override
+   public void init( JeleniumConfig config ) {
+
+      final String webDriverName = config.suiteBrowser().toLowerCase( Locale.ROOT );
+
+      for ( Class<? extends RemoteWebDriver> cls : DRIVERS ) {
+         if ( cls.getName().toLowerCase( Locale.ROOT ).contains( webDriverName ) ) {
+            driverClass = cls;
+         }
       }
    }
 

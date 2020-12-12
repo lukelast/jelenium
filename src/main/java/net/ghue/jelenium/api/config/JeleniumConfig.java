@@ -87,23 +87,23 @@ public interface JeleniumConfig extends Accessible {
    @Key( KEY_SUITE )
    Class<JeleniumSuiteRunner> suite();
 
-   @Key( "suite.webDriverProvider" )
-   Class<WebDriverProvider> suiteWdp();
-
-   @Key( KEY_TEST_RETRIES )
-   @DefaultValue( "0" )
-   int testRetries();
-
-   @Key( "suite.threads" )
-   @DefaultValue( "1" )
-   int suiteThreads();
-
    @Key( "suite.browser" )
    @DefaultValue( "chrome" )
    String suiteBrowser();
 
    @Key( "suite.reuseBrowser" )
    boolean suiteReuseBrowser();
+
+   @Key( "suite.threads" )
+   @DefaultValue( "1" )
+   int suiteThreads();
+
+   @Key( "suite.webDriverProvider" )
+   Class<WebDriverProvider> suiteWdp();
+
+   @Key( KEY_TEST_RETRIES )
+   @DefaultValue( "0" )
+   int testRetries();
 
    @DefaultValue( "http://localhost" )
    HttpUrl url();

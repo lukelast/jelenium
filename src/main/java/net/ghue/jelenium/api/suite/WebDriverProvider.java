@@ -6,8 +6,6 @@ import net.ghue.jelenium.api.config.JeleniumConfig;
 
 public interface WebDriverProvider extends Closeable {
 
-   void init( JeleniumConfig config );
-
    /**
     * Cleanup all resources created. After this is called this object will never be used again.
     */
@@ -19,4 +17,6 @@ public interface WebDriverProvider extends Closeable {
    default void destroyWebDriver( RemoteWebDriver wd ) {
       wd.quit();
    }
+
+   void init( JeleniumConfig config );
 }

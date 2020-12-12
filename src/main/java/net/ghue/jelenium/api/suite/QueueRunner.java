@@ -11,11 +11,13 @@ import net.ghue.jelenium.api.config.JeleniumConfig;
  */
 public final class QueueRunner implements Runnable {
 
-   private final WebDriverProvider wdp;
+   private final JeleniumConfig config;
 
    private final Queue<TestManager> testQueue;
 
-   private final JeleniumConfig config;
+   private final WebDriverProvider wdp;
+
+   private RemoteWebDriver webDriver;
 
    QueueRunner( JeleniumConfig config, WebDriverProvider wdp, Queue<TestManager> testQueue ) {
       this.wdp = wdp;
@@ -23,31 +25,12 @@ public final class QueueRunner implements Runnable {
       this.config = config;
    }
 
-   @Override
-   public void run() {
-      try {
-         this.wdp.init( this.config );
-         this.work( testQueue );
-      } finally {
-         if ( this.webDriver != null ) {
-            this.wdp.destroyWebDriver( this.webDriver );
-            this.webDriver = null;
-         }
-         this.wdp.close();
+   private void finishWebDriver() {
+      if ( !this.config.suiteReuseBrowser() && this.webDriver != null ) {
+         this.wdp.destroyWebDriver( this.webDriver );
+         this.webDriver = null;
       }
    }
-
-   void work( Queue<TestManager> tms ) {
-      while ( true ) {
-         final TestManager tm = tms.poll();
-         if ( tm == null ) {
-            return;
-         }
-         this.runWithRetries( tm );
-      }
-   }
-
-   private RemoteWebDriver webDriver;
 
    private RemoteWebDriver getWebDriver() {
       if ( this.webDriver == null ) {
@@ -61,10 +44,17 @@ public final class QueueRunner implements Runnable {
       return this.webDriver;
    }
 
-   private void finishWebDriver() {
-      if ( !this.config.suiteReuseBrowser() && this.webDriver != null ) {
-         this.wdp.destroyWebDriver( this.webDriver );
-         this.webDriver = null;
+   @Override
+   public void run() {
+      try {
+         this.wdp.init( this.config );
+         this.work( testQueue );
+      } finally {
+         if ( this.webDriver != null ) {
+            this.wdp.destroyWebDriver( this.webDriver );
+            this.webDriver = null;
+         }
+         this.wdp.close();
       }
    }
 
@@ -82,6 +72,16 @@ public final class QueueRunner implements Runnable {
          } else {
             break;// DONE
          }
+      }
+   }
+
+   void work( Queue<TestManager> tms ) {
+      while ( true ) {
+         final TestManager tm = tms.poll();
+         if ( tm == null ) {
+            return;
+         }
+         this.runWithRetries( tm );
       }
    }
 

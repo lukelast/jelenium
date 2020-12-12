@@ -23,8 +23,8 @@ public class TestResultSkipped implements JeleniumTestResult {
    }
 
    @Override
-   public boolean shouldTryAgain( int attempt ) {
-      return false;
+   public String getWebDriverName() {
+      return "";
    }
 
    @Override
@@ -33,7 +33,7 @@ public class TestResultSkipped implements JeleniumTestResult {
    }
 
    @Override
-   public String getWebDriverName() {
-      return "";
+   public boolean shouldTryAgain( int attempt ) {
+      return false;
    }
 }

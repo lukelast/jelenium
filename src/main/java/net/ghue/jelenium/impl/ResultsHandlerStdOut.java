@@ -13,14 +13,6 @@ import net.ghue.jelenium.api.ex.TestFailedException;
 
 public class ResultsHandlerStdOut implements TestResultsHandler {
 
-   private Multimap<TestResultState, JeleniumTestResult> binResults( Collection<JeleniumTestResult> testResults ) {
-      Builder<TestResultState, JeleniumTestResult> builder = ImmutableMultimap.builder();
-      for ( JeleniumTestResult tr : testResults ) {
-         builder.put( tr.getResult(), tr );
-      }
-      return builder.build();
-   }
-
    private void appendResults( StringBuilder sb,
                                Multimap<TestResultState, JeleniumTestResult> results,
                                TestResultState state,
@@ -36,6 +28,14 @@ public class ResultsHandlerStdOut implements TestResultsHandler {
          }
          sb.append( '\n' );
       }
+   }
+
+   private Multimap<TestResultState, JeleniumTestResult> binResults( Collection<JeleniumTestResult> testResults ) {
+      Builder<TestResultState, JeleniumTestResult> builder = ImmutableMultimap.builder();
+      for ( JeleniumTestResult tr : testResults ) {
+         builder.put( tr.getResult(), tr );
+      }
+      return builder.build();
    }
 
    @Override

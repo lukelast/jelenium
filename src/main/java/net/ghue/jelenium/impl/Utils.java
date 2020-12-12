@@ -8,6 +8,11 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 public interface Utils {
 
+   static String findWebDriverName( RemoteWebDriver driver ) {
+      Objects.requireNonNull( driver );
+      return driver.getClass().getSimpleName();
+   }
+
    /**
     * Only seconds resolution.
     * 
@@ -26,11 +31,6 @@ public interface Utils {
     */
    static String formatDateForFilenameMs( LocalDateTime time ) {
       return time.format( DateTimeFormatter.ofPattern( "uuMMdd'@'HH-mm-ss-SSS", Locale.US ) );
-   }
-
-   static String findWebDriverName( RemoteWebDriver driver ) {
-      Objects.requireNonNull( driver );
-      return driver.getClass().getSimpleName();
    }
 
 }

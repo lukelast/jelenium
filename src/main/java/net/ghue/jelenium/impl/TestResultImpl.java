@@ -39,6 +39,11 @@ class TestResultImpl implements JeleniumTestResult {
    }
 
    @Override
+   public String getWebDriverName() {
+      return this.webDriverName;
+   }
+
+   @Override
    public void setRetried( boolean retried ) {
       this.wasRetried = retried;
    }
@@ -50,10 +55,5 @@ class TestResultImpl implements JeleniumTestResult {
          return attemptsFinished < maxAttempts;
       }
       return false;
-   }
-
-   @Override
-   public String getWebDriverName() {
-      return this.webDriverName;
    }
 }

@@ -6,10 +6,10 @@ public interface JeleniumTestResult {
 
    TestResultState getResult();
 
-   boolean shouldTryAgain( int attempt );
+   String getWebDriverName();
 
    void setRetried( boolean wasRetried );
 
-   String getWebDriverName();
+   boolean shouldTryAgain( int attempt );
 
 }
