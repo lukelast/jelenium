@@ -12,12 +12,12 @@ public class PageProduct extends Page {
    private WebElement addCartButton;
 
    @Inject
-   private PopupAddedToCart popupAddedToCart;
+   private PagePopupAddedToCart popupAddedToCart;
 
    @FindBy( css = "#center_column h1" )
    private WebElement productName;
 
-   public PopupAddedToCart addToCart() {
+   public PagePopupAddedToCart addToCart() {
       this.addCartButton.click();
       this.popupAddedToCart.verifyMessage();
       return this.popupAddedToCart;

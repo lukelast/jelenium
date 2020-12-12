@@ -16,7 +16,7 @@ public class PageSearch extends Page {
    private WebElement firstProductName;
 
    @Inject
-   private PopupAddedToCart popupAddedToCart;
+   private PagePopupAddedToCart popupAddedToCart;
 
    @FindBy( css = "#search_query_top" )
    private WebElement searchBox;
@@ -24,7 +24,7 @@ public class PageSearch extends Page {
    @FindBy( css = "#searchbox > button" )
    private WebElement searchButton;
 
-   public PopupAddedToCart addFirstToCart() {
+   public PagePopupAddedToCart addFirstToCart() {
 
       this.addFirstItemToCart.click();
       this.popupAddedToCart.verifyMessage();

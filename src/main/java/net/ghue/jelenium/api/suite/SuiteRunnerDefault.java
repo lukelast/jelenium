@@ -11,8 +11,17 @@ import net.ghue.jelenium.api.config.JeleniumConfig;
 
 public class SuiteRunnerDefault implements JeleniumSuiteRunner {
 
-   protected Worker createWorker( JeleniumConfig config ) {
-      return new WorkerSharedFirefox();
+   protected WebDriverProvider createWdp( JeleniumConfig config ) {
+      Class<WebDriverProvider> fromConfig = config.suiteWdp();
+      if ( fromConfig != null ) {
+         try {
+            return fromConfig.newInstance();
+         } catch ( InstantiationException | IllegalAccessException ex ) {
+            throw new RuntimeException( ex );
+         }
+      } else {
+         return new WdpLocalBrowser();
+      }
    }
 
    protected int getThreads( JeleniumConfig config ) {
@@ -29,8 +38,8 @@ public class SuiteRunnerDefault implements JeleniumSuiteRunner {
       final Queue<TestManager> testQueue = new ConcurrentLinkedQueue<>( tests );
 
       for ( int i = 0; i < threads; i++ ) {
-         final Worker worker = this.createWorker( config );
-         exec.execute( new QueueRunner( worker, testQueue ) );
+         final WebDriverProvider wdp = this.createWdp( config );
+         exec.execute( new QueueRunner( config, wdp, testQueue ) );
       }
       exec.shutdown();
       exec.awaitTermination( 12, TimeUnit.HOURS );

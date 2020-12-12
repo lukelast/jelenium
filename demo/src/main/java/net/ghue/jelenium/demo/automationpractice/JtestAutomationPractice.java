@@ -7,7 +7,7 @@ import org.openqa.selenium.WebDriver.Options;
 import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.TestContext;
 
-public class AutomationPracticeDemo implements JeleniumTest {
+public class JtestAutomationPractice implements JeleniumTest {
 
    @Inject
    PageHome home;

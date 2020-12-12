@@ -26,8 +26,8 @@ public class SuiteRunnerSingle implements JeleniumSuiteRunner {
       final Queue<TestManager> queue = new LinkedList<>();
       queue.add( testToRun );
 
-      final Worker worker = new WorkerSharedChrome();
-      new QueueRunner( worker, queue ).run();
+      final WdpLocalBrowser wdp = new WdpLocalBrowser();
+      new QueueRunner( config, wdp, queue ).run();
 
    }
 

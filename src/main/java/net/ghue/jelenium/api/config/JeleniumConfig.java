@@ -17,6 +17,7 @@ import org.aeonbits.owner.Config.Sources;
 import net.ghue.jelenium.api.TestResultsHandler;
 import net.ghue.jelenium.api.log.LogHandlerFactory;
 import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
+import net.ghue.jelenium.api.suite.WebDriverProvider;
 import okhttp3.HttpUrl;
 
 @LoadPolicy( LoadType.MERGE )
@@ -86,6 +87,9 @@ public interface JeleniumConfig extends Accessible {
    @Key( KEY_SUITE )
    Class<JeleniumSuiteRunner> suite();
 
+   @Key( "suite.webDriverProvider" )
+   Class<WebDriverProvider> suiteWdp();
+
    @Key( KEY_TEST_RETRIES )
    @DefaultValue( "0" )
    int testRetries();
@@ -94,9 +98,12 @@ public interface JeleniumConfig extends Accessible {
    @DefaultValue( "1" )
    int suiteThreads();
 
-   @Key( "suite.driver" )
+   @Key( "suite.browser" )
    @DefaultValue( "chrome" )
-   String suiteDriver();
+   String suiteBrowser();
+
+   @Key( "suite.reuseBrowser" )
+   boolean suiteReuseBrowser();
 
    @DefaultValue( "http://localhost" )
    HttpUrl url();

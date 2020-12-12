@@ -6,7 +6,7 @@ import org.openqa.selenium.support.FindBy;
 import net.ghue.jelenium.api.Page;
 import net.ghue.jelenium.api.action.RetryableAction;
 
-public class PopupAddedToCart extends Page {
+public class PagePopupAddedToCart extends Page {
 
    @FindBy( css = "#layer_cart div.button-container span.continue.btn" )
    private WebElement continueShopping;
