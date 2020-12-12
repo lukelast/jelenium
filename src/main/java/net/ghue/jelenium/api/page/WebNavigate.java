@@ -1,4 +1,4 @@
-package net.ghue.jelenium.api;
+package net.ghue.jelenium.api.page;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Objects;

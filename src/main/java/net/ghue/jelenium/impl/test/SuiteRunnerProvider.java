@@ -1,4 +1,4 @@
-package net.ghue.jelenium.impl;
+package net.ghue.jelenium.impl.test;
 
 import java.io.IOException;
 import java.util.List;

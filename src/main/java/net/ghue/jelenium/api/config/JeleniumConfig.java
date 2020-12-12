@@ -14,9 +14,9 @@ import org.aeonbits.owner.Config.DisableableFeature;
 import org.aeonbits.owner.Config.LoadPolicy;
 import org.aeonbits.owner.Config.LoadType;
 import org.aeonbits.owner.Config.Sources;
-import net.ghue.jelenium.api.TestResultsHandler;
 import net.ghue.jelenium.api.log.LogHandlerFactory;
 import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
+import net.ghue.jelenium.api.suite.TestResultsHandler;
 import net.ghue.jelenium.api.suite.WebDriverProvider;
 import okhttp3.HttpUrl;
 

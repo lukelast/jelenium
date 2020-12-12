@@ -1,4 +1,4 @@
-package net.ghue.jelenium.impl;
+package net.ghue.jelenium.impl.test;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

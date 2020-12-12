@@ -1,12 +1,12 @@
-package net.ghue.jelenium.impl;
+package net.ghue.jelenium.impl.test;
 
 import java.util.List;
 import javax.inject.Inject;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
-import net.ghue.jelenium.api.JeleniumTest;
-import net.ghue.jelenium.api.TestManager;
 import net.ghue.jelenium.api.config.JeleniumConfig;
+import net.ghue.jelenium.api.suite.TestManager;
+import net.ghue.jelenium.api.test.JeleniumTest;
 
 /**
  * Scan for and collect all tests to run and check which should be skipped.

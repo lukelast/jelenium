@@ -4,8 +4,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import net.ghue.jelenium.impl.GuiceModule;
-import net.ghue.jelenium.impl.JeleniumRunner;
+import net.ghue.jelenium.impl.test.GuiceModule;
+import net.ghue.jelenium.impl.test.JeleniumRunner;
 
 public final class JeleniumRunnerBuilder {
 

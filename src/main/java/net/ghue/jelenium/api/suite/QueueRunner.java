@@ -2,9 +2,8 @@ package net.ghue.jelenium.api.suite;
 
 import java.util.Queue;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import net.ghue.jelenium.api.JeleniumTestResult;
-import net.ghue.jelenium.api.TestManager;
 import net.ghue.jelenium.api.config.JeleniumConfig;
+import net.ghue.jelenium.api.test.JeleniumTestResult;
 
 /**
  * This must be executed on the same thread.

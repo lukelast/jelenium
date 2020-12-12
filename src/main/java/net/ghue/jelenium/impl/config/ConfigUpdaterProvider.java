@@ -4,7 +4,7 @@ import java.util.Collection;
 import javax.inject.Provider;
 import com.google.common.collect.ImmutableList;
 import net.ghue.jelenium.api.config.JeleniumConfigUpdater;
-import net.ghue.jelenium.impl.Scanner;
+import net.ghue.jelenium.impl.test.Scanner;
 
 public final class ConfigUpdaterProvider implements Provider<Collection<JeleniumConfigUpdater>> {
 

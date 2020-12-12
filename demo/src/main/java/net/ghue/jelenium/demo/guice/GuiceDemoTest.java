@@ -1,9 +1,9 @@
 package net.ghue.jelenium.demo.guice;
 
 import javax.inject.Inject;
-import net.ghue.jelenium.api.JeleniumTest;
-import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.annotation.GuiceModule;
+import net.ghue.jelenium.api.test.JeleniumTest;
+import net.ghue.jelenium.api.test.TestContext;
 
 /**
  * Every test will have its own GUICE {@link com.google.inject.Injector}. You can add your own

@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
-import net.ghue.jelenium.api.TestManager;
 import net.ghue.jelenium.api.config.JeleniumConfig;
 import net.ghue.jelenium.api.ex.TestErrorException;
 

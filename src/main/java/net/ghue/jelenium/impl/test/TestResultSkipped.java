@@ -1,8 +1,8 @@
-package net.ghue.jelenium.impl;
+package net.ghue.jelenium.impl.test;
 
-import net.ghue.jelenium.api.JeleniumTestResult;
-import net.ghue.jelenium.api.TestName;
-import net.ghue.jelenium.api.TestResultState;
+import net.ghue.jelenium.api.test.JeleniumTestResult;
+import net.ghue.jelenium.api.test.TestName;
+import net.ghue.jelenium.api.test.TestResultState;
 
 public class TestResultSkipped implements JeleniumTestResult {
 

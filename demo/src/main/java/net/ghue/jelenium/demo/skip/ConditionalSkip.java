@@ -1,8 +1,8 @@
 package net.ghue.jelenium.demo.skip;
 
-import net.ghue.jelenium.api.JeleniumTest;
-import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.ex.SkipTestException;
+import net.ghue.jelenium.api.test.JeleniumTest;
+import net.ghue.jelenium.api.test.TestContext;
 
 /**
  * Demonstrate how to conditionally skip a test at any time during its run.

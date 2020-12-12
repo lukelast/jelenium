@@ -1,15 +1,15 @@
 package net.ghue.jelenium.impl;
 
-import static net.ghue.jelenium.api.TestResultState.*;
+import static net.ghue.jelenium.api.test.TestResultState.*;
 import java.util.Collection;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableMultimap.Builder;
 import com.google.common.collect.Multimap;
-import net.ghue.jelenium.api.JeleniumTestResult;
-import net.ghue.jelenium.api.TestResultState;
-import net.ghue.jelenium.api.TestResultsHandler;
 import net.ghue.jelenium.api.ex.TestErrorException;
 import net.ghue.jelenium.api.ex.TestFailedException;
+import net.ghue.jelenium.api.suite.TestResultsHandler;
+import net.ghue.jelenium.api.test.JeleniumTestResult;
+import net.ghue.jelenium.api.test.TestResultState;
 
 public class ResultsHandlerStdOut implements TestResultsHandler {
 

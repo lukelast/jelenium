@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import com.google.common.truth.Truth;
-import net.ghue.jelenium.api.Page;
+import net.ghue.jelenium.api.page.Page;
 
 public final class PageFormAuthSecure extends Page {
 

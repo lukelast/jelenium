@@ -4,7 +4,7 @@ import javax.inject.Inject;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import net.ghue.jelenium.api.Page;
+import net.ghue.jelenium.api.page.Page;
 
 public class PageProduct extends Page {
 

@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import com.google.inject.Module;
 
 /**
- * Use this to annotate a {@link net.ghue.jelenium.api.JeleniumTest} implementation. The test will
+ * Use this to annotate a {@link net.ghue.jelenium.api.test.JeleniumTest} implementation. The test will
  * then use your custom GUICE {@link com.google.inject.Module}.
  *
  * @author Luke Last

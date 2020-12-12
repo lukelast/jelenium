@@ -1,16 +1,16 @@
-package net.ghue.jelenium.impl;
+package net.ghue.jelenium.impl.test;
 
 import java.nio.file.Path;
 import javax.inject.Inject;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import net.ghue.jelenium.api.ScreenshotSaver;
-import net.ghue.jelenium.api.TestContext;
-import net.ghue.jelenium.api.TestName;
-import net.ghue.jelenium.api.WebNavigate;
 import net.ghue.jelenium.api.action.ActionFactory;
 import net.ghue.jelenium.api.annotation.TestResultDir;
 import net.ghue.jelenium.api.config.JeleniumConfig;
 import net.ghue.jelenium.api.log.TestLog;
+import net.ghue.jelenium.api.page.WebNavigate;
+import net.ghue.jelenium.api.test.ScreenshotSaver;
+import net.ghue.jelenium.api.test.TestContext;
+import net.ghue.jelenium.api.test.TestName;
 import net.ghue.jelenium.impl.action.ActionFactoryImpl;
 import okhttp3.HttpUrl;
 

@@ -1,4 +1,4 @@
-package net.ghue.jelenium.impl;
+package net.ghue.jelenium.impl.test;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -7,9 +7,9 @@ import java.util.stream.Stream;
 import com.google.common.collect.ImmutableList;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
-import net.ghue.jelenium.api.JeleniumTest;
 import net.ghue.jelenium.api.config.JeleniumConfigUpdater;
 import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
+import net.ghue.jelenium.api.test.JeleniumTest;
 
 /**
  * Searches the class path for available tests to be run.

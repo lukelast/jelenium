@@ -1,8 +1,8 @@
 package net.ghue.jelenium.demo;
 
-import net.ghue.jelenium.api.JeleniumTest;
-import net.ghue.jelenium.api.TestContext;
-import net.ghue.jelenium.api.TestResultState;
+import net.ghue.jelenium.api.test.JeleniumTest;
+import net.ghue.jelenium.api.test.TestContext;
+import net.ghue.jelenium.api.test.TestResultState;
 
 /**
  * Demonstrate the available life cycle methods of a test run.

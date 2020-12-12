@@ -1,4 +1,4 @@
-package net.ghue.jelenium.api;
+package net.ghue.jelenium.api.test;
 
 import java.nio.file.Path;
 import java.time.Duration;
@@ -9,6 +9,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import net.ghue.jelenium.api.action.ActionFactory;
 import net.ghue.jelenium.api.config.JeleniumConfig;
 import net.ghue.jelenium.api.log.TestLog;
+import net.ghue.jelenium.api.page.WebNavigate;
 import okhttp3.HttpUrl;
 
 /**
@@ -60,7 +61,7 @@ public interface TestContext {
    /**
     * Used to navigate the {@link WebDriver} to different URL's.
     *
-    * @return a {@link net.ghue.jelenium.api.WebNavigate} object.
+    * @return a {@link net.ghue.jelenium.api.page.WebNavigate} object.
     */
    WebNavigate getWebNavigate();
 

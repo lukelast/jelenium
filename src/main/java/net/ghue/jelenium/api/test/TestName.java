@@ -1,4 +1,4 @@
-package net.ghue.jelenium.api;
+package net.ghue.jelenium.api.test;
 
 /**
  * The name of a test, this is automatically derived from the {@link JeleniumTest} class name.

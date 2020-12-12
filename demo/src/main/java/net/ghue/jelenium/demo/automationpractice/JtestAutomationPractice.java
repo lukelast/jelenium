@@ -4,8 +4,8 @@ import java.time.Duration;
 import javax.inject.Inject;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver.Options;
-import net.ghue.jelenium.api.JeleniumTest;
-import net.ghue.jelenium.api.TestContext;
+import net.ghue.jelenium.api.test.JeleniumTest;
+import net.ghue.jelenium.api.test.TestContext;
 
 public class JtestAutomationPractice implements JeleniumTest {
 

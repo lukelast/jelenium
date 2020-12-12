@@ -3,9 +3,9 @@ package net.ghue.jelenium.impl.action;
 import java.time.Duration;
 import java.time.Instant;
 import com.google.common.base.Throwables;
-import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.action.Action;
 import net.ghue.jelenium.api.action.ThrowableAction;
+import net.ghue.jelenium.api.test.TestContext;
 
 final class ActionExecutor<R> implements Action<R> {
 

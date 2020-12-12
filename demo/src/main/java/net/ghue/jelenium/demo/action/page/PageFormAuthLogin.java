@@ -3,7 +3,7 @@ package net.ghue.jelenium.demo.action.page;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import net.ghue.jelenium.api.Page;
+import net.ghue.jelenium.api.page.Page;
 
 public final class PageFormAuthLogin extends Page {
 

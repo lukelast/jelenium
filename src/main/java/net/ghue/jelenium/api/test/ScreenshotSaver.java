@@ -1,4 +1,4 @@
-package net.ghue.jelenium.api;
+package net.ghue.jelenium.api.test;
 
 import java.nio.file.Path;
 import org.openqa.selenium.WebElement;

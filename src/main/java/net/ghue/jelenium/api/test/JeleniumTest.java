@@ -1,4 +1,4 @@
-package net.ghue.jelenium.api;
+package net.ghue.jelenium.api.test;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.Options;

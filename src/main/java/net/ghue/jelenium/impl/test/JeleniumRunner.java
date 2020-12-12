@@ -1,15 +1,15 @@
-package net.ghue.jelenium.impl;
+package net.ghue.jelenium.impl.test;
 
 import java.io.PrintStream;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import net.ghue.jelenium.api.JeleniumTestResult;
-import net.ghue.jelenium.api.TestManager;
-import net.ghue.jelenium.api.TestResultsHandler;
 import net.ghue.jelenium.api.config.JeleniumConfig;
 import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
+import net.ghue.jelenium.api.suite.TestManager;
+import net.ghue.jelenium.api.suite.TestResultsHandler;
+import net.ghue.jelenium.api.test.JeleniumTestResult;
 
 /**
  * Takes the raw input arguments and runs all the tests.

@@ -1,2 +1,2 @@
 @javax.annotation.ParametersAreNonnullByDefault
-package net.ghue.jelenium.api;
+package net.ghue.jelenium.api.page;

@@ -3,8 +3,8 @@ package net.ghue.jelenium.demo;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import net.ghue.jelenium.api.JeleniumTest;
-import net.ghue.jelenium.api.TestContext;
+import net.ghue.jelenium.api.test.JeleniumTest;
+import net.ghue.jelenium.api.test.TestContext;
 
 /**
  * <p>

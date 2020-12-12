@@ -3,7 +3,7 @@ package net.ghue.jelenium.impl.config;
 import java.lang.reflect.Method;
 import javax.annotation.Nullable;
 import org.aeonbits.owner.Converter;
-import net.ghue.jelenium.api.TestResultsHandler;
+import net.ghue.jelenium.api.suite.TestResultsHandler;
 
 public final class TestResultHandlerConverter implements Converter<TestResultsHandler> {
 

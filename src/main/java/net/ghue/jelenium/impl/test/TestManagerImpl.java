@@ -1,4 +1,4 @@
-package net.ghue.jelenium.impl;
+package net.ghue.jelenium.impl.test;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import net.ghue.jelenium.api.JeleniumTest;
-import net.ghue.jelenium.api.JeleniumTestResult;
-import net.ghue.jelenium.api.TestManager;
-import net.ghue.jelenium.api.TestName;
 import net.ghue.jelenium.api.config.JeleniumConfig;
+import net.ghue.jelenium.api.suite.TestManager;
+import net.ghue.jelenium.api.test.JeleniumTest;
+import net.ghue.jelenium.api.test.JeleniumTestResult;
+import net.ghue.jelenium.api.test.TestName;
+import net.ghue.jelenium.impl.Utils;
 
 class TestManagerImpl implements TestManager {
 

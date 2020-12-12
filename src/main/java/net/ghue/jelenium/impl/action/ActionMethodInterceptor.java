@@ -4,9 +4,9 @@ import javax.annotation.Nullable;
 import javax.inject.Provider;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import net.ghue.jelenium.api.Page;
-import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.action.RetryableAction;
+import net.ghue.jelenium.api.page.Page;
+import net.ghue.jelenium.api.test.TestContext;
 
 public final class ActionMethodInterceptor implements MethodInterceptor {
 

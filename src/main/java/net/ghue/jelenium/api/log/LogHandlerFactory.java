@@ -2,7 +2,7 @@ package net.ghue.jelenium.api.log;
 
 import java.nio.file.Path;
 import java.time.Instant;
-import net.ghue.jelenium.api.TestName;
+import net.ghue.jelenium.api.test.TestName;
 import net.ghue.jelenium.impl.log.LogHandler;
 
 /**

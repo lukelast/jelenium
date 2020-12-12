@@ -5,12 +5,12 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.action.Action;
 import net.ghue.jelenium.api.action.ActionBuilder;
 import net.ghue.jelenium.api.action.ActionStep;
 import net.ghue.jelenium.api.action.RetryableAction;
 import net.ghue.jelenium.api.action.SimpleAction;
+import net.ghue.jelenium.api.test.TestContext;
 
 final class ActionBuilderImpl<I> implements ActionBuilder<I> {
 

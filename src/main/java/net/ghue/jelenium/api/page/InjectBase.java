@@ -1,8 +1,9 @@
-package net.ghue.jelenium.api;
+package net.ghue.jelenium.api.page;
 
 import javax.inject.Inject;
 import org.openqa.selenium.WebDriver;
 import net.ghue.jelenium.api.log.TestLog;
+import net.ghue.jelenium.api.test.TestContext;
 import okhttp3.HttpUrl;
 
 /**

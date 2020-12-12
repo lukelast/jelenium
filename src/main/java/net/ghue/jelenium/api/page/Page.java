@@ -1,4 +1,4 @@
-package net.ghue.jelenium.api;
+package net.ghue.jelenium.api.page;
 
 import javax.inject.Inject;
 import org.openqa.selenium.WebElement;

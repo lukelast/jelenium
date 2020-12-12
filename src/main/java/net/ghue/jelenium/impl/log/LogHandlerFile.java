@@ -8,9 +8,9 @@ import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.util.Locale;
 import javax.annotation.concurrent.NotThreadSafe;
-import net.ghue.jelenium.api.TestName;
 import net.ghue.jelenium.api.log.LogData;
 import net.ghue.jelenium.api.log.LogFormatter;
+import net.ghue.jelenium.api.test.TestName;
 
 @NotThreadSafe
 public final class LogHandlerFile extends LogHandlerBase {

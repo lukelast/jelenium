@@ -1,12 +1,12 @@
 package net.ghue.jelenium.impl.action;
 
 import org.openqa.selenium.remote.RemoteWebDriver;
-import net.ghue.jelenium.api.TestContext;
 import net.ghue.jelenium.api.action.ActionBuilder;
 import net.ghue.jelenium.api.action.ActionFactory;
 import net.ghue.jelenium.api.action.ActionStep;
 import net.ghue.jelenium.api.action.SimpleAction;
 import net.ghue.jelenium.api.action.ThrowableAction;
+import net.ghue.jelenium.api.test.TestContext;
 
 public final class ActionFactoryImpl implements ActionFactory {
 

@@ -1,7 +1,7 @@
 package net.ghue.jelenium.demo.skip;
 
-import net.ghue.jelenium.api.JeleniumTest;
-import net.ghue.jelenium.api.TestContext;
+import net.ghue.jelenium.api.test.JeleniumTest;
+import net.ghue.jelenium.api.test.TestContext;
 
 /**
  * This example demonstrates how to mark a test to always be skipped.

@@ -1,8 +1,8 @@
 package net.ghue.jelenium.demo;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import net.ghue.jelenium.api.JeleniumTest;
-import net.ghue.jelenium.api.TestContext;
+import net.ghue.jelenium.api.test.JeleniumTest;
+import net.ghue.jelenium.api.test.TestContext;
 
 /**
  * This demo should fail twice and then pass.

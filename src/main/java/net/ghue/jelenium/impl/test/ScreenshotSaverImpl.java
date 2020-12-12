@@ -1,4 +1,4 @@
-package net.ghue.jelenium.impl;
+package net.ghue.jelenium.impl.test;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,10 +11,11 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebElement;
 import com.google.common.base.Strings;
-import net.ghue.jelenium.api.ScreenshotSaver;
-import net.ghue.jelenium.api.TestName;
 import net.ghue.jelenium.api.annotation.TestResultDir;
 import net.ghue.jelenium.api.log.TestLog;
+import net.ghue.jelenium.api.test.ScreenshotSaver;
+import net.ghue.jelenium.api.test.TestName;
+import net.ghue.jelenium.impl.Utils;
 
 /**
  * @author Luke Last

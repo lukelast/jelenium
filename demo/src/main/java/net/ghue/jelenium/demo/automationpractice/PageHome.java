@@ -3,7 +3,7 @@ package net.ghue.jelenium.demo.automationpractice;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import com.google.common.truth.Truth;
-import net.ghue.jelenium.api.Page;
+import net.ghue.jelenium.api.page.Page;
 import okhttp3.HttpUrl;
 
 public class PageHome extends Page {

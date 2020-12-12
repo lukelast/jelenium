@@ -1,7 +1,6 @@
 package net.ghue.jelenium.api.suite;
 
 import java.util.Collection;
-import net.ghue.jelenium.api.TestManager;
 import net.ghue.jelenium.api.config.JeleniumConfig;
 
 public interface JeleniumSuiteRunner {

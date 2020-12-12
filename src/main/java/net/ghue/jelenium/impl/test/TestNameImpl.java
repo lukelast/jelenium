@@ -1,7 +1,7 @@
-package net.ghue.jelenium.impl;
+package net.ghue.jelenium.impl.test;
 
-import net.ghue.jelenium.api.JeleniumTest;
-import net.ghue.jelenium.api.TestName;
+import net.ghue.jelenium.api.test.JeleniumTest;
+import net.ghue.jelenium.api.test.TestName;
 
 /**
  * @author Luke Last

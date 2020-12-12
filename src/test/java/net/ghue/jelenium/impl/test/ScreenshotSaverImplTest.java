@@ -1,4 +1,4 @@
-package net.ghue.jelenium.impl;
+package net.ghue.jelenium.impl.test;
 import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,7 +15,7 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import net.ghue.jelenium.api.TestName;
+import net.ghue.jelenium.api.test.TestName;
 import net.ghue.jelenium.demo.SampleTest;
 import net.ghue.jelenium.log.TestLogMock;
 
