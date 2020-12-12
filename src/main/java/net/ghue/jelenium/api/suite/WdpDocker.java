@@ -15,8 +15,10 @@ import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Ports.Binding;
 import com.github.dockerjava.api.model.RestartPolicy;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
-import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
+import com.github.dockerjava.core.DockerClientImpl;
+import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
+import com.github.dockerjava.transport.DockerHttpClient;
 import net.ghue.jelenium.api.config.JeleniumConfig;
 
 public final class WdpDocker implements WebDriverProvider {
@@ -30,8 +32,6 @@ public final class WdpDocker implements WebDriverProvider {
     */
    protected static final long SHARE_MEM_BYTES = 1024 * 1024 * 1024 * 2L;
 
-   private String browser;
-
    private String containerId;
 
    private DockerClient docker;
@@ -41,7 +41,9 @@ public final class WdpDocker implements WebDriverProvider {
    @Override
    public void close() {
       try {
-         this.docker.close();
+         if ( this.docker != null ) {
+            this.docker.close();
+         }
       } catch ( IOException ex ) {
          throw new RuntimeException( ex );
       }
@@ -58,13 +60,22 @@ public final class WdpDocker implements WebDriverProvider {
    }
 
    protected DockerClient createDockerClient() {
-      return DockerClientBuilder.getInstance( createDockerClientConfig() ).build();
+      final DockerClientConfig clientConfig = createDockerClientConfig();
+
+      final DockerHttpClient httpClient =
+            new ApacheDockerHttpClient.Builder().dockerHost( clientConfig.getDockerHost() )
+                                                .sslConfig( clientConfig.getSSLConfig() )
+                                                .maxConnections( 100 )
+                                                .build();
+
+      return DockerClientImpl.getInstance( clientConfig, httpClient );
    }
 
    protected DockerClientConfig createDockerClientConfig() {
+      // These settings can be read from docker-java.properties
       return DefaultDockerClientConfig.createDefaultConfigBuilder()
-                                      .withDockerHost( "tcp://localhost:2375" )
-                                      .withDockerTlsVerify( false )
+                                      //.withDockerHost( "tcp://localhost:2375" )
+                                      //.withDockerTlsVerify( true )
                                       //.withDockerCertPath( "C:\\ProgramData\\DockerDesktop\\pki" )
                                       //.withDockerConfig( "/home/user/.docker" )
                                       //.withApiVersion( "1.30" ) // optional
@@ -116,9 +127,7 @@ public final class WdpDocker implements WebDriverProvider {
       final int port = Integer.parseInt( binding[0].getHostPortSpec() );
 
       final DesiredCapabilities cap = new DesiredCapabilities();
-      cap.setCapability( CapabilityType.BROWSER_NAME, browser );
-      // Test to pass name info to the results.
-      //cap.setCapability( "name", "docker" );
+      cap.setCapability( CapabilityType.BROWSER_NAME, getBrowser() );
 
       return RemoteWebDriver.builder().url( "http://localhost:" + port + "/wd/hub" ).oneOf( cap );
    }
@@ -135,6 +144,10 @@ public final class WdpDocker implements WebDriverProvider {
       }
    }
 
+   protected String getBrowser() {
+      return this.jeleniumConfig.suiteBrowser();
+   }
+
    @Override
    public void init( JeleniumConfig jConfig ) {
       this.jeleniumConfig = jConfig;
@@ -142,8 +155,6 @@ public final class WdpDocker implements WebDriverProvider {
 
       System.out.println( docker.versionCmd().exec().toString() );
       System.out.println( docker.infoCmd().exec().toString() );
-
-      this.browser = jConfig.suiteBrowser();
 
       try {
          docker.pullImageCmd( this.createDockerImage() )
