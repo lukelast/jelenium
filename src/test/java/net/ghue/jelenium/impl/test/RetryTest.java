@@ -1,4 +1,4 @@
-package net.ghue.jelenium.impl;
+package net.ghue.jelenium.impl.test;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.ghue.jelenium.api.test.JeleniumTest;
 import net.ghue.jelenium.api.test.TestContext;
