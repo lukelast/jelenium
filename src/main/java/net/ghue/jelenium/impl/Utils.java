@@ -10,6 +10,9 @@ public interface Utils {
 
    static String findWebDriverName( RemoteWebDriver driver ) {
       Objects.requireNonNull( driver );
+      if ( driver.getClass() == RemoteWebDriver.class ) {
+         return "remote";
+      }
       return driver.getClass().getSimpleName();
    }
 

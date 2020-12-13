@@ -12,9 +12,10 @@ public final class JeleniumRunnerBuilder {
    @Nullable
    private String[] args;
 
-   public JeleniumRunnerBuilder withArgs( String[] newArgs ) {
-      this.args = newArgs;
-      return this;
+   public JeleniumRunner build() {
+      final Injector injector = Guice.createInjector( new GuiceModule( getArgs() ) );
+      final JeleniumRunner jelenium = injector.getInstance( JeleniumRunner.class );
+      return jelenium;
    }
 
    @Nonnull
@@ -22,9 +23,8 @@ public final class JeleniumRunnerBuilder {
       return ( args != null ) ? args : new String[0];
    }
 
-   public JeleniumRunner build() {
-      final Injector injector = Guice.createInjector( new GuiceModule( getArgs() ) );
-      final JeleniumRunner jelenium = injector.getInstance( JeleniumRunner.class );
-      return jelenium;
+   public JeleniumRunnerBuilder withArgs( String[] newArgs ) {
+      this.args = newArgs;
+      return this;
    }
 }
