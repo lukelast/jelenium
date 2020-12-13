@@ -36,4 +36,20 @@ public interface Utils {
       return time.format( DateTimeFormatter.ofPattern( "uuMMdd'@'HH-mm-ss-SSS", Locale.US ) );
    }
 
+   static <T> T newInstance( Class<T> clazz ) {
+      try {
+         return clazz.newInstance();
+      } catch ( InstantiationException | IllegalAccessException ex ) {
+         throw new RuntimeException( ex );
+      }
+   }
+
+   static void sleep( double seconds ) {
+      try {
+         Thread.sleep( (long) ( seconds * 1_000 ) );
+      } catch ( InterruptedException ex ) {
+         throw new RuntimeException( ex );
+      }
+   }
+
 }

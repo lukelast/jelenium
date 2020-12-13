@@ -7,20 +7,23 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import net.ghue.jelenium.api.config.JeleniumConfig;
+import net.ghue.jelenium.impl.Utils;
 
 public class SuiteRunnerDefault implements JeleniumSuiteRunner {
 
    protected WebDriverProvider createWdp( JeleniumConfig config ) {
       Class<WebDriverProvider> fromConfig = config.suiteWdp();
       if ( fromConfig != null ) {
-         try {
-            return fromConfig.newInstance();
-         } catch ( InstantiationException | IllegalAccessException ex ) {
-            throw new RuntimeException( ex );
-         }
+         return Utils.newInstance( fromConfig );
       } else {
-         return new WdpLocalBrowser();
+         return new WdpLocalBrowser(); // Default.
       }
+   }
+
+   protected ExecutorService getExecutor( JeleniumConfig config ) {
+      final int threads = this.getThreads( config );
+      final ExecutorService exec = Executors.newFixedThreadPool( threads );
+      return exec;
    }
 
    protected int getThreads( JeleniumConfig config ) {
@@ -29,12 +32,9 @@ public class SuiteRunnerDefault implements JeleniumSuiteRunner {
 
    @Override
    public void runTests( Collection<TestManager> tests, JeleniumConfig config ) throws Exception {
-
-      final int threads = this.getThreads( config );
-
-      final ExecutorService exec = Executors.newFixedThreadPool( threads );
-
+      final ExecutorService exec = this.getExecutor( config );
       final Queue<TestManager> testQueue = new ConcurrentLinkedQueue<>( tests );
+      final int threads = this.getThreads( config );
 
       for ( int i = 0; i < threads; i++ ) {
          final WebDriverProvider wdp = this.createWdp( config );

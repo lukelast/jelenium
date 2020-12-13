@@ -1,52 +1,44 @@
 package net.ghue.jelenium.impl.test;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.Comparator;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import net.ghue.jelenium.api.config.JeleniumConfig;
 import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
 import net.ghue.jelenium.api.suite.SuiteRunnerDefault;
+import net.ghue.jelenium.impl.Utils;
 
 final class SuiteRunnerProvider implements Provider<JeleniumSuiteRunner> {
 
    private final JeleniumConfig config;
 
+   private final Scanner scanner;
+
    @Inject
-   SuiteRunnerProvider( JeleniumConfig config ) {
+   SuiteRunnerProvider( JeleniumConfig config, Scanner scanner ) {
       this.config = config;
+      this.scanner = scanner;
    }
 
    /**
     * Scan CONFIG and the class path looking for the {@link JeleniumSuiteRunner} to use.
     */
    Class<? extends JeleniumSuiteRunner> findTestSuite() {
-      final Optional<Class<JeleniumSuiteRunner>> suiteFromSettings =
-            Optional.ofNullable( this.config.suite() );
-
-      if ( suiteFromSettings.isPresent() ) {
-         return suiteFromSettings.get();
+      if ( this.config.suite() != null ) {
+         return this.config.suite();
       }
 
-      final List<Class<? extends JeleniumSuiteRunner>> suites = Scanner.findSuites();
-      if ( suites.isEmpty() ) {
-         return SuiteRunnerDefault.class;
-      } else if ( suites.size() == 1 ) {
-         return suites.get( 0 );
-      } else {
-         //TODO find default using annotations.
-         return suites.get( 0 );
-      }
+      return scanner.findSuites()
+                    // Sort so if more than one at least the result is consistent.
+                    .sorted( Comparator.comparing( Class::getCanonicalName ) )
+                    .findFirst()
+                    .orElse( SuiteRunnerDefault.class );
    }
 
    @Override
    public JeleniumSuiteRunner get() {
-      try {
-         Class<? extends JeleniumSuiteRunner> suiteClass = findTestSuite();
-         final JeleniumSuiteRunner suite = suiteClass.newInstance();
-         return suite;
-      } catch ( InstantiationException | IllegalAccessException ex ) {
-         throw new RuntimeException( ex );
-      }
+      Class<? extends JeleniumSuiteRunner> suiteClass = findTestSuite();
+      final JeleniumSuiteRunner suite = Utils.newInstance( suiteClass );
+      return suite;
    }
 }

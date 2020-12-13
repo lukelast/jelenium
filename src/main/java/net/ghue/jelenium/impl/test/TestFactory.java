@@ -15,13 +15,16 @@ final class TestFactory {
 
    private final JeleniumConfig config;
 
+   private final Scanner scanner;
+
    private final List<TestManager> testsSkipped;
 
    private final List<TestManager> testsToRun;
 
    @Inject
-   TestFactory( JeleniumConfig config ) {
+   TestFactory( JeleniumConfig config, Scanner scanner ) {
       this.config = config;
+      this.scanner = scanner;
 
       final List<TestManagerImpl> testManagers = findTests();
 
@@ -44,11 +47,10 @@ final class TestFactory {
     * {@link TestManagerImpl}'s.
     */
    private List<TestManagerImpl> findTests() {
-      final List<Class<? extends JeleniumTest>> testClasses = Scanner.findTests();
-
-      final List<TestManagerImpl> tests = testClasses.stream()
-                                                     .map( tc -> new TestManagerImpl( tc, config ) )
-                                                     .collect( ImmutableList.toImmutableList() );
+      final List<TestManagerImpl> tests =
+            this.scanner.findTests()
+                        .map( tc -> new TestManagerImpl( tc, config ) )
+                        .collect( ImmutableList.toImmutableList() );
       return tests;
    }
 

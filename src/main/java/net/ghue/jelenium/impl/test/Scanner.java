@@ -17,7 +17,7 @@ import net.ghue.jelenium.api.test.JeleniumTest;
  *
  * @author Luke Last
  */
-public final class Scanner {
+public class Scanner {
 
    /**
     * These are packages that will never contain the classes we are looking for so ignore them to
@@ -53,30 +53,6 @@ public final class Scanner {
                            "org.w3c.",
                            "org.webbitserver.",
                            "org.xml." );
-
-   private static <T> List<Class<? extends T>> findClasses( Class<T> type ) {
-      return scanAndLoadClasses().filter( type::isAssignableFrom )
-                                 .map( cl -> cl.<T> asSubclass( type ) )
-                                 .collect( ImmutableList.toImmutableList() );
-   }
-
-   public static List<Class<? extends JeleniumConfigUpdater>> findConfigUpdaters() {
-      return findClasses( JeleniumConfigUpdater.class );
-   }
-
-   static List<Class<? extends JeleniumSuiteRunner>> findSuites() {
-      return findClasses( JeleniumSuiteRunner.class );
-   }
-
-   /**
-    * Scan all available classes on the class-path looking for any that implement
-    * {@link JeleniumTest}.
-    *
-    * @return List of classes.
-    */
-   static List<Class<? extends JeleniumTest>> findTests() {
-      return findClasses( JeleniumTest.class );
-   }
 
    /**
     * Load a {@link ClassInfo} into a {@link Class} instance.
@@ -114,6 +90,29 @@ public final class Scanner {
     */
    private static boolean shouldCheck( ClassInfo ci ) {
       return CLASSES_TO_IGNORE.stream().noneMatch( ci.getName()::startsWith );
+   }
+
+   private <T> Stream<Class<? extends T>> findClasses( Class<T> type ) {
+      return scanAndLoadClasses().filter( type::isAssignableFrom )
+                                 .map( cl -> cl.<T> asSubclass( type ) );
+   }
+
+   public Stream<Class<? extends JeleniumConfigUpdater>> findConfigUpdaters() {
+      return findClasses( JeleniumConfigUpdater.class );
+   }
+
+   Stream<Class<? extends JeleniumSuiteRunner>> findSuites() {
+      return findClasses( JeleniumSuiteRunner.class );
+   }
+
+   /**
+    * Scan all available classes on the class-path looking for any that implement
+    * {@link JeleniumTest}.
+    *
+    * @return List of classes.
+    */
+   Stream<Class<? extends JeleniumTest>> findTests() {
+      return findClasses( JeleniumTest.class );
    }
 
 }
