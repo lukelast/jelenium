@@ -14,7 +14,8 @@ public class WebDriverSessionBase implements WebDriverSession {
 
    @Override
    public void close() {
-      this.driver.close();
+      // https://stackoverflow.com/questions/15067107/difference-between-webdriver-dispose-close-and-quit
+      this.driver.quit();
    }
 
    @Override
