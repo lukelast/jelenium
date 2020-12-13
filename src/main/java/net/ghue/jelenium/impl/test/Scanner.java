@@ -1,5 +1,6 @@
 package net.ghue.jelenium.impl.test;
 
+import static com.google.common.base.Predicates.not;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -12,12 +13,16 @@ import net.ghue.jelenium.api.suite.JeleniumSuiteRunner;
 import net.ghue.jelenium.api.test.JeleniumTest;
 
 /**
- * Searches the class path for available tests to be run.
+ * Searches the class path for classes that implement certain interfaces.
  *
  * @author Luke Last
  */
 public final class Scanner {
 
+   /**
+    * These are packages that will never contain the classes we are looking for so ignore them to
+    * improve performance.
+    */
    private static final List<String> CLASSES_TO_IGNORE =
          ImmutableList.of( "cern.",
                            "com.gargoylesoftware.htmlunit.",
@@ -49,20 +54,18 @@ public final class Scanner {
                            "org.webbitserver.",
                            "org.xml." );
 
-   public static List<Class<? extends JeleniumConfigUpdater>> findConfigUpdaters() {
-      try {
-         return scanAndLoadClasses().filter( JeleniumConfigUpdater.class::isAssignableFrom )
-                                    .map( cl -> cl.<JeleniumConfigUpdater> asSubclass( JeleniumConfigUpdater.class ) )
-                                    .collect( ImmutableList.toImmutableList() );
-      } catch ( IOException ex ) {
-         throw new RuntimeException( ex );
-      }
+   private static <T> List<Class<? extends T>> findClasses( Class<T> type ) {
+      return scanAndLoadClasses().filter( type::isAssignableFrom )
+                                 .map( cl -> cl.<T> asSubclass( type ) )
+                                 .collect( ImmutableList.toImmutableList() );
    }
 
-   static List<Class<? extends JeleniumSuiteRunner>> findSuites() throws IOException {
-      return scanAndLoadClasses().filter( JeleniumSuiteRunner.class::isAssignableFrom )
-                                 .map( cl -> cl.<JeleniumSuiteRunner> asSubclass( JeleniumSuiteRunner.class ) )
-                                 .collect( ImmutableList.toImmutableList() );
+   public static List<Class<? extends JeleniumConfigUpdater>> findConfigUpdaters() {
+      return findClasses( JeleniumConfigUpdater.class );
+   }
+
+   static List<Class<? extends JeleniumSuiteRunner>> findSuites() {
+      return findClasses( JeleniumSuiteRunner.class );
    }
 
    /**
@@ -70,18 +73,14 @@ public final class Scanner {
     * {@link JeleniumTest}.
     *
     * @return List of classes.
-    * @throws java.io.IOException if any.
     */
    static List<Class<? extends JeleniumTest>> findTests() {
-      try {
-         return scanAndLoadClasses().filter( JeleniumTest.class::isAssignableFrom )
-                                    .map( cl -> cl.<JeleniumTest> asSubclass( JeleniumTest.class ) )
-                                    .collect( ImmutableList.toImmutableList() );
-      } catch ( IOException ex ) {
-         throw new RuntimeException( ex );
-      }
+      return findClasses( JeleniumTest.class );
    }
 
+   /**
+    * Load a {@link ClassInfo} into a {@link Class} instance.
+    */
    private static Stream<Class<?>> load( ClassInfo ci ) {
       try {
          return Stream.of( ci.load() );
@@ -90,17 +89,24 @@ public final class Scanner {
       }
    }
 
-   private static Stream<Class<?>> scanAndLoadClasses() throws IOException {
-      return ClassPath.from( Thread.currentThread().getContextClassLoader() )
-                      .getTopLevelClasses()
-                      .stream()
-                      .filter( Scanner::shouldCheck )
-                      //.peek( System.out::println )
-                      .flatMap( Scanner::load )
-                      // No abstract classes.
-                      .filter( cl -> !Modifier.isAbstract( cl.getModifiers() ) )
-                      // No interfaces.
-                      .filter( cl -> !cl.isInterface() );
+   /**
+    * Return all classes on the Java CLASSPATH after doing some filtering.
+    */
+   private static Stream<Class<?>> scanAndLoadClasses() {
+      try {
+         return ClassPath.from( Thread.currentThread().getContextClassLoader() )
+                         .getTopLevelClasses()
+                         .stream()
+                         .filter( Scanner::shouldCheck )
+                         //.peek( System.out::println )
+                         .flatMap( Scanner::load )
+                         // No abstract classes.
+                         .filter( cl -> !Modifier.isAbstract( cl.getModifiers() ) )
+                         // No interfaces.
+                         .filter( not( Class::isInterface ) );
+      } catch ( IOException ex ) {
+         throw new RuntimeException( ex );
+      }
    }
 
    /**

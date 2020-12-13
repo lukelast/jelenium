@@ -1,6 +1,5 @@
 package net.ghue.jelenium.impl.test;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
@@ -21,7 +20,7 @@ final class SuiteRunnerProvider implements Provider<JeleniumSuiteRunner> {
    /**
     * Scan CONFIG and the class path looking for the {@link JeleniumSuiteRunner} to use.
     */
-   Class<? extends JeleniumSuiteRunner> findTestSuite() throws IOException {
+   Class<? extends JeleniumSuiteRunner> findTestSuite() {
       final Optional<Class<JeleniumSuiteRunner>> suiteFromSettings =
             Optional.ofNullable( this.config.suite() );
 
@@ -46,7 +45,7 @@ final class SuiteRunnerProvider implements Provider<JeleniumSuiteRunner> {
          Class<? extends JeleniumSuiteRunner> suiteClass = findTestSuite();
          final JeleniumSuiteRunner suite = suiteClass.newInstance();
          return suite;
-      } catch ( InstantiationException | IllegalAccessException | IOException ex ) {
+      } catch ( InstantiationException | IllegalAccessException ex ) {
          throw new RuntimeException( ex );
       }
    }
