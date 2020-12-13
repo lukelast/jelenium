@@ -9,6 +9,7 @@ repositories {
     mavenCentral()
 }
 
+// 'api' means the dependency will be published in the maven pom.
 dependencies {
     api 'javax.inject:javax.inject:1'
     api 'org.seleniumhq.selenium:selenium-java:3.141.59'
@@ -29,10 +30,13 @@ dependencies {
     api 'org.aeonbits.owner:owner-java8:1.0.10'
     api 'org.aeonbits.owner:owner-java8-extras:1.0.10'
     
-    //implementation 'net.bytebuddy:byte-buddy:1.10.1'
-    //implementation 'org.apache.httpcomponents:httpclient:4.5.9'
-    //implementation 'com.google.flogger:flogger:0.4'
-    //implementation 'com.google.flogger:flogger-system-backend:0.4'
+    
+    // Without this Mockito fails when running JUnit in Eclipse.
+    // Errors look like the following.
+    // org.mockito.exceptions.base.MockitoException:
+    // Mockito cannot mock this class: interface org.openqa.selenium.WebElement.
+    // Mockito can only mock non-private & non-final classes.
+	implementation 'net.bytebuddy:byte-buddy:1.10.18'
     
     // Testing
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
