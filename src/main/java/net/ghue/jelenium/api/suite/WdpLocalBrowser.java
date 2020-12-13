@@ -11,6 +11,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import com.google.common.collect.ImmutableList;
 import net.ghue.jelenium.api.config.JeleniumConfig;
+import net.ghue.jelenium.impl.Utils;
+import net.ghue.jelenium.impl.suite.WebDriverSessionBase;
 
 public class WdpLocalBrowser implements WebDriverProvider {
 
@@ -28,12 +30,8 @@ public class WdpLocalBrowser implements WebDriverProvider {
    public void close() {}
 
    @Override
-   public RemoteWebDriver createWebDriver() {
-      try {
-         return this.driverClass.newInstance();
-      } catch ( InstantiationException | IllegalAccessException ex ) {
-         throw new RuntimeException( ex );
-      }
+   public WebDriverSession createWebDriver() {
+      return new WebDriverSessionBase( Utils.newInstance( this.driverClass ) );
    }
 
    @Override

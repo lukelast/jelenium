@@ -20,8 +20,40 @@ import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
 import net.ghue.jelenium.api.config.JeleniumConfig;
+import net.ghue.jelenium.impl.Utils;
+import net.ghue.jelenium.impl.suite.WebDriverSessionBase;
 
 public final class WdpDocker implements WebDriverProvider {
+
+   private static final class WdSessionDocker extends WebDriverSessionBase {
+
+      private final String browser;
+
+      private final String containerId;
+
+      private final DockerClient docker;
+
+      public WdSessionDocker( RemoteWebDriver driver, DockerClient docker, String containerId,
+                              String browser ) {
+         super( driver );
+         this.containerId = containerId;
+         this.docker = docker;
+         this.browser = browser;
+      }
+
+      @Override
+      public void close() {
+         super.close();
+         // With auto remove enabled stopping the container removes it.
+         docker.stopContainerCmd( this.containerId ).exec();
+         //docker.removeContainerCmd( id ).withForce( true ).exec();
+      }
+
+      @Override
+      public String getName() {
+         return "docker-" + this.browser;
+      }
+   }
 
    private static final int SELENIUM_PORT = 4444;
 
@@ -31,8 +63,6 @@ public final class WdpDocker implements WebDriverProvider {
     * @see "https://github.com/SeleniumHQ/docker-selenium"
     */
    protected static final long SHARE_MEM_BYTES = 1024 * 1024 * 1024 * 2L;
-
-   private String containerId;
 
    private DockerClient docker;
 
@@ -92,28 +122,23 @@ public final class WdpDocker implements WebDriverProvider {
    }
 
    @Override
-   public RemoteWebDriver createWebDriver() {
+   public WebDriverSession createWebDriver() {
       final CreateContainerResponse result = createContainer().exec();
       System.out.println( result );
 
-      final String id = result.getId();
-      if ( id == null ) {
+      final String containerId = result.getId();
+      if ( containerId == null ) {
          throw new IllegalArgumentException();
       }
-      this.containerId = id;
 
-      docker.startContainerCmd( id ).exec();
-      // Selenium hub needs time to start.
+      docker.startContainerCmd( containerId ).exec();
+      // SELENIUM hub needs time to start.
       // 2 seconds seems to be the minimum time required.
-      try {
-         Thread.sleep( 3_000 );
-      } catch ( InterruptedException ex ) {
-         throw new RuntimeException( ex );
-      }
+      Utils.sleep( 3 );
 
-      RemoteWebDriver webDriver = (RemoteWebDriver) createWebDriverBuilder( id ).build();
+      RemoteWebDriver webDriver = (RemoteWebDriver) createWebDriverBuilder( containerId ).build();
 
-      return webDriver;
+      return new WdSessionDocker( webDriver, docker, containerId, getBrowser() );
    }
 
    protected RemoteWebDriverBuilder createWebDriverBuilder( String id ) {
@@ -130,18 +155,6 @@ public final class WdpDocker implements WebDriverProvider {
       cap.setCapability( CapabilityType.BROWSER_NAME, getBrowser() );
 
       return RemoteWebDriver.builder().url( "http://localhost:" + port + "/wd/hub" ).oneOf( cap );
-   }
-
-   @Override
-   public void destroyWebDriver( RemoteWebDriver wd ) {
-      wd.quit();
-      final String id = this.containerId;
-      this.containerId = null;
-      if ( id != null && !id.isEmpty() ) {
-         // With auto remove enabled stopping the container removes it.
-         docker.stopContainerCmd( id ).exec();
-         //docker.removeContainerCmd( id ).withForce( true ).exec();
-      }
    }
 
    protected String getBrowser() {

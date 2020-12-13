@@ -1,14 +1,16 @@
 package net.ghue.jelenium.api.suite;
 
 import java.util.Queue;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import net.ghue.jelenium.api.config.JeleniumConfig;
 import net.ghue.jelenium.api.test.JeleniumTestResult;
+import net.ghue.jelenium.impl.Utils;
 
 /**
  * This must be executed on the same thread.
  */
 public final class QueueRunner implements Runnable {
+
+   private static final int RETRY_LIMIT = 10;
 
    private final JeleniumConfig config;
 
@@ -16,7 +18,7 @@ public final class QueueRunner implements Runnable {
 
    private final WebDriverProvider wdp;
 
-   private RemoteWebDriver webDriver;
+   private WebDriverSession webDriver;
 
    QueueRunner( JeleniumConfig config, WebDriverProvider wdp, Queue<TestManager> testQueue ) {
       this.wdp = wdp;
@@ -26,19 +28,17 @@ public final class QueueRunner implements Runnable {
 
    private void finishWebDriver() {
       if ( !this.config.suiteReuseBrowser() && this.webDriver != null ) {
-         this.wdp.destroyWebDriver( this.webDriver );
+         this.webDriver.close();
          this.webDriver = null;
       }
    }
 
-   private RemoteWebDriver getWebDriver() {
+   private WebDriverSession getWebDriver() {
       if ( this.webDriver == null ) {
          this.webDriver = this.wdp.createWebDriver();
          // Give the browser time to start up.
          // Sending commands too soon has caused problems.
-         try {
-            Thread.sleep( 1_000 );
-         } catch ( InterruptedException ex ) {}
+         Utils.sleep( 1 );
       }
       return this.webDriver;
    }
@@ -50,7 +50,7 @@ public final class QueueRunner implements Runnable {
          this.work( testQueue );
       } finally {
          if ( this.webDriver != null ) {
-            this.wdp.destroyWebDriver( this.webDriver );
+            this.webDriver.close();
             this.webDriver = null;
          }
          this.wdp.close();
@@ -59,7 +59,7 @@ public final class QueueRunner implements Runnable {
 
    void runWithRetries( TestManager tm ) {
       // Use a max attempts limit to prevent running forever.
-      for ( int attempt = 1; attempt < 10; attempt++ ) {
+      for ( int attempt = 1; attempt < RETRY_LIMIT; attempt++ ) {
          final JeleniumTestResult result;
          try {
             result = tm.run( getWebDriver(), attempt );

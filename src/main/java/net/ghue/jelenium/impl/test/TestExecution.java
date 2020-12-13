@@ -28,13 +28,13 @@ import net.ghue.jelenium.api.config.JeleniumConfig;
 import net.ghue.jelenium.api.ex.SkipTestException;
 import net.ghue.jelenium.api.log.TestLog;
 import net.ghue.jelenium.api.page.Page;
+import net.ghue.jelenium.api.suite.WebDriverSession;
 import net.ghue.jelenium.api.test.JeleniumTest;
 import net.ghue.jelenium.api.test.JeleniumTestResult;
 import net.ghue.jelenium.api.test.ScreenshotSaver;
 import net.ghue.jelenium.api.test.TestContext;
 import net.ghue.jelenium.api.test.TestName;
 import net.ghue.jelenium.api.test.TestResultState;
-import net.ghue.jelenium.impl.Utils;
 import net.ghue.jelenium.impl.action.ActionMethodInterceptor;
 import net.ghue.jelenium.impl.log.TestLogImpl;
 import okhttp3.HttpUrl;
@@ -47,6 +47,8 @@ import okhttp3.HttpUrl;
 final class TestExecution {
 
    private final JeleniumConfig config;
+
+   private final WebDriverSession driver;
 
    private Optional<Injector> injector = empty();
 
@@ -64,8 +66,6 @@ final class TestExecution {
 
    private final Path testResultsDir;
 
-   private final RemoteWebDriver webDriver;
-
    /**
     * <p>
     * Constructor.
@@ -76,10 +76,10 @@ final class TestExecution {
     * @param config a {@link net.ghue.jelenium.api.config.JeleniumSettings} object.
     */
    TestExecution( Class<? extends JeleniumTest> testClass, JeleniumConfig config,
-                  Path testResultsDir, RemoteWebDriver webDriver ) {
+                  Path testResultsDir, WebDriverSession driver ) {
       this.testClass = requireNonNull( testClass );
       this.config = requireNonNull( config );
-      this.webDriver = requireNonNull( webDriver );
+      this.driver = requireNonNull( driver );
       this.name = new TestNameImpl( testClass );
       this.testResultsDir = testResultsDir;
       this.log = new TestLogImpl( this.startTime,
@@ -111,7 +111,7 @@ final class TestExecution {
                              new ActionMethodInterceptor( getProvider( TestContext.class ) ) );
             bind( Clock.class ).toInstance( Clock.systemUTC() );
             bind( testClass ).in( Singleton.class );
-            bind( RemoteWebDriver.class ).toInstance( webDriver );
+            bind( RemoteWebDriver.class ).toInstance( driver.getWebDriver() );
             bind( WebDriver.class ).to( RemoteWebDriver.class );
             bind( TakesScreenshot.class ).to( RemoteWebDriver.class );
             bind( TestLog.class ).toInstance( log );
@@ -188,7 +188,7 @@ final class TestExecution {
          this.injector = of( createGuiceInjector() );
          this.testInstance = of( injector.get().getInstance( testClass ) );
 
-         final Options manage = this.webDriver.manage();
+         final Options manage = this.driver.getWebDriver().manage();
          manage.timeouts().implicitlyWait( 10, TimeUnit.SECONDS );
          manage.timeouts().pageLoadTimeout( 20, TimeUnit.SECONDS );
          manage.timeouts().setScriptTimeout( 20, TimeUnit.SECONDS );
@@ -211,11 +211,11 @@ final class TestExecution {
       }
 
       log.info()
-         .msg( "Using webdriver '%s'", this.webDriver.toString() )
+         .msg( "Using webdriver '%s'", driver.getWebDriver().toString() )
          .newline()
          .msg( "Browser: %s %s",
-               webDriver.getCapabilities().getBrowserName(),
-               webDriver.getCapabilities().getVersion() )
+               driver.getWebDriver().getCapabilities().getBrowserName(),
+               driver.getWebDriver().getCapabilities().getVersion() )
          .log();
 
       this.result = this.runTest( this.testInstance.get() );
@@ -249,6 +249,6 @@ final class TestExecution {
       return new TestResultImpl( this.name,
                                  this.result,
                                  this.getTestRetries(),
-                                 Utils.findWebDriverName( this.webDriver ) );
+                                 this.driver.getName() );
    }
 }

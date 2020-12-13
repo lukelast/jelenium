@@ -3,18 +3,8 @@ package net.ghue.jelenium.impl;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.Objects;
-import org.openqa.selenium.remote.RemoteWebDriver;
 
 public interface Utils {
-
-   static String findWebDriverName( RemoteWebDriver driver ) {
-      Objects.requireNonNull( driver );
-      if ( driver.getClass() == RemoteWebDriver.class ) {
-         return "remote";
-      }
-      return driver.getClass().getSimpleName();
-   }
 
    /**
     * Only seconds resolution.

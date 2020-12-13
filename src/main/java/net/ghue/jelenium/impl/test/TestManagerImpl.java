@@ -5,13 +5,12 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import net.ghue.jelenium.api.config.JeleniumConfig;
 import net.ghue.jelenium.api.suite.TestManager;
+import net.ghue.jelenium.api.suite.WebDriverSession;
 import net.ghue.jelenium.api.test.JeleniumTest;
 import net.ghue.jelenium.api.test.JeleniumTestResult;
 import net.ghue.jelenium.api.test.TestName;
-import net.ghue.jelenium.impl.Utils;
 
 class TestManagerImpl implements TestManager {
 
@@ -76,13 +75,12 @@ class TestManagerImpl implements TestManager {
    }
 
    @Override
-   public JeleniumTestResult run( RemoteWebDriver remoteWebDriver, int attempt ) {
+   public JeleniumTestResult run( WebDriverSession driver, int attempt ) {
       final TestExecution testExec =
             new TestExecution( testClass,
                                config,
-                               buildTestResultsDir( Utils.findWebDriverName( remoteWebDriver ),
-                                                    attempt ),
-                               remoteWebDriver );
+                               buildTestResultsDir( driver.getName(), attempt ),
+                               driver );
       testExec.run();
       final JeleniumTestResult result = testExec.toResult();
       this.results.add( result );

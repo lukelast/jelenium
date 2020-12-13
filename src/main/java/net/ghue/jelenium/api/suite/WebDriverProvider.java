@@ -1,7 +1,6 @@
 package net.ghue.jelenium.api.suite;
 
 import java.io.Closeable;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import net.ghue.jelenium.api.config.JeleniumConfig;
 
 public interface WebDriverProvider extends Closeable {
@@ -12,11 +11,7 @@ public interface WebDriverProvider extends Closeable {
    @Override
    void close();
 
-   RemoteWebDriver createWebDriver();
-
-   default void destroyWebDriver( RemoteWebDriver wd ) {
-      wd.quit();
-   }
+   WebDriverSession createWebDriver();
 
    void init( JeleniumConfig config );
 }
