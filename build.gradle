@@ -48,14 +48,6 @@ version = '1.0.0-SNAPSHOT'
 description = 'Jelenium'
 sourceCompatibility = '1.8'
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from(components.java)
-        }
-    }
-}
-
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
@@ -64,4 +56,25 @@ test {
     useJUnitPlatform()
 }
 
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+            // Include any other artifacts here, like javadocs
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/lukelast/jelenium")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+
+}
 
