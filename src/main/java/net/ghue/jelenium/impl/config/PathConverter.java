@@ -7,6 +7,9 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 import org.aeonbits.owner.Converter;
 
+/**
+ * Convert strings to {@link Path}'s for configuration.
+ */
 public final class PathConverter implements Converter<Path> {
 
    @Override
