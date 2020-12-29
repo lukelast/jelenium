@@ -32,7 +32,7 @@ class TestManagerImpl implements TestManager {
     * TODO need to handle when the directory already exists or it is a retry, or multiple web
     * drivers.
     */
-   private Path buildTestResultsDir( String webDriverName, int attempt ) {
+   Path buildTestResultsDir( String webDriverName, int attempt ) {
       final StringBuilder dirName = new StringBuilder();
       dirName.append( this.name.getShortName() );
       if ( !webDriverName.isEmpty() ) {
@@ -43,14 +43,15 @@ class TestManagerImpl implements TestManager {
          dirName.append( "-try" ).append( attempt );
       }
 
-      Path path;
       int counter = 0;
+      Path path;
       do {
          counter++;
+         String appendedDirName = dirName.toString();
          if ( 1 < counter ) {
-            dirName.append( '-' ).append( counter );
+            appendedDirName += "-" + counter;
          }
-         path = this.config.results().resolve( dirName.toString() ).toAbsolutePath();
+         path = this.config.results().resolve( appendedDirName ).toAbsolutePath();
       } while ( Files.isDirectory( path ) );
 
       return path;
