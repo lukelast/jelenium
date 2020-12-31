@@ -59,11 +59,16 @@ public interface JeleniumConfig extends Accessible {
       StringBuilder sb = new StringBuilder();
       sb.append( '\n' ).append( "##### Jelenium Configuration Values: " ).append( '\n' );
       for ( Entry<String, String> arg : args.entrySet() ) {
-         sb.append( "  " )
-           .append( arg.getKey() )
-           .append( " = " )
-           .append( arg.getValue() )
-           .append( '\n' );
+         sb.append( "  " ).append( arg.getKey() ).append( " = " );
+         final String key = arg.getKey().toLowerCase();
+         if ( key.contains( "accesskey" ) ||
+              key.contains( "password" ) ||
+              key.contains( "secret" ) ) {
+            sb.append( "***" );
+         } else {
+            sb.append( arg.getValue() );
+         }
+         sb.append( '\n' );
       }
       sb.append( '\n' );
       return sb.toString();
