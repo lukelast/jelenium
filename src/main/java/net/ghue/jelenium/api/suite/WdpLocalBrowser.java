@@ -37,7 +37,7 @@ public class WdpLocalBrowser implements WebDriverProvider {
    @Override
    public void init( JeleniumConfig config ) {
 
-      final String webDriverName = config.suiteBrowser().toLowerCase( Locale.ROOT );
+      final String webDriverName = config.browserName().toLowerCase( Locale.ROOT );
 
       for ( Class<? extends RemoteWebDriver> cls : DRIVERS ) {
          if ( cls.getName().toLowerCase( Locale.ROOT ).contains( webDriverName ) ) {

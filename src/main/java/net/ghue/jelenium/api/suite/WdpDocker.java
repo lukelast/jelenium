@@ -118,7 +118,7 @@ public final class WdpDocker implements WebDriverProvider {
 
    @Nonnull
    protected String createDockerImage() {
-      return "selenium/standalone-" + this.jeleniumConfig.suiteBrowser() + ":latest";
+      return "selenium/standalone-" + getBrowser() + ":latest";
    }
 
    @Override
@@ -158,7 +158,7 @@ public final class WdpDocker implements WebDriverProvider {
    }
 
    protected String getBrowser() {
-      return this.jeleniumConfig.suiteBrowser();
+      return this.jeleniumConfig.browserName();
    }
 
    @Override

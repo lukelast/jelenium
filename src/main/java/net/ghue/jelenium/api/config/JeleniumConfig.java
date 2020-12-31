@@ -34,6 +34,27 @@ public interface JeleniumConfig extends Accessible {
 
    String KEY_TEST_RETRIES = "retries";
 
+   @Key( "browser.name" )
+   @DefaultValue( "chrome" )
+   String browserName();
+
+   /**
+    * {@link org.openqa.selenium.Platform}
+    * 
+    * @return value
+    */
+   @Key( "browser.platform" )
+   @DefaultValue( "linux" )
+   String browserPlatform();
+
+   @Key( "browser.version" )
+   @DefaultValue( "latest" )
+   String browserVersion();
+
+   @Key( "browser.video" )
+   @DefaultValue( "true" )
+   boolean browserVideo();
+
    @Key( KEY_FILTER )
    @DefaultValue( "" )
    String filter();
@@ -41,6 +62,15 @@ public interface JeleniumConfig extends Accessible {
    default Optional<HttpUrl> getSecondaryUrl( int number ) {
       return Optional.ofNullable( HttpUrl.parse( getProperty( "url" + number, "" ) ) );
    }
+
+   @Key( "gridlastic.accessKey" )
+   String gridlasticAccessKey();
+
+   @Key( "gridlastic.hubSubdomain" )
+   String gridlasticHubSubdomain();
+
+   @Key( "gridlastic.username" )
+   String gridlasticUsername();
 
    default boolean is( String key, String expectedValue ) {
       return nullToEmpty( getProperty( key ) ).equalsIgnoreCase( nullToEmpty( expectedValue ) );
@@ -91,10 +121,6 @@ public interface JeleniumConfig extends Accessible {
 
    @Key( KEY_SUITE )
    Class<JeleniumSuiteRunner> suite();
-
-   @Key( "suite.browser" )
-   @DefaultValue( "chrome" )
-   String suiteBrowser();
 
    @Key( "suite.reuseBrowser" )
    boolean suiteReuseBrowser();
