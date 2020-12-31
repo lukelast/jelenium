@@ -20,10 +20,16 @@ import net.ghue.jelenium.api.suite.TestResultsHandler;
 import net.ghue.jelenium.api.suite.WebDriverProvider;
 import okhttp3.HttpUrl;
 
+/**
+ * 'jelenium-priority' files can be created as a way to override values without modifying the main
+ * CONFIG file.
+ */
 @LoadPolicy( LoadType.MERGE )
 @DisableFeature( {
       DisableableFeature.VARIABLE_EXPANSION, DisableableFeature.PARAMETER_FORMATTING } )
-@Sources( { "classpath:jelenium.xml", "classpath:jelenium.properties" } )
+@Sources( {
+      "classpath:jelenium-priority.xml", "classpath:jelenium-priority.properties",
+      "classpath:jelenium.xml", "classpath:jelenium.properties" } )
 public interface JeleniumConfig extends Accessible {
 
    String KEY_FILTER = "filter";
